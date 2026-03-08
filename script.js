@@ -1,37 +1,33 @@
-// ===============================
-// FORMATA CPF
-// ===============================
+// ==========================
+// FORMATAR CPF
+// ==========================
 
 function formatarCPF(campo){
 
-let cpf = campo.value.replace(/\D/g,'')
+let cpf=campo.value.replace(/\D/g,'')
 
-cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
 
-campo.value = cpf
+campo.value=cpf
 
 }
 
 
-// ===============================
-// CADASTRO DE ALUNOS
-// ===============================
+
+// ==========================
+// CADASTRAR ALUNO
+// ==========================
 
 function cadastrarAluno(e){
 
 e.preventDefault()
 
-let nome = document.getElementById("nomeAluno").value
-let cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'')
+let nome=document.getElementById("nomeAluno").value
+let cpf=document.getElementById("cpfAluno").value.replace(/\D/g,'')
 
-if(nome=="" || cpf==""){
-alert("Preencha todos os campos")
-return
-}
-
-let alunos = JSON.parse(localStorage.getItem("alunos")) || []
+let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
 
 alunos.push({
 nome:nome,
@@ -48,50 +44,80 @@ mostrarAlunos()
 }
 
 
-// ===============================
-// MOSTRAR ALUNOS CADASTRADOS
-// ===============================
 
-function mostrarAlunos(){
+// ==========================
+// CADASTRAR PROFESSOR
+// ==========================
 
-let tabela = document.getElementById("tabelaAlunos")
+function cadastrarProfessor(e){
 
-if(!tabela) return
+e.preventDefault()
 
-let alunos = JSON.parse(localStorage.getItem("alunos")) || []
+let nome=document.getElementById("nomeProfessor").value
+let disciplina=document.getElementById("disciplinaProfessor").value
 
-tabela.innerHTML = `
-<tr>
-<th>Nome</th>
-<th>CPF</th>
-</tr>
-`
+let professores=JSON.parse(localStorage.getItem("professores"))||[]
 
-alunos.forEach(a=>{
-
-tabela.innerHTML += `
-<tr>
-<td>${a.nome}</td>
-<td>${a.cpf}</td>
-</tr>
-`
-
+professores.push({
+nome:nome,
+disciplina:disciplina
 })
+
+localStorage.setItem("professores",JSON.stringify(professores))
+
+alert("Professor cadastrado!")
 
 }
 
 
-// ===============================
-// LOGIN DO ALUNO
-// ===============================
+
+// ==========================
+// REGISTRAR NOTA
+// ==========================
+
+function registrarNota(e){
+
+e.preventDefault()
+
+let cpf=document.getElementById("cpfNota").value.replace(/\D/g,'')
+let disciplina=document.getElementById("disciplinaNota").value
+let nota=parseFloat(document.getElementById("notaAluno").value)
+
+let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
+
+let aluno=alunos.find(a=>a.cpf===cpf)
+
+if(!aluno){
+
+alert("Aluno não encontrado")
+return
+
+}
+
+aluno.notas.push({
+disciplina:disciplina,
+nota:nota
+})
+
+localStorage.setItem("alunos",JSON.stringify(alunos))
+
+alert("Nota registrada!")
+
+}
+
+
+
+// ==========================
+// LOGIN
+// ==========================
 
 function login(){
 
-let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
+let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
 
-let alunos = JSON.parse(localStorage.getItem("alunos")) || []
+let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
 
-let aluno = alunos.find(a => a.cpf === cpf)
+let aluno=alunos.find(a=>a.cpf===cpf)
 
 if(aluno){
 
@@ -108,60 +134,91 @@ alert("Aluno não encontrado")
 }
 
 
-// ===============================
-// SISTEMA DE BOLETIM
-// ===============================
+
+// ==========================
+// BOLETIM
+// ==========================
 
 function carregarBoletim(){
 
-let tabela = document.getElementById("tabela")
+let tabela=document.getElementById("tabela")
 
 if(!tabela) return
 
-let aluno = JSON.parse(localStorage.getItem("alunoLogado"))
+let aluno=JSON.parse(localStorage.getItem("alunoLogado"))
 
-if(!aluno){
-return
-}
+if(!aluno) return
 
-let notas = aluno.notas.length ? aluno.notas : [
+let soma=0
 
-{disciplina:"Matemática",nota:8.5},
-{disciplina:"Português",nota:9.0},
-{disciplina:"História",nota:7.5}
+aluno.notas.forEach(n=>{
 
-]
-
-let soma = 0
-
-notas.forEach(n=>{
-
-tabela.innerHTML += `
+tabela.innerHTML+=`
 <tr>
 <td>${n.disciplina}</td>
 <td>${n.nota}</td>
 </tr>
 `
 
-soma += n.nota
+soma+=n.nota
 
 })
 
-let media = (soma/notas.length).toFixed(1)
+let media=(soma/aluno.notas.length).toFixed(1)
 
-tabela.innerHTML += `
+let situacao=media>=6?"Aprovado":"Reprovado"
+
+tabela.innerHTML+=`
+
 <tr>
-<td><strong>Média Final</strong></td>
-<td><strong>${media}</strong></td>
+<td><strong>Média</strong></td>
+<td>${media}</td>
 </tr>
+
+<tr>
+<td><strong>Situação</strong></td>
+<td>${situacao}</td>
+</tr>
+
 `
 
 }
 
 
-// ===============================
-// INICIAR SISTEMA
-// ===============================
+
+// ==========================
+// MOSTRAR ALUNOS
+// ==========================
+
+function mostrarAlunos(){
+
+let tabela=document.getElementById("tabelaAlunos")
+
+if(!tabela) return
+
+let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
+
+tabela.innerHTML=`
+<tr>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+`
+
+alunos.forEach(a=>{
+
+tabela.innerHTML+=`
+<tr>
+<td>${a.nome}</td>
+<td>${a.cpf}</td>
+</tr>
+`
+
+})
+
+}
+
+
 
 window.onload=function(){
 
