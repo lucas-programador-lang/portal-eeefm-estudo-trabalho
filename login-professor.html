@@ -14,6 +14,7 @@
 
 body{
 background:#f1f3f6;
+font-family:Arial, Helvetica, sans-serif;
 }
 
 .login-box{
@@ -94,6 +95,7 @@ color:#0a2a66;
 </header>
 
 
+
 <!-- LOGIN PROFESSOR -->
 
 <div class="login-box" id="loginBox">
@@ -159,15 +161,18 @@ placeholder="Digite a nova senha"
 </div>
 
 
+
 <script src="script.js"></script>
 
 <script>
 
-const API="https://portal-escola-backend.onrender.com"
-
 let cpfRecuperacao=""
 
-/* ABRIR RECUPERAÇÃO */
+
+
+/* =========================
+ABRIR RECUPERAÇÃO
+========================= */
 
 function abrirRecuperar(){
 
@@ -176,7 +181,11 @@ document.getElementById("recuperarBox").style.display="block"
 
 }
 
-/* VOLTAR LOGIN */
+
+
+/* =========================
+VOLTAR LOGIN
+========================= */
 
 function voltarLogin(){
 
@@ -185,11 +194,22 @@ document.getElementById("loginBox").style.display="block"
 
 }
 
-/* RECUPERAR SENHA */
+
+
+/* =========================
+RECUPERAR SENHA
+========================= */
 
 async function recuperarSenha(){
 
 let cpf=document.getElementById("cpfRecuperar").value.replace(/\D/g,'')
+
+if(!cpf){
+alert("Digite seu CPF")
+return
+}
+
+try{
 
 let res=await fetch(API+"/recuperar-senha",{
 
@@ -221,13 +241,30 @@ alert("CPF não encontrado")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
 }
 
-/* REDEFINIR SENHA */
+}
+
+
+
+/* =========================
+REDEFINIR SENHA
+========================= */
 
 async function redefinirSenha(){
 
 let senha=document.getElementById("novaSenha").value
+
+if(!senha){
+alert("Digite a nova senha")
+return
+}
+
+try{
 
 let res=await fetch(API+"/redefinir-senha",{
 
@@ -256,6 +293,12 @@ window.location="login-professor.html"
 }else{
 
 alert("Erro ao redefinir senha")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
 
 }
 
