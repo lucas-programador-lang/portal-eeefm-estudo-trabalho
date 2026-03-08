@@ -1,16 +1,30 @@
-function loginAluno(){
-let ra=document.getElementById("ra").value;
+function login(){
 
-if(ra==="123"){
-document.getElementById("boletim").innerHTML=`
+let cpf=document.getElementById("cpf").value
 
-<h3>Boletim Escolar</h3>
+if(cpf=="12345678900"){
 
-<table>
-<tr>
-<th>Disciplina</th>
-<th>Nota</th>
-</tr>
+localStorage.setItem("aluno","João Silva")
+
+window.location="alunos.html"
+
+}else{
+
+alert("CPF não encontrado")
+
+}
+
+}
+
+window.onload=function(){
+
+let nome=localStorage.getItem("aluno")
+
+let tabela=document.getElementById("tabela")
+
+if(tabela){
+
+tabela.innerHTML+=`
 
 <tr>
 <td>Matemática</td>
@@ -27,14 +41,8 @@ document.getElementById("boletim").innerHTML=`
 <td>7.5</td>
 </tr>
 
-</table>
+`
 
-`;
-}else{
-alert("Aluno não encontrado");
-}
 }
 
-function enviarMatricula(){
-alert("Pré-matrícula enviada com sucesso!");
 }
