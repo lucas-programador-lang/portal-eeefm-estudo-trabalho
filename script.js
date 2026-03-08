@@ -5,7 +5,6 @@
 const API = "https://portal-escola-backend.onrender.com"
 
 
-
 // ==========================
 // FORMATAR CPF
 // ==========================
@@ -23,9 +22,8 @@ campo.value = cpf
 }
 
 
-
 // ==========================
-// CADASTRAR ALUNO (MYSQL)
+// CADASTRAR ALUNO
 // ==========================
 
 async function cadastrarAluno(e){
@@ -40,7 +38,7 @@ alert("Preencha todos os campos")
 return
 }
 
-let res = await fetch(API + "/cadastrar-aluno",{
+let res = await fetch(API + "/aluno",{
 
 method:"POST",
 
@@ -50,7 +48,8 @@ headers:{
 
 body:JSON.stringify({
 nome:nome,
-cpf:cpf
+cpf:cpf,
+senha:"1234"
 })
 
 })
@@ -70,14 +69,58 @@ alert("Erro ao cadastrar aluno")
 }
 
 
+// ==========================
+// CADASTRAR PROFESSOR
+// ==========================
+
+async function cadastrarProfessor(e){
+
+e.preventDefault()
+
+let nome = document.getElementById("nomeProfessor").value
+let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
+let disciplina = document.getElementById("disciplinaProfessor").value
+
+let res = await fetch(API + "/professor",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+nome:nome,
+cpf:cpf,
+senha:"1234",
+disciplina:disciplina
+})
+
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Professor cadastrado!")
+
+}else{
+
+alert("Erro ao cadastrar professor")
+
+}
+
+}
+
 
 // ==========================
 // LOGIN ALUNO
 // ==========================
 
-async function loginSistema(){
+async function loginAluno(){
 
 let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
+let senha = document.getElementById("senha").value
 
 let res = await fetch(API + "/login",{
 
@@ -87,7 +130,10 @@ headers:{
 "Content-Type":"application/json"
 },
 
-body:JSON.stringify({cpf})
+body:JSON.stringify({
+cpf:cpf,
+senha:senha
+})
 
 })
 
@@ -97,20 +143,140 @@ if(data.success){
 
 localStorage.setItem("alunoID",data.aluno.id)
 
-window.location = "alunos.html"
+window.location="alunos.html"
 
 }else{
 
-alert("Aluno não encontrado")
+alert("CPF ou senha incorretos")
 
 }
 
 }
-
 
 
 // ==========================
-// CARREGAR BOLETIM
+// LOGIN PROFESSOR
+// ==========================
+
+async function loginProfessor(){
+
+let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
+let senha = document.getElementById("senha").value
+
+let res = await fetch(API + "/login-professor",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+cpf:cpf,
+senha:senha
+})
+
+})
+
+let data = await res.json()
+
+if(data.success){
+
+localStorage.setItem("professorLogado",data.professor.id)
+
+window.location="professores.html"
+
+}else{
+
+alert("CPF ou senha inválidos")
+
+}
+
+}
+
+
+// ==========================
+// LISTAR ALUNOS
+// ==========================
+
+async function carregarAlunos(){
+
+let tabela = document.getElementById("tabelaAlunos")
+
+if(!tabela) return
+
+let res = await fetch(API + "/alunos")
+
+let alunos = await res.json()
+
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+`
+
+alunos.forEach(a=>{
+
+tabela.innerHTML += `
+<tr>
+<td>${a.id}</td>
+<td>${a.nome}</td>
+<td>${a.cpf}</td>
+</tr>
+`
+
+})
+
+}
+
+
+// ==========================
+// REGISTRAR NOTA
+// ==========================
+
+async function registrarNota(e){
+
+e.preventDefault()
+
+let aluno_id = document.getElementById("idAluno").value
+let disciplina = document.getElementById("disciplinaNota").value
+let nota = document.getElementById("notaAluno").value
+
+let res = await fetch(API + "/nota",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+aluno_id,
+disciplina,
+nota
+})
+
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Nota registrada!")
+
+}else{
+
+alert("Erro ao registrar nota")
+
+}
+
+}
+
+
+// ==========================
+// BOLETIM
 // ==========================
 
 async function carregarBoletim(){
@@ -152,15 +318,12 @@ soma += n.nota
 let media = 0
 
 if(notas.length > 0){
-
 media = (soma/notas.length).toFixed(1)
-
 }
 
 let situacao = media >= 6 ? "Aprovado" : "Reprovado"
 
 tabela.innerHTML += `
-
 <tr>
 <td><strong>Média</strong></td>
 <td>${media}</td>
@@ -173,7 +336,6 @@ tabela.innerHTML += `
 `
 
 }
-
 
 
 // ==========================
@@ -194,7 +356,6 @@ janela.document.close()
 janela.print()
 
 }
-
 
 
 // ==========================
@@ -230,6 +391,18 @@ calendario.innerHTML += `
 }
 
 
+// ==========================
+// LOGOUT
+// ==========================
+
+function logout(){
+
+localStorage.clear()
+
+window.location="index.html"
+
+}
+
 
 // ==========================
 // INICIALIZAÇÃO
@@ -239,5 +412,6 @@ window.onload=function(){
 
 carregarBoletim()
 carregarCalendario()
+carregarAlunos()
 
 }
