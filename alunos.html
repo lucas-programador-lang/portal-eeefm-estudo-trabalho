@@ -131,25 +131,53 @@ placeholder="Nova senha"
 
 const API = "https://portal-escola-backend.onrender.com"
 
-/* PROTEGER LOGIN */
 
-if(!localStorage.getItem("alunoID")){
+/* =========================
+PEGAR TOKEN
+========================= */
+
+function getToken(){
+return localStorage.getItem("token")
+}
+
+
+/* =========================
+PROTEGER LOGIN
+========================= */
+
+if(!localStorage.getItem("token")){
 window.location="login.html"
 }
 
-/* CARREGAR BOLETIM */
+
+/* =========================
+CARREGAR BOLETIM
+========================= */
 
 async function carregarBoletim(){
 
 let tabela=document.getElementById("tabela")
 
-let alunoID=localStorage.getItem("alunoID")
+let usuario=JSON.parse(localStorage.getItem("usuario"))
 
-let res=await fetch(API + "/boletim/" + alunoID)
+let res=await fetch(API + "/boletim/" + usuario.id,{
+
+headers:{
+Authorization:"Bearer "+getToken()
+}
+
+})
 
 let notas=await res.json()
 
 let soma=0
+
+tabela.innerHTML=`
+<tr>
+<th>Disciplina</th>
+<th>Nota</th>
+</tr>
+`
 
 notas.forEach(n=>{
 
@@ -189,7 +217,9 @@ tabela.innerHTML+=`
 }
 
 
-/* ABRIR TROCAR SENHA */
+/* =========================
+ABRIR TROCAR SENHA
+========================= */
 
 function abrirTrocarSenha(){
 
@@ -204,17 +234,19 @@ box.style.display="none"
 }
 
 
-/* TROCAR SENHA */
+/* =========================
+TROCAR SENHA
+========================= */
 
 async function trocarSenha(){
 
 let senhaAtual=document.getElementById("senhaAtual").value
 let novaSenha=document.getElementById("novaSenha").value
 
-let cpf=prompt("Confirme seu CPF")
+let usuario=JSON.parse(localStorage.getItem("usuario"))
 
-if(!cpf){
-alert("CPF necessário")
+if(!senhaAtual || !novaSenha){
+alert("Preencha os campos")
 return
 }
 
@@ -227,7 +259,7 @@ headers:{
 },
 
 body:JSON.stringify({
-cpf:cpf.replace(/\D/g,''),
+cpf:usuario.cpf,
 senhaAtual:senhaAtual,
 novaSenha:novaSenha,
 tipo:"aluno"
@@ -252,7 +284,9 @@ alert("Senha atual incorreta")
 }
 
 
-/* EXPORTAR PDF */
+/* =========================
+EXPORTAR PDF
+========================= */
 
 function exportarPDF(){
 
@@ -270,6 +304,7 @@ janela.print()
 
 }
 
+
 window.onload=function(){
 
 carregarBoletim()
@@ -277,8 +312,6 @@ carregarBoletim()
 }
 
 </script>
-
-<script src="logout.js"></script>
 
 </body>
 </html>
