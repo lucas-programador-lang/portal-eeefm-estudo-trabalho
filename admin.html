@@ -17,6 +17,7 @@
 display:flex;
 gap:20px;
 margin-bottom:30px;
+flex-wrap:wrap;
 }
 
 .card{
@@ -26,6 +27,7 @@ border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.1);
 flex:1;
 text-align:center;
+min-width:180px;
 }
 
 table{
@@ -45,10 +47,6 @@ padding:6px 10px;
 border:none;
 border-radius:4px;
 cursor:pointer;
-}
-
-.btn-editar{
-background:#ffc107;
 }
 
 .btn-excluir{
@@ -90,7 +88,6 @@ color:white;
 
 <h2>Painel Administrativo</h2>
 
-
 <!-- DASHBOARD -->
 
 <div class="dashboard">
@@ -119,9 +116,9 @@ color:white;
 
 <form onsubmit="cadastrarAluno(event)">
 
-<input id="nomeAluno" placeholder="Nome">
+<input id="nomeAluno" placeholder="Nome" required>
 
-<input id="cpfAluno" placeholder="CPF">
+<input id="cpfAluno" placeholder="CPF" oninput="formatarCPF(this)" required>
 
 <button type="submit">Cadastrar</button>
 
@@ -135,11 +132,11 @@ color:white;
 
 <form onsubmit="cadastrarProfessor(event)">
 
-<input id="nomeProfessor" placeholder="Nome">
+<input id="nomeProfessor" placeholder="Nome" required>
 
-<input id="cpfProfessor" placeholder="CPF">
+<input id="cpfProfessor" placeholder="CPF" oninput="formatarCPF(this)" required>
 
-<input id="disciplinaProfessor" placeholder="Disciplina">
+<input id="disciplinaProfessor" placeholder="Disciplina" required>
 
 <button type="submit">Cadastrar</button>
 
@@ -183,25 +180,102 @@ color:white;
 
 <script>
 
+/* =========================
+DASHBOARD
+========================= */
+
 async function carregarDashboard(){
 
-let alunos=await fetch(API+"/alunos")
-let listaAlunos=await alunos.json()
+try{
 
-document.getElementById("totalAlunos").innerText=listaAlunos.length
+let res = await fetch(API + "/dashboard")
+let dados = await res.json()
+
+document.getElementById("totalAlunos").innerText = dados.alunos
+document.getElementById("totalProfessores").innerText = dados.professores
+document.getElementById("totalNotas").innerText = dados.notas
+
+}catch(err){
+
+console.log("Erro dashboard")
 
 }
 
+}
+
+
+/* =========================
+CARREGAR ALUNOS
+========================= */
+
+async function carregarAlunos(){
+
+try{
+
+let res = await fetch(API + "/alunos")
+let alunos = await res.json()
+
+let tabela = document.getElementById("tabelaAlunos")
+
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>CPF</th>
+<th>Ações</th>
+</tr>
+`
+
+alunos.forEach(a=>{
+
+tabela.innerHTML += `
+<tr>
+<td>${a.id}</td>
+<td>${a.nome}</td>
+<td>${a.cpf}</td>
+<td>
+<button class="btn btn-excluir" onclick="excluirAluno(${a.id})">
+Excluir
+</button>
+</td>
+</tr>
+`
+
+})
+
+}catch(err){
+
+console.log("Erro alunos")
+
+}
+
+}
+
+
+/* =========================
+CARREGAR PROFESSORES
+========================= */
+
 async function carregarProfessores(){
 
-let res=await fetch(API+"/professores")
-let professores=await res.json()
+try{
 
-let tabela=document.getElementById("tabelaProfessores")
+let res = await fetch(API + "/professores")
+let professores = await res.json()
+
+let tabela = document.getElementById("tabelaProfessores")
+
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>Disciplina</th>
+</tr>
+`
 
 professores.forEach(p=>{
 
-tabela.innerHTML+=`
+tabela.innerHTML += `
 <tr>
 <td>${p.id}</td>
 <td>${p.nome}</td>
@@ -211,25 +285,42 @@ tabela.innerHTML+=`
 
 })
 
+}catch(err){
+
+console.log("Erro professores")
+
 }
+
+}
+
+
+/* =========================
+EXCLUIR ALUNO
+========================= */
 
 async function excluirAluno(id){
 
 if(!confirm("Deseja excluir este aluno?")) return
 
-await fetch(API+"/aluno/"+id,{
+await fetch(API + "/aluno/" + id,{
 method:"DELETE"
 })
 
 carregarAlunos()
+carregarDashboard()
 
 }
 
-window.onload=function(){
 
+/* =========================
+INICIAR
+========================= */
+
+window.onload = function(){
+
+carregarDashboard()
 carregarAlunos()
 carregarProfessores()
-carregarDashboard()
 
 }
 
