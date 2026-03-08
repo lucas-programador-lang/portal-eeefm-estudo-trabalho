@@ -27,6 +27,11 @@ e.preventDefault()
 let nome=document.getElementById("nomeAluno").value
 let cpf=document.getElementById("cpfAluno").value.replace(/\D/g,'')
 
+if(!nome || !cpf){
+alert("Preencha todos os campos")
+return
+}
+
 let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
 
 alunos.push({
@@ -108,12 +113,15 @@ alert("Nota registrada!")
 
 
 // ==========================
-// LOGIN
+// LOGIN ALUNO OU PROFESSOR
 // ==========================
 
-function login(){
+function loginSistema(){
 
 let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
+let tipo=document.getElementById("tipoUsuario").value
+
+if(tipo==="aluno"){
 
 let alunos=JSON.parse(localStorage.getItem("alunos"))||[]
 
@@ -122,12 +130,32 @@ let aluno=alunos.find(a=>a.cpf===cpf)
 if(aluno){
 
 localStorage.setItem("alunoLogado",JSON.stringify(aluno))
-
 window.location="alunos.html"
 
 }else{
 
 alert("Aluno não encontrado")
+
+}
+
+}
+
+
+
+if(tipo==="professor"){
+
+let professores=JSON.parse(localStorage.getItem("professores"))||[]
+
+if(professores.length===0){
+
+alert("Nenhum professor cadastrado ainda")
+return
+
+}
+
+localStorage.setItem("professorLogado",cpf)
+
+window.location="professores.html"
 
 }
 
@@ -151,6 +179,13 @@ if(!aluno) return
 
 let soma=0
 
+tabela.innerHTML=`
+<tr>
+<th>Disciplina</th>
+<th>Nota</th>
+</tr>
+`
+
 aluno.notas.forEach(n=>{
 
 tabela.innerHTML+=`
@@ -164,7 +199,11 @@ soma+=n.nota
 
 })
 
-let media=(soma/aluno.notas.length).toFixed(1)
+let media=0
+
+if(aluno.notas.length>0){
+media=(soma/aluno.notas.length).toFixed(1)
+}
 
 let situacao=media>=6?"Aprovado":"Reprovado"
 
@@ -181,6 +220,27 @@ tabela.innerHTML+=`
 </tr>
 
 `
+
+}
+
+
+
+// ==========================
+// EXPORTAR BOLETIM PDF
+// ==========================
+
+function exportarPDF(){
+
+let conteudo=document.querySelector(".boletim-container")
+
+let janela=window.open("","","width=800,height=600")
+
+janela.document.write("<html><head><title>Boletim</title></head><body>")
+janela.document.write(conteudo.innerHTML)
+janela.document.write("</body></html>")
+
+janela.document.close()
+janela.print()
 
 }
 
@@ -220,9 +280,48 @@ tabela.innerHTML+=`
 
 
 
+// ==========================
+// CALENDÁRIO ESCOLAR
+// ==========================
+
+function carregarCalendario(){
+
+let calendario=document.getElementById("calendario")
+
+if(!calendario) return
+
+let eventos=[
+
+{evento:"Início das aulas",data:"05/02"},
+{evento:"Feira de Ciências",data:"20/04"},
+{evento:"Recesso Escolar",data:"15/07"},
+{evento:"Provas finais",data:"10/12"}
+
+]
+
+eventos.forEach(e=>{
+
+calendario.innerHTML+=`
+<tr>
+<td>${e.evento}</td>
+<td>${e.data}</td>
+</tr>
+`
+
+})
+
+}
+
+
+
+// ==========================
+// INICIALIZAÇÃO
+// ==========================
+
 window.onload=function(){
 
 mostrarAlunos()
 carregarBoletim()
+carregarCalendario()
 
 }
