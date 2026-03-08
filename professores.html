@@ -9,6 +9,7 @@
 <title>Painel do Professor - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
 
 </head>
 
@@ -49,7 +50,7 @@ Sair
 <h2 style="margin-top:40px;">Painel do Professor</h2>
 
 
-<h3 style="margin-top:30px;">Alunos da Turma</h3>
+<h3 style="margin-top:30px;">Alunos da Escola</h3>
 
 <table id="tabelaAlunos">
 
@@ -101,8 +102,9 @@ required
 const API = "https://portal-escola-backend.onrender.com"
 
 
-
-/* PROTEGER LOGIN */
+/* =========================
+PROTEGER LOGIN PROFESSOR
+========================= */
 
 if(!localStorage.getItem("professorLogado")){
 
@@ -111,12 +113,23 @@ window.location="login-professor.html"
 }
 
 
-
-/* CARREGAR ALUNOS */
+/* =========================
+CARREGAR ALUNOS
+========================= */
 
 async function carregarAlunos(){
 
 let tabela=document.getElementById("tabelaAlunos")
+
+tabela.innerHTML=`
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+`
+
+try{
 
 let res=await fetch(API + "/alunos")
 
@@ -134,11 +147,18 @@ tabela.innerHTML+=`
 
 })
 
+}catch(err){
+
+console.log("Erro ao carregar alunos")
+
+}
+
 }
 
 
-
-/* REGISTRAR NOTA */
+/* =========================
+REGISTRAR NOTA
+========================= */
 
 async function registrarNota(e){
 
@@ -147,6 +167,8 @@ e.preventDefault()
 let aluno_id=document.getElementById("idAluno").value
 let disciplina=document.getElementById("disciplinaNota").value
 let nota=document.getElementById("notaAluno").value
+
+try{
 
 let res=await fetch(API + "/nota",{
 
@@ -168,7 +190,11 @@ let data=await res.json()
 
 if(data.success){
 
-alert("Nota registrada!")
+alert("Nota registrada com sucesso!")
+
+document.getElementById("idAluno").value=""
+document.getElementById("disciplinaNota").value=""
+document.getElementById("notaAluno").value=""
 
 }else{
 
@@ -176,9 +202,18 @@ alert("Erro ao registrar nota")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
+/* =========================
+INICIAR SISTEMA
+========================= */
 
 window.onload=function(){
 
@@ -192,4 +227,5 @@ carregarAlunos()
 <script src="logout.js"></script>
 
 </body>
+
 </html>
