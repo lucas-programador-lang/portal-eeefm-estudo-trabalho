@@ -9,7 +9,6 @@
 <title>Painel Administrativo - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
 
 </head>
 
@@ -161,6 +160,9 @@ required
 </div>
 
 
+<script src="script.js"></script>
+<script src="logout.js"></script>
+
 <script>
 
 /* =========================
@@ -168,9 +170,7 @@ PROTEGER ADMIN
 ========================= */
 
 if(!localStorage.getItem("adminLogado")){
-
 window.location="login.html"
-
 }
 
 
@@ -228,8 +228,6 @@ carregarAlunos()
 }
 
 </script>
-
-<script src="logout.js"></script>
 
 </body>
 
