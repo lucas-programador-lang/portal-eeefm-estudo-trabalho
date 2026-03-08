@@ -30,6 +30,7 @@
 <a href="login.html">Portal do Aluno</a>
 <a href="login-professor.html">Portal do Professor</a>
 <a href="matricula.html">Matrícula</a>
+<button onclick="logout()" style="margin-left:20px;">Sair</button>
 </div>
 
 </nav>
@@ -64,8 +65,6 @@ Baixar Boletim em PDF
 
 const API = "https://portal-escola-backend.onrender.com"
 
-
-
 /* PROTEGER LOGIN */
 
 if(!localStorage.getItem("alunoID")){
@@ -73,8 +72,6 @@ if(!localStorage.getItem("alunoID")){
 window.location="login.html"
 
 }
-
-
 
 /* CARREGAR BOLETIM */
 
@@ -106,9 +103,7 @@ soma+=n.nota
 let media=0
 
 if(notas.length>0){
-
 media=(soma/notas.length).toFixed(1)
-
 }
 
 let situacao=media>=6?"Aprovado":"Reprovado"
@@ -129,8 +124,6 @@ tabela.innerHTML+=`
 
 }
 
-
-
 /* EXPORTAR PDF */
 
 function exportarPDF(){
@@ -149,8 +142,6 @@ janela.print()
 
 }
 
-
-
 window.onload=function(){
 
 carregarBoletim()
@@ -159,6 +150,7 @@ carregarBoletim()
 
 </script>
 
-</body>
+<script src="logout.js"></script>
 
+</body>
 </html>
