@@ -83,68 +83,8 @@ placeholder="Senha"
 
 </div>
 
-
-<script>
-
-const API = "https://portal-escola-backend.onrender.com"
-
-/* =========================
-FORMATAR CPF
-========================= */
-
-function formatarCPF(campo){
-
-let cpf=campo.value.replace(/\D/g,'')
-
-cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-
-campo.value=cpf
-
-}
-
-/* =========================
-LOGIN ALUNO
-========================= */
-
-async function loginAluno(){
-
-let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
-let senha=document.getElementById("senha").value
-
-let res=await fetch(API + "/login",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-cpf:cpf,
-senha:senha
-})
-
-})
-
-let data=await res.json()
-
-if(data.success){
-
-localStorage.setItem("alunoID",data.aluno.id)
-
-window.location="alunos.html"
-
-}else{
-
-alert("CPF ou senha incorretos")
-
-}
-
-}
-
-</script>
+<!-- IMPORTAR SCRIPT PRINCIPAL -->
+<script src="script.js"></script>
 
 </body>
 
