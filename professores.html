@@ -30,6 +30,11 @@
 <a href="login.html">Portal do Aluno</a>
 <a href="login-professor.html">Portal do Professor</a>
 <a href="matricula.html">Matrícula</a>
+
+<button onclick="logout()" style="margin-left:20px;">
+Sair
+</button>
+
 </div>
 
 </nav>
@@ -44,8 +49,6 @@
 <h2 style="margin-top:40px;">Painel do Professor</h2>
 
 
-<!-- LISTA DE ALUNOS -->
-
 <h3 style="margin-top:30px;">Alunos da Turma</h3>
 
 <table id="tabelaAlunos">
@@ -59,8 +62,6 @@
 </table>
 
 
-
-<!-- REGISTRAR NOTA -->
 
 <h3 style="margin-top:40px;">Registrar Nota</h3>
 
@@ -186,6 +187,9 @@ carregarAlunos()
 }
 
 </script>
+
+
+<script src="logout.js"></script>
 
 </body>
 </html>
