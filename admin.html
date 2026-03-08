@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel Administrativo</title>
+
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container">
+
+<nav>
+
+<div class="logo">
+<img src="logo.png">
+<strong>EEEFM Estudo e Trabalho</strong>
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="admin.html">Painel</a>
+<a href="login.html">Portal do Aluno</a>
+</div>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<div class="container">
+
+<h2 style="margin-top:40px;">Painel Administrativo</h2>
+
+
+<h3>Cadastrar Aluno</h3>
+
+<form onsubmit="cadastrarAluno(event)">
+
+<input type="text" id="nomeAluno" placeholder="Nome do aluno">
+
+<input type="text" id="cpfAluno" placeholder="CPF">
+
+<button type="submit">Cadastrar</button>
+
+</form>
+
+
+<h3 style="margin-top:40px;">Alunos Cadastrados</h3>
+
+<table id="tabelaAlunos">
+
+<tr>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+
+</table>
+
+</div>
+
+</body>
+
+</html>
