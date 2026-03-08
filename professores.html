@@ -9,7 +9,6 @@
 <title>Painel do Professor - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
 
 </head>
 
@@ -28,7 +27,8 @@
 
 <div class="menu">
 <a href="index.html">Início</a>
-<a href="login.html">Portal</a>
+<a href="login.html">Portal do Aluno</a>
+<a href="login-professor.html">Portal do Professor</a>
 <a href="matricula.html">Matrícula</a>
 </div>
 
@@ -44,7 +44,25 @@
 <h2 style="margin-top:40px;">Painel do Professor</h2>
 
 
-<h3 style="margin-top:30px;">Registrar Nota</h3>
+<!-- LISTA DE ALUNOS -->
+
+<h3 style="margin-top:30px;">Alunos da Turma</h3>
+
+<table id="tabelaAlunos">
+
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+
+</table>
+
+
+
+<!-- REGISTRAR NOTA -->
+
+<h3 style="margin-top:40px;">Registrar Nota</h3>
 
 <form onsubmit="registrarNota(event)">
 
@@ -74,31 +92,100 @@ required
 
 </form>
 
-
-
-<h3 style="margin-top:40px;">Turmas</h3>
-
-<table>
-
-<tr>
-<th>Turma</th>
-<th>Disciplina</th>
-</tr>
-
-<tr>
-<td>1º Ano A</td>
-<td>Matemática</td>
-</tr>
-
-<tr>
-<td>2º Ano B</td>
-<td>Português</td>
-</tr>
-
-</table>
-
 </div>
 
-</body>
 
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+
+
+/* PROTEGER LOGIN */
+
+if(!localStorage.getItem("professorLogado")){
+
+window.location="login-professor.html"
+
+}
+
+
+
+/* CARREGAR ALUNOS */
+
+async function carregarAlunos(){
+
+let tabela=document.getElementById("tabelaAlunos")
+
+let res=await fetch(API + "/alunos")
+
+let alunos=await res.json()
+
+alunos.forEach(a=>{
+
+tabela.innerHTML+=`
+<tr>
+<td>${a.id}</td>
+<td>${a.nome}</td>
+<td>${a.cpf}</td>
+</tr>
+`
+
+})
+
+}
+
+
+
+/* REGISTRAR NOTA */
+
+async function registrarNota(e){
+
+e.preventDefault()
+
+let aluno_id=document.getElementById("idAluno").value
+let disciplina=document.getElementById("disciplinaNota").value
+let nota=document.getElementById("notaAluno").value
+
+let res=await fetch(API + "/nota",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+aluno_id,
+disciplina,
+nota
+})
+
+})
+
+let data=await res.json()
+
+if(data.success){
+
+alert("Nota registrada!")
+
+}else{
+
+alert("Erro ao registrar nota")
+
+}
+
+}
+
+
+
+window.onload=function(){
+
+carregarAlunos()
+
+}
+
+</script>
+
+</body>
 </html>
