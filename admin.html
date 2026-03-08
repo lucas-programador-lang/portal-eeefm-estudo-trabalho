@@ -186,6 +186,15 @@ color:white;
 <script>
 
 /* =========================
+PEGAR TOKEN
+========================= */
+
+function getToken(){
+return localStorage.getItem("token")
+}
+
+
+/* =========================
 DASHBOARD
 ========================= */
 
@@ -193,7 +202,14 @@ async function carregarDashboard(){
 
 try{
 
-let res = await fetch(API + "/dashboard")
+let res = await fetch(API + "/dashboard",{
+
+headers:{
+Authorization:"Bearer "+getToken()
+}
+
+})
+
 let dados = await res.json()
 
 document.getElementById("totalAlunos").innerText = dados.alunos
@@ -215,7 +231,16 @@ CARREGAR PROFESSORES
 
 async function carregarProfessores(){
 
-let res = await fetch(API + "/professores")
+try{
+
+let res = await fetch(API + "/professores",{
+
+headers:{
+Authorization:"Bearer "+getToken()
+}
+
+})
+
 let professores = await res.json()
 
 let tabela = document.getElementById("tabelaProfessores")
@@ -240,6 +265,12 @@ tabela.innerHTML += `
 
 })
 
+}catch(err){
+
+console.log("Erro professores")
+
+}
+
 }
 
 
@@ -251,12 +282,23 @@ async function excluirAluno(id){
 
 if(!confirm("Deseja excluir este aluno?")) return
 
+try{
+
 await fetch(API+"/aluno/"+id,{
-method:"DELETE"
+method:"DELETE",
+headers:{
+Authorization:"Bearer "+getToken()
+}
 })
 
 carregarAlunos()
 carregarDashboard()
+
+}catch(err){
+
+alert("Erro ao excluir aluno")
+
+}
 
 }
 
