@@ -56,13 +56,22 @@ cursor:pointer;
 background:#1c4cb3;
 }
 
+.link{
+margin-top:15px;
+display:block;
+cursor:pointer;
+color:#0a2a66;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<div class="login-container">
+<!-- LOGIN -->
+
+<div class="login-container" id="loginBox">
 
 <h2>Portal do Aluno</h2>
 
@@ -81,11 +90,160 @@ placeholder="Senha"
 
 <button onclick="loginAluno()">Entrar</button>
 
+<span class="link" onclick="abrirRecuperar()">Esqueci minha senha</span>
+
 </div>
 
-<!-- IMPORTAR SCRIPT PRINCIPAL -->
+
+
+<!-- RECUPERAR SENHA -->
+
+<div class="login-container" id="recuperarBox" style="display:none;">
+
+<h2>Recuperar Senha</h2>
+
+<input
+id="cpfRecuperar"
+placeholder="Digite seu CPF"
+maxlength="14"
+oninput="formatarCPF(this)"
+>
+
+<button onclick="recuperarSenha()">Continuar</button>
+
+<span class="link" onclick="voltarLogin()">Voltar</span>
+
+</div>
+
+
+
+<!-- REDEFINIR SENHA -->
+
+<div class="login-container" id="novaSenhaBox" style="display:none;">
+
+<h2>Nova Senha</h2>
+
+<input
+type="password"
+id="novaSenha"
+placeholder="Digite a nova senha"
+>
+
+<button onclick="redefinirSenha()">Salvar Nova Senha</button>
+
+</div>
+
+
+
 <script src="script.js"></script>
 
-</body>
+<script>
 
+let cpfRecuperacao=""
+
+/* =========================
+ABRIR RECUPERAÇÃO
+========================= */
+
+function abrirRecuperar(){
+
+document.getElementById("loginBox").style.display="none"
+document.getElementById("recuperarBox").style.display="block"
+
+}
+
+/* =========================
+VOLTAR LOGIN
+========================= */
+
+function voltarLogin(){
+
+document.getElementById("recuperarBox").style.display="none"
+document.getElementById("loginBox").style.display="block"
+
+}
+
+/* =========================
+RECUPERAR SENHA
+========================= */
+
+async function recuperarSenha(){
+
+let cpf=document.getElementById("cpfRecuperar").value.replace(/\D/g,'')
+
+let res=await fetch(API+"/recuperar-senha",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+cpf:cpf,
+tipo:"aluno"
+})
+
+})
+
+let data=await res.json()
+
+if(data.success){
+
+cpfRecuperacao=cpf
+
+document.getElementById("recuperarBox").style.display="none"
+document.getElementById("novaSenhaBox").style.display="block"
+
+}else{
+
+alert("CPF não encontrado")
+
+}
+
+}
+
+/* =========================
+REDEFINIR SENHA
+========================= */
+
+async function redefinirSenha(){
+
+let senha=document.getElementById("novaSenha").value
+
+let res=await fetch(API+"/redefinir-senha",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+cpf:cpfRecuperacao,
+novaSenha:senha,
+tipo:"aluno"
+})
+
+})
+
+let data=await res.json()
+
+if(data.success){
+
+alert("Senha alterada com sucesso!")
+
+window.location="login.html"
+
+}else{
+
+alert("Erro ao redefinir senha")
+
+}
+
+}
+
+</script>
+
+</body>
 </html>
