@@ -6,9 +6,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Login Professor - Portal Educacional</title>
+<title>Portal do Professor - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
 
 <style>
 
@@ -104,65 +105,6 @@ placeholder="Senha"
 
 </div>
 
-
-<script>
-
-const API = "https://portal-escola-backend.onrender.com"
-
-function formatarCPF(campo){
-
-let cpf=campo.value.replace(/\D/g,'')
-
-cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-
-campo.value=cpf
-
-}
-
-
-async function loginProfessor(){
-
-let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
-let senha=document.getElementById("senha").value
-
-if(!cpf || !senha){
-
-alert("Preencha CPF e senha")
-return
-
-}
-
-let res=await fetch(API + "/login-professor",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({cpf,senha})
-
-})
-
-let data=await res.json()
-
-if(data.success){
-
-localStorage.setItem("professorLogado",JSON.stringify(data.professor))
-
-window.location="professores.html"
-
-}else{
-
-alert("CPF ou senha inválidos")
-
-}
-
-}
-
-</script>
-
 </body>
+
 </html>
