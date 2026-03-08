@@ -1,5 +1,5 @@
 // ==========================
-// URL DO BACKEND (RENDER)
+// URL DO BACKEND
 // ==========================
 
 const API = "https://portal-escola-backend.onrender.com"
@@ -38,6 +38,8 @@ alert("Preencha todos os campos")
 return
 }
 
+try{
+
 let res = await fetch(API + "/aluno",{
 
 method:"POST",
@@ -60,9 +62,20 @@ if(data.success){
 
 alert("Aluno cadastrado!")
 
+document.getElementById("nomeAluno").value=""
+document.getElementById("cpfAluno").value=""
+
+carregarAlunos()
+
 }else{
 
 alert("Erro ao cadastrar aluno")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
 
 }
 
@@ -80,6 +93,15 @@ e.preventDefault()
 let nome = document.getElementById("nomeProfessor").value
 let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
 let disciplina = document.getElementById("disciplinaProfessor").value
+
+if(!nome || !cpf || !disciplina){
+
+alert("Preencha todos os campos")
+return
+
+}
+
+try{
 
 let res = await fetch(API + "/professor",{
 
@@ -104,9 +126,19 @@ if(data.success){
 
 alert("Professor cadastrado!")
 
+document.getElementById("nomeProfessor").value=""
+document.getElementById("cpfProfessor").value=""
+document.getElementById("disciplinaProfessor").value=""
+
 }else{
 
 alert("Erro ao cadastrar professor")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
 
 }
 
@@ -121,6 +153,15 @@ async function loginAluno(){
 
 let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
 let senha = document.getElementById("senha").value
+
+if(!cpf || !senha){
+
+alert("Preencha CPF e senha")
+return
+
+}
+
+try{
 
 let res = await fetch(API + "/login",{
 
@@ -151,6 +192,12 @@ alert("CPF ou senha incorretos")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
@@ -162,6 +209,15 @@ async function loginProfessor(){
 
 let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
 let senha = document.getElementById("senha").value
+
+if(!cpf || !senha){
+
+alert("Preencha CPF e senha")
+return
+
+}
+
+try{
 
 let res = await fetch(API + "/login-professor",{
 
@@ -192,6 +248,12 @@ alert("CPF ou senha inválidos")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
@@ -204,6 +266,8 @@ async function carregarAlunos(){
 let tabela = document.getElementById("tabelaAlunos")
 
 if(!tabela) return
+
+try{
 
 let res = await fetch(API + "/alunos")
 
@@ -229,6 +293,12 @@ tabela.innerHTML += `
 
 })
 
+}catch(err){
+
+console.log("Erro ao carregar alunos")
+
+}
+
 }
 
 
@@ -243,6 +313,8 @@ e.preventDefault()
 let aluno_id = document.getElementById("idAluno").value
 let disciplina = document.getElementById("disciplinaNota").value
 let nota = document.getElementById("notaAluno").value
+
+try{
 
 let res = await fetch(API + "/nota",{
 
@@ -272,6 +344,12 @@ alert("Erro ao registrar nota")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
@@ -288,6 +366,8 @@ if(!tabela) return
 let alunoID = localStorage.getItem("alunoID")
 
 if(!alunoID) return
+
+try{
 
 let res = await fetch(API + "/boletim/" + alunoID)
 
@@ -311,15 +391,11 @@ tabela.innerHTML += `
 </tr>
 `
 
-soma += n.nota
+soma += Number(n.nota)
 
 })
 
-let media = 0
-
-if(notas.length > 0){
-media = (soma/notas.length).toFixed(1)
-}
+let media = notas.length ? (soma/notas.length).toFixed(1) : 0
 
 let situacao = media >= 6 ? "Aprovado" : "Reprovado"
 
@@ -335,58 +411,11 @@ tabela.innerHTML += `
 </tr>
 `
 
-}
+}catch(err){
 
-
-// ==========================
-// EXPORTAR BOLETIM PDF
-// ==========================
-
-function exportarPDF(){
-
-let conteudo = document.querySelector(".boletim-container")
-
-let janela = window.open("","","width=800,height=600")
-
-janela.document.write("<html><head><title>Boletim</title></head><body>")
-janela.document.write(conteudo.innerHTML)
-janela.document.write("</body></html>")
-
-janela.document.close()
-janela.print()
+console.log("Erro ao carregar boletim")
 
 }
-
-
-// ==========================
-// CALENDÁRIO ESCOLAR
-// ==========================
-
-function carregarCalendario(){
-
-let calendario = document.getElementById("calendario")
-
-if(!calendario) return
-
-let eventos = [
-
-{evento:"Início das aulas",data:"05/02"},
-{evento:"Feira de Ciências",data:"20/04"},
-{evento:"Recesso Escolar",data:"15/07"},
-{evento:"Provas finais",data:"10/12"}
-
-]
-
-eventos.forEach(e=>{
-
-calendario.innerHTML += `
-<tr>
-<td>${e.evento}</td>
-<td>${e.data}</td>
-</tr>
-`
-
-})
 
 }
 
@@ -398,7 +427,6 @@ calendario.innerHTML += `
 function logout(){
 
 localStorage.clear()
-
 window.location="index.html"
 
 }
