@@ -6,15 +6,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Login - Portal Educacional</title>
+<title>Login Professor - Portal Educacional</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
 
 <style>
 
 .login-box{
-max-width:400px;
+max-width:420px;
 margin:120px auto;
 background:white;
 padding:35px;
@@ -28,7 +27,6 @@ margin-bottom:20px;
 color:#0a2a66;
 }
 
-.login-box select,
 .login-box input{
 width:100%;
 padding:12px;
@@ -73,7 +71,8 @@ background:#1c4cb3;
 
 <div class="menu">
 <a href="index.html">Início</a>
-<a href="login.html">Portal</a>
+<a href="login.html">Portal do Aluno</a>
+<a href="login-professor.html">Portal do Professor</a>
 <a href="matricula.html">Matrícula</a>
 </div>
 
@@ -83,16 +82,10 @@ background:#1c4cb3;
 
 </header>
 
+
 <div class="login-box">
 
-<h2>Portal Educacional</h2>
-
-<select id="tipoUsuario">
-
-<option value="aluno">Aluno</option>
-<option value="professor">Professor</option>
-
-</select>
+<h2>Portal do Professor</h2>
 
 <input
 id="cpf"
@@ -107,9 +100,69 @@ id="senha"
 placeholder="Senha"
 >
 
-<button onclick="loginSistema()">Entrar</button>
+<button onclick="loginProfessor()">Entrar</button>
 
 </div>
+
+
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+function formatarCPF(campo){
+
+let cpf=campo.value.replace(/\D/g,'')
+
+cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf=cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf=cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+
+campo.value=cpf
+
+}
+
+
+async function loginProfessor(){
+
+let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
+let senha=document.getElementById("senha").value
+
+if(!cpf || !senha){
+
+alert("Preencha CPF e senha")
+return
+
+}
+
+let res=await fetch(API + "/login-professor",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({cpf,senha})
+
+})
+
+let data=await res.json()
+
+if(data.success){
+
+localStorage.setItem("professorLogado",JSON.stringify(data.professor))
+
+window.location="professores.html"
+
+}else{
+
+alert("CPF ou senha inválidos")
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
