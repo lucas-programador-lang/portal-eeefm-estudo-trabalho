@@ -9,7 +9,6 @@
 <title>Boletim Escolar - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
-<script src="script.js"></script>
 
 </head>
 
@@ -29,7 +28,7 @@
 <div class="menu">
 <a href="index.html">Início</a>
 <a href="login.html">Portal do Aluno</a>
-<a href="professores.html">Área de Professores</a>
+<a href="login-professor.html">Portal do Professor</a>
 <a href="matricula.html">Matrícula</a>
 </div>
 
@@ -38,6 +37,7 @@
 </div>
 
 </header>
+
 
 <div class="boletim-container">
 
@@ -53,7 +53,111 @@
 
 </table>
 
+<button onclick="exportarPDF()" style="margin-top:20px;">
+Baixar Boletim em PDF
+</button>
+
 </div>
+
+
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+
+
+/* PROTEGER LOGIN */
+
+if(!localStorage.getItem("alunoID")){
+
+window.location="login.html"
+
+}
+
+
+
+/* CARREGAR BOLETIM */
+
+async function carregarBoletim(){
+
+let tabela=document.getElementById("tabela")
+
+let alunoID=localStorage.getItem("alunoID")
+
+let res=await fetch(API + "/boletim/" + alunoID)
+
+let notas=await res.json()
+
+let soma=0
+
+notas.forEach(n=>{
+
+tabela.innerHTML+=`
+<tr>
+<td>${n.disciplina}</td>
+<td>${n.nota}</td>
+</tr>
+`
+
+soma+=n.nota
+
+})
+
+let media=0
+
+if(notas.length>0){
+
+media=(soma/notas.length).toFixed(1)
+
+}
+
+let situacao=media>=6?"Aprovado":"Reprovado"
+
+tabela.innerHTML+=`
+
+<tr>
+<td><strong>Média</strong></td>
+<td>${media}</td>
+</tr>
+
+<tr>
+<td><strong>Situação</strong></td>
+<td>${situacao}</td>
+</tr>
+
+`
+
+}
+
+
+
+/* EXPORTAR PDF */
+
+function exportarPDF(){
+
+let conteudo=document.querySelector(".boletim-container")
+
+let janela=window.open("","","width=800,height=600")
+
+janela.document.write("<html><head><title>Boletim</title></head><body>")
+janela.document.write(conteudo.innerHTML)
+janela.document.write("</body></html>")
+
+janela.document.close()
+
+janela.print()
+
+}
+
+
+
+window.onload=function(){
+
+carregarBoletim()
+
+}
+
+</script>
 
 </body>
 
