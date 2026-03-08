@@ -1,22 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
 
-<title>Login Aluno</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Portal do Aluno - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
+
 <script src="script.js"></script>
+
+<style>
+
+.login-container{
+max-width:400px;
+margin:120px auto;
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.15);
+text-align:center;
+}
+
+.login-container h2{
+margin-bottom:20px;
+color:#0a2a66;
+}
+
+.login-container input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+.login-container button{
+width:100%;
+margin-top:15px;
+padding:12px;
+background:#0a2a66;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+</style>
 
 </head>
 
 <body>
 
+<div class="login-container">
+
 <h2>Portal do Aluno</h2>
 
-<input id="cpf" placeholder="Digite seu CPF">
+<input
+id="cpf"
+placeholder="Digite seu CPF"
+maxlength="14"
+oninput="formatarCPF(this)"
+>
 
 <button onclick="login()">Entrar</button>
+
+</div>
 
 </body>
 
