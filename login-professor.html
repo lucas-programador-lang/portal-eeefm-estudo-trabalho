@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Portal Educacional</title>
+
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+
+<style>
+
+.login-box{
+max-width:400px;
+margin:120px auto;
+background:white;
+padding:35px;
+border-radius:8px;
+box-shadow:0 3px 12px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+.login-box h2{
+margin-bottom:20px;
+color:#0a2a66;
+}
+
+.login-box select,
+.login-box input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+.login-box button{
+width:100%;
+margin-top:15px;
+padding:12px;
+background:#0a2a66;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+cursor:pointer;
+}
+
+.login-box button:hover{
+background:#1c4cb3;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<div class="container">
+
+<nav>
+
+<div class="logo">
+<img src="logo.png">
+<strong>EEEFM Estudo e Trabalho</strong>
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="login.html">Portal</a>
+<a href="matricula.html">Matrícula</a>
+</div>
+
+</nav>
+
+</div>
+
+</header>
+
+<div class="login-box">
+
+<h2>Portal Educacional</h2>
+
+<select id="tipoUsuario">
+
+<option value="aluno">Aluno</option>
+<option value="professor">Professor</option>
+
+</select>
+
+<input
+id="cpf"
+placeholder="Digite seu CPF"
+maxlength="14"
+oninput="formatarCPF(this)"
+>
+
+<input
+type="password"
+id="senha"
+placeholder="Senha"
+>
+
+<button onclick="loginSistema()">Entrar</button>
+
+</div>
+
+</body>
+</html>
