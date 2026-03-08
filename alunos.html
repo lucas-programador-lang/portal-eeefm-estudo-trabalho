@@ -1,18 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
 
-<title>Boletim do aluno</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Boletim Escolar - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
 <script src="script.js"></script>
+
+<style>
+
+.boletim-container{
+max-width:700px;
+margin:80px auto;
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 3px 12px rgba(0,0,0,0.15);
+text-align:center;
+}
+
+.boletim-container h2{
+margin-bottom:5px;
+color:#0a2a66;
+}
+
+.boletim-container h3{
+margin-bottom:25px;
+color:#444;
+font-weight:normal;
+}
+
+.boletim-container table{
+width:100%;
+border-collapse:collapse;
+}
+
+.boletim-container th{
+background:#0a2a66;
+color:white;
+padding:12px;
+}
+
+.boletim-container td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+</style>
 
 </head>
 
 <body>
 
-<h2>Boletim Escolar</h2>
+<div class="boletim-container">
+
+<h2>EEEFM Estudo e Trabalho</h2>
+<h3>Boletim Escolar</h3>
 
 <table id="tabela">
 
@@ -22,6 +69,8 @@
 </tr>
 
 </table>
+
+</div>
 
 </body>
 
