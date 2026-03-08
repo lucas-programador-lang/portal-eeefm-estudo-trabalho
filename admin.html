@@ -88,6 +88,7 @@ color:white;
 
 <h2>Painel Administrativo</h2>
 
+
 <!-- DASHBOARD -->
 
 <div class="dashboard">
@@ -116,9 +117,11 @@ color:white;
 
 <form onsubmit="cadastrarAluno(event)">
 
-<input id="nomeAluno" placeholder="Nome" required>
+<input id="nomeAluno" placeholder="Nome do aluno" required>
 
 <input id="cpfAluno" placeholder="CPF" oninput="formatarCPF(this)" required>
+
+<input id="senhaAluno" placeholder="Senha" required>
 
 <button type="submit">Cadastrar</button>
 
@@ -132,9 +135,11 @@ color:white;
 
 <form onsubmit="cadastrarProfessor(event)">
 
-<input id="nomeProfessor" placeholder="Nome" required>
+<input id="nomeProfessor" placeholder="Nome do professor" required>
 
 <input id="cpfProfessor" placeholder="CPF" oninput="formatarCPF(this)" required>
+
+<input id="senhaProfessor" placeholder="Senha" required>
 
 <input id="disciplinaProfessor" placeholder="Disciplina" required>
 
@@ -205,60 +210,10 @@ console.log("Erro dashboard")
 
 
 /* =========================
-CARREGAR ALUNOS
-========================= */
-
-async function carregarAlunos(){
-
-try{
-
-let res = await fetch(API + "/alunos")
-let alunos = await res.json()
-
-let tabela = document.getElementById("tabelaAlunos")
-
-tabela.innerHTML = `
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>CPF</th>
-<th>Ações</th>
-</tr>
-`
-
-alunos.forEach(a=>{
-
-tabela.innerHTML += `
-<tr>
-<td>${a.id}</td>
-<td>${a.nome}</td>
-<td>${a.cpf}</td>
-<td>
-<button class="btn btn-excluir" onclick="excluirAluno(${a.id})">
-Excluir
-</button>
-</td>
-</tr>
-`
-
-})
-
-}catch(err){
-
-console.log("Erro alunos")
-
-}
-
-}
-
-
-/* =========================
 CARREGAR PROFESSORES
 ========================= */
 
 async function carregarProfessores(){
-
-try{
 
 let res = await fetch(API + "/professores")
 let professores = await res.json()
@@ -285,12 +240,6 @@ tabela.innerHTML += `
 
 })
 
-}catch(err){
-
-console.log("Erro professores")
-
-}
-
 }
 
 
@@ -302,7 +251,7 @@ async function excluirAluno(id){
 
 if(!confirm("Deseja excluir este aluno?")) return
 
-await fetch(API + "/aluno/" + id,{
+await fetch(API+"/aluno/"+id,{
 method:"DELETE"
 })
 
@@ -316,11 +265,11 @@ carregarDashboard()
 INICIAR
 ========================= */
 
-window.onload = function(){
+window.onload=function(){
 
-carregarDashboard()
 carregarAlunos()
 carregarProfessores()
+carregarDashboard()
 
 }
 
