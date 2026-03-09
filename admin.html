@@ -7,6 +7,7 @@
 <title>Painel Administrativo</title>
 
 <link rel="stylesheet" href="style.css">
+
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
@@ -26,6 +27,12 @@ color:white;
 padding:15px 0;
 }
 
+.container{
+width:95%;
+max-width:1200px;
+margin:auto;
+}
+
 .logo{
 display:flex;
 align-items:center;
@@ -36,7 +43,7 @@ gap:10px;
 height:40px;
 }
 
-.menu a, .menu button{
+.menu a,.menu button{
 color:white;
 margin-left:15px;
 text-decoration:none;
@@ -46,33 +53,30 @@ cursor:pointer;
 font-size:15px;
 }
 
-.container{
-width:95%;
-max-width:1200px;
-margin:auto;
-}
-
 /* MENU ADMIN */
 
 .admin-menu{
 display:flex;
-gap:10px;
+justify-content:center;
+gap:15px;
 margin:30px 0;
 flex-wrap:wrap;
 }
 
 .admin-menu button{
 background:white;
-border:1px solid #ddd;
-padding:10px 16px;
-border-radius:6px;
+border:2px solid #0a2a66;
+padding:10px 18px;
+border-radius:8px;
 cursor:pointer;
 font-weight:bold;
+transition:0.2s;
 }
 
 .admin-menu button:hover{
 background:#0a2a66;
 color:white;
+transform:scale(1.05);
 }
 
 /* SECTIONS */
@@ -96,47 +100,57 @@ margin-bottom:30px;
 
 .card{
 background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+padding:30px;
+border-radius:12px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
 text-align:center;
+transition:0.2s;
+}
+
+.card:hover{
+transform:translateY(-5px);
 }
 
 .card h3{
 margin:0;
 font-size:18px;
-color:#444;
+color:#666;
 }
 
 .card p{
-font-size:28px;
+font-size:36px;
 font-weight:bold;
 color:#0a2a66;
 margin-top:10px;
 }
 
-/* BOXES */
+/* BOX */
 
 .publicacao-box{
 background:white;
 padding:25px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 margin-bottom:30px;
 }
 
 /* INPUTS */
 
-input, textarea{
+input,textarea{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
 border:1px solid #ccc;
 border-radius:6px;
-font-size:14px;
+font-size:15px;
+outline:none;
 }
 
-/* BUTTONS */
+input:focus,textarea:focus{
+border-color:#0a2a66;
+}
+
+/* BUTTON */
 
 button{
 margin-top:15px;
@@ -166,27 +180,31 @@ background:white;
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:15px;
+margin-top:20px;
 background:white;
+border-radius:8px;
+overflow:hidden;
 }
 
 table th{
 background:#0a2a66;
 color:white;
-padding:10px;
+padding:12px;
 }
 
 table td{
-padding:10px;
-border-bottom:1px solid #ddd;
+padding:12px;
+border-bottom:1px solid #eee;
 }
 
 table tr:hover{
-background:#f2f2f2;
+background:#f6f8ff;
 }
 
 .btn-excluir{
 background:#dc3545;
+padding:6px 12px;
+border-radius:5px;
 }
 
 .btn-excluir:hover{
@@ -200,6 +218,7 @@ font-weight:bold;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -211,6 +230,7 @@ window.location="login-admin.html"
 </script>
 
 <header>
+
 <div class="container">
 
 <nav style="display:flex;justify-content:space-between;align-items:center;">
@@ -228,6 +248,7 @@ window.location="login-admin.html"
 </nav>
 
 </div>
+
 </header>
 
 <div class="container">
@@ -277,10 +298,13 @@ window.location="login-admin.html"
 <h3>Cadastrar Aluno</h3>
 
 <form onsubmit="cadastrarAluno(event)">
+
 <input id="nomeAluno" placeholder="Nome do aluno" required>
 <input id="cpfAluno" placeholder="CPF" required oninput="formatarCPF(this)">
 <input id="senhaAluno" placeholder="Senha" required>
+
 <button type="submit">Cadastrar Aluno</button>
+
 </form>
 
 </div>
@@ -296,11 +320,14 @@ window.location="login-admin.html"
 <h3>Cadastrar Professor</h3>
 
 <form onsubmit="cadastrarProfessor(event)">
+
 <input id="nomeProfessor" placeholder="Nome do professor" required>
 <input id="cpfProfessor" placeholder="CPF" required oninput="formatarCPF(this)">
 <input id="senhaProfessor" placeholder="Senha" required>
 <input id="disciplinaProfessor" placeholder="Disciplina" required>
+
 <button type="submit">Cadastrar Professor</button>
+
 </form>
 
 </div>
@@ -316,9 +343,13 @@ window.location="login-admin.html"
 <h3>Publicar Aviso</h3>
 
 <form onsubmit="publicarAviso(event)">
+
 <input id="tituloAviso" placeholder="Título do aviso" required>
+
 <textarea id="textoAviso" placeholder="Texto do aviso" required></textarea>
+
 <button type="submit">Publicar Aviso</button>
+
 </form>
 
 </div>
@@ -352,7 +383,7 @@ window.location="login-admin.html"
 
 </div>
 
-<!-- PUBLICACOES -->
+<!-- PUBLICAÇÕES -->
 
 <div id="publicacoes" class="admin-section">
 
@@ -361,6 +392,7 @@ window.location="login-admin.html"
 <h3>Publicações</h3>
 
 <table id="tabelaPublicacoes">
+
 <tr>
 <th>ID</th>
 <th>Título</th>
@@ -368,6 +400,7 @@ window.location="login-admin.html"
 <th>Data</th>
 <th>Ações</th>
 </tr>
+
 </table>
 
 </div>
