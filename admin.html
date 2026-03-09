@@ -9,7 +9,12 @@
 <title>Painel Administrativo</title>
 
 <link rel="stylesheet" href="style.css">
+
+<!-- Editor profissional -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
 <script src="script.js"></script>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <style>
 
@@ -30,40 +35,6 @@ text-align:center;
 min-width:180px;
 }
 
-.table-container{
-overflow-x:auto;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
-min-width:500px;
-}
-
-table th, table td{
-border:1px solid #ddd;
-padding:8px;
-text-align:left;
-}
-
-.btn{
-padding:6px 10px;
-border:none;
-border-radius:4px;
-cursor:pointer;
-}
-
-.btn-excluir{
-background:#dc3545;
-color:white;
-}
-
-form{
-margin-top:15px;
-margin-bottom:30px;
-}
-
 .publicacao-box{
 background:white;
 padding:20px;
@@ -72,22 +43,46 @@ box-shadow:0 2px 8px rgba(0,0,0,0.1);
 margin-bottom:30px;
 }
 
-textarea{
+#editor{
+height:200px;
+}
+
+input, textarea{
 width:100%;
-min-height:120px;
 padding:10px;
 margin-top:10px;
 border:1px solid #ccc;
 border-radius:6px;
-resize:vertical;
 }
 
-@media(max-width:768px){
-
-.dashboard{
-flex-direction:column;
+button{
+margin-top:15px;
+padding:10px;
+background:#0a2a66;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
 
+button:hover{
+background:#1c4cb3;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+table th, table td{
+border:1px solid #ddd;
+padding:8px;
+text-align:left;
+}
+
+.btn-excluir{
+background:#dc3545;
 }
 
 </style>
@@ -136,7 +131,6 @@ window.location="login-admin.html"
 
 <h2 style="margin-top:30px;">Painel Administrativo</h2>
 
-
 <!-- DASHBOARD -->
 
 <div class="dashboard">
@@ -158,81 +152,6 @@ window.location="login-admin.html"
 
 </div>
 
-
-<!-- CADASTRAR ALUNO -->
-
-<h3>Cadastrar Aluno</h3>
-
-<form onsubmit="cadastrarAluno(event)">
-
-<input id="nomeAluno" placeholder="Nome do aluno" required>
-<input id="cpfAluno" placeholder="CPF" oninput="formatarCPF(this)" required>
-<input id="senhaAluno" placeholder="Senha" required>
-
-<button type="submit">Cadastrar</button>
-
-</form>
-
-
-
-<!-- CADASTRAR PROFESSOR -->
-
-<h3>Cadastrar Professor</h3>
-
-<form onsubmit="cadastrarProfessor(event)">
-
-<input id="nomeProfessor" placeholder="Nome do professor" required>
-<input id="cpfProfessor" placeholder="CPF" oninput="formatarCPF(this)" required>
-<input id="senhaProfessor" placeholder="Senha" required>
-<input id="disciplinaProfessor" placeholder="Disciplina" required>
-
-<button type="submit">Cadastrar</button>
-
-</form>
-
-
-
-<!-- LISTA DE ALUNOS -->
-
-<h3>Lista de Alunos</h3>
-
-<div class="table-container">
-
-<table id="tabelaAlunos">
-
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>CPF</th>
-<th>Ações</th>
-</tr>
-
-</table>
-
-</div>
-
-
-
-<!-- LISTA DE PROFESSORES -->
-
-<h3>Lista de Professores</h3>
-
-<div class="table-container">
-
-<table id="tabelaProfessores">
-
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Disciplina</th>
-</tr>
-
-</table>
-
-</div>
-
-
-
 <!-- PUBLICAR AVISO -->
 
 <div class="publicacao-box">
@@ -252,7 +171,6 @@ window.location="login-admin.html"
 </div>
 
 
-
 <!-- PUBLICAR NOTÍCIA -->
 
 <div class="publicacao-box">
@@ -263,9 +181,14 @@ window.location="login-admin.html"
 
 <input id="tituloNoticia" placeholder="Título da notícia" required>
 
-<input id="imagemNoticia" placeholder="URL da imagem">
+<input id="subtituloNoticia" placeholder="Subtítulo da notícia">
 
-<textarea id="conteudoNoticia" placeholder="Texto da notícia" required></textarea>
+<label>Imagem da notícia</label>
+<input type="file" id="imagemUpload" accept="image/*">
+
+<label>Conteúdo da notícia</label>
+
+<div id="editor"></div>
 
 <button type="submit">Publicar Notícia</button>
 
@@ -274,12 +197,9 @@ window.location="login-admin.html"
 </div>
 
 
-
 <!-- LISTA DE PUBLICAÇÕES -->
 
 <h3>Publicações</h3>
-
-<div class="table-container">
 
 <table id="tabelaPublicacoes">
 
@@ -295,174 +215,47 @@ window.location="login-admin.html"
 
 </div>
 
-</div>
-
 
 <script>
 
-/* =========================
-PEGAR TOKEN
-========================= */
-
-function getToken(){
-return localStorage.getItem("token")
-}
-
+const API = "https://portal-escola-backend.onrender.com"
 
 /* =========================
-DASHBOARD
+EDITOR DE TEXTO
 ========================= */
 
-async function carregarDashboard(){
-
-try{
-
-let res = await fetch(API + "/dashboard",{
-headers:{
-Authorization:"Bearer "+getToken()
+var quill = new Quill('#editor', {
+theme: 'snow',
+placeholder: 'Escreva o conteúdo da notícia...',
+modules: {
+toolbar: [
+['bold','italic','underline'],
+[{ 'list': 'ordered'}, { 'list': 'bullet' }],
+['blockquote'],
+['link'],
+['clean']
+]
 }
 })
-
-let dados = await res.json()
-
-document.getElementById("totalAlunos").innerText = dados.alunos || 0
-document.getElementById("totalProfessores").innerText = dados.professores || 0
-document.getElementById("totalNotas").innerText = dados.notas || 0
-
-}catch(err){
-
-console.log("Erro dashboard")
-
-}
-
-}
 
 
 /* =========================
-CARREGAR PROFESSORES
+CONVERTER IMAGEM BASE64
 ========================= */
 
-async function carregarProfessores(){
+function imagemBase64(file){
 
-try{
+return new Promise((resolve,reject)=>{
 
-let res = await fetch(API + "/professores",{
-headers:{
-Authorization:"Bearer "+getToken()
-}
-})
+const reader = new FileReader()
 
-let professores = await res.json()
+reader.onload = ()=>resolve(reader.result)
 
-let tabela = document.getElementById("tabelaProfessores")
+reader.onerror = error=>reject(error)
 
-tabela.innerHTML = `
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>Disciplina</th>
-</tr>
-`
-
-professores.forEach(p=>{
-
-tabela.innerHTML += `
-<tr>
-<td>${p.id}</td>
-<td>${p.nome}</td>
-<td>${p.disciplina}</td>
-</tr>
-`
+reader.readAsDataURL(file)
 
 })
-
-}catch(err){
-
-console.log("Erro professores")
-
-}
-
-}
-
-
-/* =========================
-EXCLUIR ALUNO
-========================= */
-
-async function excluirAluno(id){
-
-if(!confirm("Deseja excluir este aluno?")) return
-
-try{
-
-await fetch(API+"/aluno/"+id,{
-method:"DELETE",
-headers:{
-Authorization:"Bearer "+getToken()
-}
-})
-
-carregarAlunos()
-carregarDashboard()
-
-}catch(err){
-
-alert("Erro ao excluir aluno")
-
-}
-
-}
-
-
-/* =========================
-PUBLICAR AVISO
-========================= */
-
-async function publicarAviso(e){
-
-e.preventDefault()
-
-let titulo = document.getElementById("tituloAviso").value
-let conteudo = document.getElementById("textoAviso").value
-
-try{
-
-let res = await fetch(API + "/publicacao",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
-body:JSON.stringify({
-titulo,
-conteudo,
-imagem:"",
-tipo:"aviso"
-})
-})
-
-let data = await res.json()
-
-if(data.success){
-
-alert("Aviso publicado com sucesso!")
-
-document.getElementById("tituloAviso").value=""
-document.getElementById("textoAviso").value=""
-
-carregarPublicacoes()
-
-}else{
-
-alert("Erro ao publicar aviso")
-
-}
-
-}catch(err){
-
-alert("Erro de conexão com servidor")
-
-}
 
 }
 
@@ -476,46 +269,57 @@ async function publicarNoticia(e){
 e.preventDefault()
 
 let titulo = document.getElementById("tituloNoticia").value
-let imagem = document.getElementById("imagemNoticia").value
-let conteudo = document.getElementById("conteudoNoticia").value
+let subtitulo = document.getElementById("subtituloNoticia").value
+let conteudo = quill.root.innerHTML
+
+let imagemInput = document.getElementById("imagemUpload")
+let imagem = ""
+
+if(imagemInput.files.length > 0){
+
+imagem = await imagemBase64(imagemInput.files[0])
+
+}
 
 try{
 
 let res = await fetch(API + "/publicacao",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
+"Authorization":"Bearer "+localStorage.getItem("token")
 },
+
 body:JSON.stringify({
-titulo,
+titulo: titulo + " - " + subtitulo,
 conteudo,
 imagem,
 tipo:"noticia"
 })
+
 })
 
 let data = await res.json()
 
 if(data.success){
 
-alert("Notícia publicada com sucesso!")
+alert("Notícia publicada!")
 
 document.getElementById("tituloNoticia").value=""
-document.getElementById("imagemNoticia").value=""
-document.getElementById("conteudoNoticia").value=""
+document.getElementById("subtituloNoticia").value=""
+imagemInput.value=""
+
+quill.root.innerHTML=""
 
 carregarPublicacoes()
-
-}else{
-
-alert("Erro ao publicar notícia")
 
 }
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao publicar notícia")
 
 }
 
@@ -528,9 +332,8 @@ CARREGAR PUBLICAÇÕES
 
 async function carregarPublicacoes(){
 
-try{
-
 let res = await fetch(API + "/publicacoes")
+
 let publicacoes = await res.json()
 
 let tabela = document.getElementById("tabelaPublicacoes")
@@ -547,85 +350,25 @@ tabela.innerHTML = `
 
 publicacoes.forEach(p=>{
 
-let dataFormatada = p.data_publicacao || p.data || ""
-
 tabela.innerHTML += `
 <tr>
 <td>${p.id}</td>
 <td>${p.titulo}</td>
 <td>${p.tipo}</td>
-<td>${dataFormatada}</td>
+<td>${p.data_publicacao}</td>
 <td>
-<button class="btn btn-excluir" onclick="excluirPublicacao(${p.id})">Excluir</button>
+<button class="btn-excluir" onclick="excluirPublicacao(${p.id})">Excluir</button>
 </td>
 </tr>
 `
 
 })
 
-}catch(err){
-
-console.log("Erro ao carregar publicações")
-
 }
 
-}
-
-
-/* =========================
-EXCLUIR PUBLICAÇÃO
-========================= */
-
-async function excluirPublicacao(id){
-
-if(!confirm("Deseja excluir esta publicação?")) return
-
-try{
-
-let res = await fetch(API + "/publicacao/" + id,{
-method:"DELETE",
-headers:{
-Authorization:"Bearer "+getToken()
-}
-})
-
-let data = await res.json()
-
-if(data.success){
-
-alert("Publicação excluída com sucesso!")
 carregarPublicacoes()
-
-}else{
-
-alert("Erro ao excluir publicação")
-
-}
-
-}catch(err){
-
-alert("Erro de conexão com servidor")
-
-}
-
-}
-
-
-/* =========================
-INICIAR
-========================= */
-
-window.onload=function(){
-
-carregarAlunos()
-carregarProfessores()
-carregarDashboard()
-carregarPublicacoes()
-
-}
 
 </script>
 
 </body>
-
 </html>
