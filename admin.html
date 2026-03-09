@@ -132,6 +132,8 @@ background:white;
 <h2>Admin</h2>
 
 <button onclick="mostrar('dashboard')">Dashboard</button>
+<button onclick="mostrar('alunos')">Alunos</button>
+<button onclick="mostrar('professores')">Professores</button>
 <button onclick="mostrar('avisos')">Avisos</button>
 <button onclick="mostrar('noticias')">Notícias</button>
 <button onclick="mostrar('publicacoes')">Publicações</button>
@@ -163,6 +165,51 @@ background:white;
 <h3>Notas</h3>
 <p id="totalNotas">0</p>
 </div>
+
+</div>
+
+</div>
+
+<!-- ALUNOS -->
+
+<div id="alunos" class="section" style="display:none">
+
+<div class="box">
+
+<h3>Cadastrar Aluno</h3>
+
+<form onsubmit="cadastrarAluno(event)">
+
+<input id="nomeAluno" placeholder="Nome" required>
+<input id="cpfAluno" placeholder="CPF" required>
+<input id="senhaAluno" placeholder="Senha" required>
+
+<button type="submit">Cadastrar</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- PROFESSORES -->
+
+<div id="professores" class="section" style="display:none">
+
+<div class="box">
+
+<h3>Cadastrar Professor</h3>
+
+<form onsubmit="cadastrarProfessor(event)">
+
+<input id="nomeProfessor" placeholder="Nome" required>
+<input id="cpfProfessor" placeholder="CPF" required>
+<input id="senhaProfessor" placeholder="Senha" required>
+<input id="disciplinaProfessor" placeholder="Disciplina" required>
+
+<button type="submit">Cadastrar</button>
+
+</form>
 
 </div>
 
@@ -254,6 +301,59 @@ window.location="login-admin.html"
 
 var quill=new Quill('#editor',{theme:'snow'})
 
+/* CADASTRAR ALUNO */
+
+async function cadastrarAluno(e){
+
+e.preventDefault()
+
+let nome=document.getElementById("nomeAluno").value
+let cpf=document.getElementById("cpfAluno").value
+let senha=document.getElementById("senhaAluno").value
+
+await fetch(API+"/aluno",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({nome,cpf,senha})
+
+})
+
+alert("Aluno cadastrado")
+
+}
+
+/* CADASTRAR PROFESSOR */
+
+async function cadastrarProfessor(e){
+
+e.preventDefault()
+
+let nome=document.getElementById("nomeProfessor").value
+let cpf=document.getElementById("cpfProfessor").value
+let senha=document.getElementById("senhaProfessor").value
+let disciplina=document.getElementById("disciplinaProfessor").value
+
+await fetch(API+"/professor",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({nome,cpf,senha,disciplina})
+
+})
+
+alert("Professor cadastrado")
+
+}
+
 /* UPLOAD IMAGEM */
 
 async function uploadImagem(file){
@@ -293,7 +393,7 @@ e.preventDefault()
 let titulo=document.getElementById("tituloAviso").value
 let conteudo=document.getElementById("textoAviso").value
 
-let res=await fetch(API+"/publicacao",{
+await fetch(API+"/publicacao",{
 
 method:"POST",
 
@@ -311,19 +411,7 @@ tipo:"aviso"
 
 })
 
-let data=await res.json()
-
-if(data.success){
-
-alert("Aviso publicado!")
-
-e.target.reset()
-
-}else{
-
-alert("Erro ao publicar aviso")
-
-}
+alert("Aviso publicado")
 
 }
 
@@ -349,7 +437,7 @@ imagem=await uploadImagem(img.files[0])
 
 let tituloFinal=subtitulo?titulo+" - "+subtitulo:titulo
 
-let res=await fetch(API+"/publicacao",{
+await fetch(API+"/publicacao",{
 
 method:"POST",
 
@@ -369,23 +457,7 @@ tipo:"noticia"
 
 })
 
-let data=await res.json()
-
-if(data.success){
-
-alert("Notícia publicada!")
-
-document.getElementById("tituloNoticia").value=""
-document.getElementById("subtituloNoticia").value=""
-document.getElementById("imagemUpload").value=""
-
-quill.root.innerHTML=""
-
-}else{
-
-alert("Erro ao publicar notícia")
-
-}
+alert("Notícia publicada")
 
 }
 
