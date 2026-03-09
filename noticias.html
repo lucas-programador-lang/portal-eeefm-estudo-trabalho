@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Notícias da Escola</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.noticias-container{
+max-width:1100px;
+margin:auto;
+padding:40px 20px;
+}
+
+.aviso-diretor{
+background:#ffd43b;
+padding:15px;
+margin-bottom:20px;
+border-left:6px solid #e0b800;
+font-weight:bold;
+}
+
+.noticia-card{
+background:white;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+margin-bottom:30px;
+overflow:hidden;
+}
+
+.noticia-card img{
+width:100%;
+max-height:350px;
+object-fit:cover;
+}
+
+.noticia-conteudo{
+padding:20px;
+}
+
+.noticia-conteudo h3{
+color:#0a2a66;
+margin-bottom:10px;
+}
+
+.data{
+font-size:12px;
+color:#666;
+margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+
+<div class="container">
+
+<nav>
+
+<div class="logo">
+<img src="logo.png">
+<strong>EEEFM Estudo e Trabalho</strong>
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="noticias.html">Notícias</a>
+<a href="login.html">Portal do Aluno</a>
+<a href="login-professor.html">Portal do Professor</a>
+</div>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<div class="noticias-container">
+
+<h2>Notícias e Avisos da Escola</h2>
+
+<br>
+
+<div id="avisos"></div>
+
+<div id="noticias"></div>
+
+</div>
+
+
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+
+async function carregarNoticias(){
+
+let res = await fetch(API + "/publicacoes")
+
+let dados = await res.json()
+
+let avisosDiv = document.getElementById("avisos")
+let noticiasDiv = document.getElementById("noticias")
+
+avisosDiv.innerHTML=""
+noticiasDiv.innerHTML=""
+
+dados.forEach(p=>{
+
+let data = new Date(p.data_publicacao).toLocaleDateString()
+
+if(p.tipo==="aviso"){
+
+avisosDiv.innerHTML += `
+<div class="aviso-diretor">
+📢 ${p.titulo} <br>
+${p.conteudo}
+<div class="data">${data}</div>
+</div>
+`
+
+}
+
+if(p
