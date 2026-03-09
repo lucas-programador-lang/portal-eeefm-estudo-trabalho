@@ -10,10 +10,7 @@
 
 <link rel="stylesheet" href="style.css">
 
-<!-- Editor profissional -->
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
-<script src="script.js"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <style>
@@ -32,7 +29,6 @@ border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.1);
 flex:1;
 text-align:center;
-min-width:180px;
 }
 
 .publicacao-box{
@@ -44,7 +40,7 @@ margin-bottom:30px;
 }
 
 #editor{
-height:200px;
+height:250px;
 }
 
 input, textarea{
@@ -78,7 +74,6 @@ margin-top:10px;
 table th, table td{
 border:1px solid #ddd;
 padding:8px;
-text-align:left;
 }
 
 .btn-excluir{
@@ -92,10 +87,6 @@ background:#dc3545;
 <body>
 
 <script>
-
-/* =========================
-PROTEGER ADMIN
-========================= */
 
 if(!localStorage.getItem("adminLogado")){
 window.location="login-admin.html"
@@ -116,7 +107,6 @@ window.location="login-admin.html"
 
 <div class="menu">
 <a href="index.html">Início</a>
-<a href="admin.html">Painel</a>
 <button onclick="logout()">Sair</button>
 </div>
 
@@ -126,12 +116,9 @@ window.location="login-admin.html"
 
 </header>
 
-
 <div class="container">
 
-<h2 style="margin-top:30px;">Painel Administrativo</h2>
-
-<!-- DASHBOARD -->
+<h2>Painel Administrativo</h2>
 
 <div class="dashboard">
 
@@ -152,7 +139,6 @@ window.location="login-admin.html"
 
 </div>
 
-<!-- PUBLICAR AVISO -->
 
 <div class="publicacao-box">
 
@@ -171,8 +157,6 @@ window.location="login-admin.html"
 </div>
 
 
-<!-- PUBLICAR NOTÍCIA -->
-
 <div class="publicacao-box">
 
 <h3>Publicar Notícia</h3>
@@ -181,14 +165,18 @@ window.location="login-admin.html"
 
 <input id="tituloNoticia" placeholder="Título da notícia" required>
 
-<input id="subtituloNoticia" placeholder="Subtítulo da notícia">
+<input id="subtituloNoticia" placeholder="Subtítulo">
 
 <label>Imagem da notícia</label>
 <input type="file" id="imagemUpload" accept="image/*">
 
-<label>Conteúdo da notícia</label>
-
+<label>Conteúdo</label>
 <div id="editor"></div>
+
+<label>
+<input type="checkbox" id="destaque">
+ Notícia destaque
+</label>
 
 <button type="submit">Publicar Notícia</button>
 
@@ -196,8 +184,6 @@ window.location="login-admin.html"
 
 </div>
 
-
-<!-- LISTA DE PUBLICAÇÕES -->
 
 <h3>Publicações</h3>
 
@@ -220,49 +206,48 @@ window.location="login-admin.html"
 
 const API = "https://portal-escola-backend.onrender.com"
 
-/* =========================
-EDITOR DE TEXTO
-========================= */
-
 var quill = new Quill('#editor', {
-theme: 'snow',
-placeholder: 'Escreva o conteúdo da notícia...',
-modules: {
-toolbar: [
-['bold','italic','underline'],
-[{ 'list': 'ordered'}, { 'list': 'bullet' }],
-['blockquote'],
-['link'],
+
+theme:'snow',
+
+modules:{
+toolbar:[
+['bold','italic','underline','strike'],
+[{ 'header':1},{ 'header':2}],
+[{ 'list':'ordered'},{ 'list':'bullet'}],
+['blockquote','code-block'],
+['link','image'],
 ['clean']
 ]
 }
-})
-
-
-/* =========================
-CONVERTER IMAGEM BASE64
-========================= */
-
-function imagemBase64(file){
-
-return new Promise((resolve,reject)=>{
-
-const reader = new FileReader()
-
-reader.onload = ()=>resolve(reader.result)
-
-reader.onerror = error=>reject(error)
-
-reader.readAsDataURL(file)
 
 })
+
+
+async function uploadImagem(file){
+
+let formData = new FormData()
+
+formData.append("imagem",file)
+
+let res = await fetch(API+"/upload",{
+
+method:"POST",
+
+headers:{
+Authorization:"Bearer "+localStorage.getItem("token")
+},
+
+body:formData
+
+})
+
+let data = await res.json()
+
+return data.url
 
 }
 
-
-/* =========================
-PUBLICAR NOTÍCIA
-========================= */
 
 async function publicarNoticia(e){
 
@@ -271,32 +256,39 @@ e.preventDefault()
 let titulo = document.getElementById("tituloNoticia").value
 let subtitulo = document.getElementById("subtituloNoticia").value
 let conteudo = quill.root.innerHTML
+let destaque = document.getElementById("destaque").checked
 
-let imagemInput = document.getElementById("imagemUpload")
 let imagem = ""
 
-if(imagemInput.files.length > 0){
+let imgInput = document.getElementById("imagemUpload")
 
-imagem = await imagemBase64(imagemInput.files[0])
+if(imgInput.files.length){
+
+imagem = await uploadImagem(imgInput.files[0])
 
 }
 
-try{
-
-let res = await fetch(API + "/publicacao",{
+let res = await fetch(API+"/publicacao",{
 
 method:"POST",
 
 headers:{
 "Content-Type":"application/json",
-"Authorization":"Bearer "+localStorage.getItem("token")
+Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({
-titulo: titulo + " - " + subtitulo,
+
+titulo: titulo+" - "+subtitulo,
+
 conteudo,
+
 imagem,
-tipo:"noticia"
+
+tipo:"noticia",
+
+destaque
+
 })
 
 })
@@ -305,40 +297,24 @@ let data = await res.json()
 
 if(data.success){
 
-alert("Notícia publicada!")
+alert("Notícia publicada")
 
-document.getElementById("tituloNoticia").value=""
-document.getElementById("subtituloNoticia").value=""
-imagemInput.value=""
-
-quill.root.innerHTML=""
-
-carregarPublicacoes()
-
-}
-
-}catch(err){
-
-alert("Erro ao publicar notícia")
+location.reload()
 
 }
 
 }
 
-
-/* =========================
-CARREGAR PUBLICAÇÕES
-========================= */
 
 async function carregarPublicacoes(){
 
-let res = await fetch(API + "/publicacoes")
+let res = await fetch(API+"/publicacoes")
 
-let publicacoes = await res.json()
+let dados = await res.json()
 
 let tabela = document.getElementById("tabelaPublicacoes")
 
-tabela.innerHTML = `
+tabela.innerHTML=`
 <tr>
 <th>ID</th>
 <th>Título</th>
@@ -348,17 +324,24 @@ tabela.innerHTML = `
 </tr>
 `
 
-publicacoes.forEach(p=>{
+dados.forEach(p=>{
 
-tabela.innerHTML += `
+tabela.innerHTML+=`
+
 <tr>
+
 <td>${p.id}</td>
+
 <td>${p.titulo}</td>
+
 <td>${p.tipo}</td>
-<td>${p.data_publicacao}</td>
+
+<td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
+
 <td>
 <button class="btn-excluir" onclick="excluirPublicacao(${p.id})">Excluir</button>
 </td>
+
 </tr>
 `
 
