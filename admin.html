@@ -87,11 +87,9 @@ background:#dc3545;
 <body>
 
 <script>
-
 if(!localStorage.getItem("adminLogado")){
 window.location="login-admin.html"
 }
-
 </script>
 
 <header>
@@ -140,6 +138,8 @@ window.location="login-admin.html"
 </div>
 
 
+<!-- AVISO -->
+
 <div class="publicacao-box">
 
 <h3>Publicar Aviso</h3>
@@ -157,6 +157,8 @@ window.location="login-admin.html"
 </div>
 
 
+<!-- NOTICIA -->
+
 <div class="publicacao-box">
 
 <h3>Publicar Notícia</h3>
@@ -172,11 +174,6 @@ window.location="login-admin.html"
 
 <label>Conteúdo</label>
 <div id="editor"></div>
-
-<label>
-<input type="checkbox" id="destaque">
- Notícia destaque
-</label>
 
 <button type="submit">Publicar Notícia</button>
 
@@ -206,28 +203,29 @@ window.location="login-admin.html"
 
 const API = "https://portal-escola-backend.onrender.com"
 
-var quill = new Quill('#editor', {
 
-theme:'snow',
+/* EDITOR */
 
-modules:{
-toolbar:[
-['bold','italic','underline','strike'],
-[{ 'header':1},{ 'header':2}],
-[{ 'list':'ordered'},{ 'list':'bullet'}],
-['blockquote','code-block'],
-['link','image'],
-['clean']
-]
-}
-
+var quill = new Quill('#editor',{
+theme:'snow'
 })
 
+
+/* LOGOUT */
+
+function logout(){
+
+localStorage.clear()
+window.location="login-admin.html"
+
+}
+
+
+/* UPLOAD IMAGEM */
 
 async function uploadImagem(file){
 
 let formData = new FormData()
-
 formData.append("imagem",file)
 
 let res = await fetch(API+"/upload",{
@@ -249,6 +247,49 @@ return data.url
 }
 
 
+/* PUBLICAR AVISO */
+
+async function publicarAviso(e){
+
+e.preventDefault()
+
+let titulo = document.getElementById("tituloAviso").value
+let conteudo = document.getElementById("textoAviso").value
+
+let res = await fetch(API+"/publicacao",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer "+localStorage.getItem("token")
+},
+
+body:JSON.stringify({
+
+titulo,
+conteudo,
+imagem:"",
+tipo:"aviso"
+
+})
+
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Aviso publicado")
+location.reload()
+
+}
+
+}
+
+
+/* PUBLICAR NOTICIA */
+
 async function publicarNoticia(e){
 
 e.preventDefault()
@@ -256,9 +297,8 @@ e.preventDefault()
 let titulo = document.getElementById("tituloNoticia").value
 let subtitulo = document.getElementById("subtituloNoticia").value
 let conteudo = quill.root.innerHTML
-let destaque = document.getElementById("destaque").checked
 
-let imagem = ""
+let imagem=""
 
 let imgInput = document.getElementById("imagemUpload")
 
@@ -280,14 +320,9 @@ Authorization:"Bearer "+localStorage.getItem("token")
 body:JSON.stringify({
 
 titulo: titulo+" - "+subtitulo,
-
 conteudo,
-
 imagem,
-
-tipo:"noticia",
-
-destaque
+tipo:"noticia"
 
 })
 
@@ -298,13 +333,14 @@ let data = await res.json()
 if(data.success){
 
 alert("Notícia publicada")
-
 location.reload()
 
 }
 
 }
 
+
+/* CARREGAR PUBLICAÇÕES */
 
 async function carregarPublicacoes(){
 
@@ -346,6 +382,21 @@ tabela.innerHTML+=`
 `
 
 })
+
+}
+
+async function excluirPublicacao(id){
+
+if(!confirm("Excluir publicação?")) return
+
+await fetch(API+"/publicacao/"+id,{
+method:"DELETE",
+headers:{
+Authorization:"Bearer "+localStorage.getItem("token")
+}
+})
+
+carregarPublicacoes()
 
 }
 
