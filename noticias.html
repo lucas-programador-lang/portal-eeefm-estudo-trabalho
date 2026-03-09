@@ -18,6 +18,73 @@ margin:auto;
 padding:40px 20px;
 }
 
+.busca{
+margin:20px 0;
+}
+
+.busca input{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:16px;
+}
+
+.destaque{
+background:white;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+overflow:hidden;
+margin-bottom:30px;
+cursor:pointer;
+}
+
+.destaque img{
+width:100%;
+max-height:400px;
+object-fit:cover;
+}
+
+.destaque-conteudo{
+padding:20px;
+}
+
+.slider{
+display:flex;
+overflow-x:auto;
+gap:15px;
+margin-bottom:30px;
+}
+
+.slider::-webkit-scrollbar{
+height:6px;
+}
+
+.slider::-webkit-scrollbar-thumb{
+background:#ccc;
+border-radius:4px;
+}
+
+.slider-card{
+min-width:250px;
+background:white;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+cursor:pointer;
+overflow:hidden;
+}
+
+.slider-card img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.slider-card h4{
+padding:10px;
+font-size:14px;
+}
+
 .aviso-diretor{
 background:#ffd43b;
 padding:15px;
@@ -32,6 +99,7 @@ border-radius:8px;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 margin-bottom:30px;
 overflow:hidden;
+cursor:pointer;
 }
 
 .noticia-card img{
@@ -42,11 +110,6 @@ object-fit:cover;
 
 .noticia-conteudo{
 padding:20px;
-}
-
-.noticia-conteudo h3{
-color:#0a2a66;
-margin-bottom:10px;
 }
 
 .data{
@@ -60,7 +123,6 @@ margin-top:10px;
 </head>
 
 <body>
-
 
 <header>
 
@@ -91,9 +153,15 @@ margin-top:10px;
 
 <h2>Notícias e Avisos da Escola</h2>
 
-<br>
+<div class="busca">
+<input id="busca" placeholder="Buscar notícia..." oninput="filtrarNoticias()">
+</div>
 
 <div id="avisos"></div>
+
+<div id="destaque"></div>
+
+<div class="slider" id="sliderNoticias"></div>
 
 <div id="noticias"></div>
 
@@ -104,8 +172,11 @@ margin-top:10px;
 
 const API = "https://portal-escola-backend.onrender.com"
 
+let todasNoticias = []
 
 async function carregarNoticias(){
+
+try{
 
 let res = await fetch(API + "/publicacoes")
 
@@ -113,9 +184,15 @@ let dados = await res.json()
 
 let avisosDiv = document.getElementById("avisos")
 let noticiasDiv = document.getElementById("noticias")
+let destaqueDiv = document.getElementById("destaque")
+let sliderDiv = document.getElementById("sliderNoticias")
 
 avisosDiv.innerHTML=""
 noticiasDiv.innerHTML=""
+destaqueDiv.innerHTML=""
+sliderDiv.innerHTML=""
+
+todasNoticias = dados.filter(p=>p.tipo==="noticia")
 
 dados.forEach(p=>{
 
@@ -125,7 +202,7 @@ if(p.tipo==="aviso"){
 
 avisosDiv.innerHTML += `
 <div class="aviso-diretor">
-📢 ${p.titulo} <br>
+📢 ${p.titulo}<br>
 ${p.conteudo}
 <div class="data">${data}</div>
 </div>
@@ -133,4 +210,105 @@ ${p.conteudo}
 
 }
 
-if(p
+})
+
+if(todasNoticias.length){
+
+let destaque = todasNoticias[0]
+
+destaqueDiv.innerHTML = `
+<div class="destaque" onclick="abrirNoticia(${destaque.id})">
+
+${destaque.imagem ? `<img src="${destaque.imagem}">` : ""}
+
+<div class="destaque-conteudo">
+<h2>${destaque.titulo}</h2>
+<p>${destaque.conteudo.substring(0,150)}...</p>
+</div>
+
+</div>
+`
+
+}
+
+todasNoticias.forEach(p=>{
+
+sliderDiv.innerHTML += `
+<div class="slider-card" onclick="abrirNoticia(${p.id})">
+
+${p.imagem ? `<img src="${p.imagem}">` : ""}
+
+<h4>${p.titulo}</h4>
+
+</div>
+`
+
+})
+
+renderNoticias(todasNoticias)
+
+}catch(err){
+
+console.log("Erro ao carregar notícias")
+
+}
+
+}
+
+function renderNoticias(lista){
+
+let noticiasDiv = document.getElementById("noticias")
+
+noticiasDiv.innerHTML=""
+
+lista.forEach(p=>{
+
+let data = new Date(p.data_publicacao).toLocaleDateString()
+
+noticiasDiv.innerHTML += `
+<div class="noticia-card" onclick="abrirNoticia(${p.id})">
+
+${p.imagem ? `<img src="${p.imagem}">` : ""}
+
+<div class="noticia-conteudo">
+
+<h3>${p.titulo}</h3>
+
+<p>${p.conteudo.substring(0,200)}...</p>
+
+<div class="data">${data}</div>
+
+</div>
+
+</div>
+`
+
+})
+
+}
+
+function filtrarNoticias(){
+
+let busca = document.getElementById("busca").value.toLowerCase()
+
+let filtradas = todasNoticias.filter(n =>
+n.titulo.toLowerCase().includes(busca) ||
+n.conteudo.toLowerCase().includes(busca)
+)
+
+renderNoticias(filtradas)
+
+}
+
+function abrirNoticia(id){
+
+window.location = "noticia.html?id=" + id
+
+}
+
+carregarNoticias()
+
+</script>
+
+</body>
+</html>
