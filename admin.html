@@ -2,14 +2,11 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Painel Administrativo</title>
 
 <link rel="stylesheet" href="style.css">
-
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
@@ -47,6 +44,7 @@ display:block;
 display:flex;
 gap:20px;
 flex-wrap:wrap;
+margin-bottom:30px;
 }
 
 .card{
@@ -56,6 +54,7 @@ border-radius:8px;
 box-shadow:0 2px 8px rgba(0,0,0,0.1);
 flex:1;
 text-align:center;
+min-width:200px;
 }
 
 .publicacao-box{
@@ -68,6 +67,9 @@ margin-bottom:30px;
 
 #editor{
 height:250px;
+margin-top:10px;
+margin-bottom:50px;
+background:white;
 }
 
 input, textarea{
@@ -96,35 +98,58 @@ table{
 width:100%;
 border-collapse:collapse;
 margin-top:10px;
+background:white;
 }
 
 table th, table td{
 border:1px solid #ddd;
 padding:8px;
+text-align:left;
 }
 
 .btn-excluir{
 background:#dc3545;
 }
 
-</style>
+.btn-excluir:hover{
+background:#b02a37;
+}
 
+label{
+display:block;
+margin-top:12px;
+font-weight:bold;
+}
+
+.table-box{
+overflow-x:auto;
+}
+
+@media(max-width:768px){
+
+.dashboard{
+flex-direction:column;
+}
+
+.admin-menu{
+flex-direction:column;
+}
+
+}
+</style>
 </head>
 
 <body>
 
 <script>
 if(!localStorage.getItem("adminLogado")){
-window.location="login-admin.html"
+window.location = "login-admin.html"
 }
 </script>
 
 <header>
-
 <div class="container">
-
 <nav>
-
 <div class="logo">
 <img src="logo.png">
 <strong>EEEFM Estudo e Trabalho</strong>
@@ -132,38 +157,27 @@ window.location="login-admin.html"
 
 <div class="menu">
 <a href="index.html">Início</a>
-<button onclick="logout()">Sair</button>
+<button type="button" onclick="logout()">Sair</button>
 </div>
-
 </nav>
-
 </div>
-
 </header>
 
 <div class="container">
 
-<h2>Painel Administrativo</h2>
-
-
-<!-- MENU ADMIN -->
+<h2 style="margin-top:30px;">Painel Administrativo</h2>
 
 <div class="admin-menu">
-
-<button onclick="mostrar('dashboard')">Dashboard</button>
-<button onclick="mostrar('alunos')">Alunos</button>
-<button onclick="mostrar('professores')">Professores</button>
-<button onclick="mostrar('avisos')">Avisos</button>
-<button onclick="mostrar('noticias')">Notícias</button>
-<button onclick="mostrar('publicacoes')">Publicações</button>
-
+<button type="button" onclick="mostrar('dashboard')">Dashboard</button>
+<button type="button" onclick="mostrar('alunos')">Alunos</button>
+<button type="button" onclick="mostrar('professores')">Professores</button>
+<button type="button" onclick="mostrar('avisos')">Avisos</button>
+<button type="button" onclick="mostrar('noticias')">Notícias</button>
+<button type="button" onclick="mostrar('publicacoes')">Publicações</button>
 </div>
 
-
 <!-- DASHBOARD -->
-
 <div id="dashboard" class="admin-section active">
-
 <div class="dashboard">
 
 <div class="card">
@@ -182,108 +196,80 @@ window.location="login-admin.html"
 </div>
 
 </div>
-
 </div>
 
-
-<!-- CADASTRAR ALUNO -->
-
+<!-- ALUNOS -->
 <div id="alunos" class="admin-section">
-
+<div class="publicacao-box">
 <h3>Cadastrar Aluno</h3>
 
 <form onsubmit="cadastrarAluno(event)">
-
 <input id="nomeAluno" placeholder="Nome do aluno" required>
-<input id="cpfAluno" placeholder="CPF" required>
+<input id="cpfAluno" placeholder="CPF" required oninput="formatarCPF(this)">
 <input id="senhaAluno" placeholder="Senha" required>
-
-<button type="submit">Cadastrar</button>
-
+<button type="submit">Cadastrar Aluno</button>
 </form>
 
 </div>
+</div>
 
-
-<!-- CADASTRAR PROFESSOR -->
-
+<!-- PROFESSORES -->
 <div id="professores" class="admin-section">
-
+<div class="publicacao-box">
 <h3>Cadastrar Professor</h3>
 
 <form onsubmit="cadastrarProfessor(event)">
-
 <input id="nomeProfessor" placeholder="Nome do professor" required>
-<input id="cpfProfessor" placeholder="CPF" required>
+<input id="cpfProfessor" placeholder="CPF" required oninput="formatarCPF(this)">
 <input id="senhaProfessor" placeholder="Senha" required>
 <input id="disciplinaProfessor" placeholder="Disciplina" required>
-
-<button type="submit">Cadastrar</button>
-
+<button type="submit">Cadastrar Professor</button>
 </form>
 
 </div>
+</div>
 
-
-<!-- AVISO -->
-
+<!-- AVISOS -->
 <div id="avisos" class="admin-section">
-
 <div class="publicacao-box">
-
 <h3>Publicar Aviso</h3>
 
 <form onsubmit="publicarAviso(event)">
-
 <input id="tituloAviso" placeholder="Título do aviso" required>
-
 <textarea id="textoAviso" placeholder="Texto do aviso" required></textarea>
-
 <button type="submit">Publicar Aviso</button>
-
 </form>
 
 </div>
-
 </div>
 
-
-<!-- NOTICIA -->
-
+<!-- NOTICIAS -->
 <div id="noticias" class="admin-section">
-
 <div class="publicacao-box">
-
 <h3>Publicar Notícia</h3>
 
 <form onsubmit="publicarNoticia(event)">
-
 <input id="tituloNoticia" placeholder="Título da notícia" required>
 <input id="subtituloNoticia" placeholder="Subtítulo">
-
-<label>Imagem</label>
-<input type="file" id="imagemUpload">
+<label for="imagemUpload">Imagem</label>
+<input type="file" id="imagemUpload" accept="image/*">
 
 <label>Conteúdo</label>
 <div id="editor"></div>
 
 <button type="submit">Publicar Notícia</button>
-
 </form>
 
 </div>
-
 </div>
 
-
-<!-- PUBLICAÇÕES -->
-
+<!-- PUBLICACOES -->
 <div id="publicacoes" class="admin-section">
-
+<div class="publicacao-box">
 <h3>Publicações</h3>
 
+<div class="table-box">
 <table id="tabelaPublicacoes">
-
 <tr>
 <th>ID</th>
 <th>Título</th>
@@ -291,199 +277,305 @@ window.location="login-admin.html"
 <th>Data</th>
 <th>Ações</th>
 </tr>
-
 </table>
-
 </div>
 
 </div>
+</div>
 
+</div>
 
 <script>
-
-const API="https://portal-escola-backend.onrender.com"
-
+const API = "https://portal-escola-backend.onrender.com"
 
 function logout(){
 localStorage.clear()
-window.location="login-admin.html"
+window.location = "login-admin.html"
 }
 
-
 function mostrar(sec){
-
 document.querySelectorAll(".admin-section").forEach(s=>{
 s.classList.remove("active")
 })
-
 document.getElementById(sec).classList.add("active")
-
 }
 
+function formatarCPF(campo){
+let cpf = campo.value.replace(/\D/g,'')
+cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+campo.value = cpf
+}
 
-/* EDITOR */
+var quill = new Quill('#editor',{
+theme:'snow',
+modules:{
+toolbar:[
+['bold','italic','underline','strike'],
+[{ 'header':[1,2,false] }],
+[{ 'list':'ordered' },{ 'list':'bullet' }],
+['blockquote','link'],
+['clean']
+]
+}
+})
 
-var quill = new Quill('#editor',{theme:'snow'})
+async function carregarDashboard(){
+try{
+let res = await fetch(API + "/dashboard",{
+headers:{
+Authorization:"Bearer " + localStorage.getItem("token")
+}
+})
 
+let dados = await res.json()
 
-/* UPLOAD */
+document.getElementById("totalAlunos").innerText = dados.alunos || 0
+document.getElementById("totalProfessores").innerText = dados.professores || 0
+document.getElementById("totalNotas").innerText = dados.notas || 0
+
+}catch(err){
+console.log("Erro ao carregar dashboard")
+}
+}
+
+async function cadastrarAluno(e){
+e.preventDefault()
+
+let nome = document.getElementById("nomeAluno").value
+let cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'')
+let senha = document.getElementById("senhaAluno").value
+
+try{
+let res = await fetch(API + "/aluno",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer " + localStorage.getItem("token")
+},
+body:JSON.stringify({nome,cpf,senha})
+})
+
+let data = await res.json()
+
+if(data.success){
+alert("Aluno cadastrado com sucesso!")
+e.target.reset()
+carregarDashboard()
+}else{
+alert("Erro ao cadastrar aluno")
+}
+
+}catch(err){
+alert("Erro ao conectar com servidor")
+}
+}
+
+async function cadastrarProfessor(e){
+e.preventDefault()
+
+let nome = document.getElementById("nomeProfessor").value
+let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
+let senha = document.getElementById("senhaProfessor").value
+let disciplina = document.getElementById("disciplinaProfessor").value
+
+try{
+let res = await fetch(API + "/professor",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer " + localStorage.getItem("token")
+},
+body:JSON.stringify({nome,cpf,senha,disciplina})
+})
+
+let data = await res.json()
+
+if(data.success){
+alert("Professor cadastrado com sucesso!")
+e.target.reset()
+carregarDashboard()
+}else{
+alert("Erro ao cadastrar professor")
+}
+
+}catch(err){
+alert("Erro ao conectar com servidor")
+}
+}
 
 async function uploadImagem(file){
-
-let formData=new FormData()
+let formData = new FormData()
 formData.append("imagem",file)
 
-let res=await fetch(API+"/upload",{
+let res = await fetch(API + "/upload",{
 method:"POST",
-headers:{Authorization:"Bearer "+localStorage.getItem("token")},
+headers:{
+Authorization:"Bearer " + localStorage.getItem("token")
+},
 body:formData
 })
 
-let data=await res.json()
+let data = await res.json()
 
-return data.url
-
+if(!data.success){
+throw new Error("Erro no upload")
 }
 
-
-/* AVISO */
+return data.url
+}
 
 async function publicarAviso(e){
-
 e.preventDefault()
 
-let titulo=document.getElementById("tituloAviso").value
-let conteudo=document.getElementById("textoAviso").value
+let titulo = document.getElementById("tituloAviso").value
+let conteudo = document.getElementById("textoAviso").value
 
-let res=await fetch(API+"/publicacao",{
-
+try{
+let res = await fetch(API + "/publicacao",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json",
-Authorization:"Bearer "+localStorage.getItem("token")
+Authorization:"Bearer " + localStorage.getItem("token")
 },
-
 body:JSON.stringify({
 titulo,
 conteudo,
 imagem:"",
 tipo:"aviso"
 })
-
 })
 
-let data=await res.json()
+let data = await res.json()
 
 if(data.success){
-
-alert("Aviso publicado")
-
+alert("Aviso publicado com sucesso!")
+e.target.reset()
+carregarPublicacoes()
+mostrar("publicacoes")
+}else{
+alert("Erro ao publicar aviso")
 }
 
+}catch(err){
+alert("Erro ao conectar com servidor")
 }
-
-
-/* NOTICIA */
+}
 
 async function publicarNoticia(e){
-
 e.preventDefault()
 
-let titulo=document.getElementById("tituloNoticia").value
-let subtitulo=document.getElementById("subtituloNoticia").value
-let conteudo=quill.root.innerHTML
+let titulo = document.getElementById("tituloNoticia").value
+let subtitulo = document.getElementById("subtituloNoticia").value
+let conteudo = quill.root.innerHTML
+let imagem = ""
 
-let imagem=""
-
-let img=document.getElementById("imagemUpload")
+try{
+let img = document.getElementById("imagemUpload")
 
 if(img.files.length){
-imagem=await uploadImagem(img.files[0])
+imagem = await uploadImagem(img.files[0])
 }
 
-let res=await fetch(API+"/publicacao",{
+let tituloFinal = subtitulo ? titulo + " - " + subtitulo : titulo
 
+let res = await fetch(API + "/publicacao",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json",
-Authorization:"Bearer "+localStorage.getItem("token")
+Authorization:"Bearer " + localStorage.getItem("token")
 },
-
 body:JSON.stringify({
-
-titulo:titulo+" - "+subtitulo,
+titulo:tituloFinal,
 conteudo,
 imagem,
 tipo:"noticia"
-
+})
 })
 
-})
-
-let data=await res.json()
+let data = await res.json()
 
 if(data.success){
-
-alert("Notícia publicada")
-
+alert("Notícia publicada com sucesso!")
+document.getElementById("tituloNoticia").value = ""
+document.getElementById("subtituloNoticia").value = ""
+document.getElementById("imagemUpload").value = ""
+quill.root.innerHTML = ""
+carregarPublicacoes()
+mostrar("publicacoes")
+}else{
+alert("Erro ao publicar notícia")
 }
 
+}catch(err){
+alert("Erro ao conectar com servidor")
 }
-
-
-/* LISTAR PUBLICAÇÕES */
+}
 
 async function carregarPublicacoes(){
+try{
+let res = await fetch(API + "/publicacoes")
+let dados = await res.json()
 
-let res=await fetch(API+"/publicacoes")
-let dados=await res.json()
+let tabela = document.getElementById("tabelaPublicacoes")
 
-let tabela=document.getElementById("tabelaPublicacoes")
-
-tabela.innerHTML=""
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Título</th>
+<th>Tipo</th>
+<th>Data</th>
+<th>Ações</th>
+</tr>
+`
 
 dados.forEach(p=>{
-
-tabela.innerHTML+=`
-
+tabela.innerHTML += `
 <tr>
-
 <td>${p.id}</td>
 <td>${p.titulo}</td>
 <td>${p.tipo}</td>
 <td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
-
 <td>
 <button class="btn-excluir" onclick="excluirPublicacao(${p.id})">Excluir</button>
 </td>
-
 </tr>
-
 `
-
 })
 
+}catch(err){
+console.log("Erro ao carregar publicações")
 }
-
+}
 
 async function excluirPublicacao(id){
-
 if(!confirm("Excluir publicação?")) return
 
-await fetch(API+"/publicacao/"+id,{
+try{
+let res = await fetch(API + "/publicacao/" + id,{
 method:"DELETE",
-headers:{Authorization:"Bearer "+localStorage.getItem("token")}
+headers:{
+Authorization:"Bearer " + localStorage.getItem("token")
+}
 })
 
-carregarPublicacoes()
+let data = await res.json()
 
+if(data.success){
+alert("Publicação excluída com sucesso!")
+carregarPublicacoes()
+}else{
+alert("Erro ao excluir publicação")
 }
 
+}catch(err){
+alert("Erro ao conectar com servidor")
+}
+}
 
+carregarDashboard()
 carregarPublicacoes()
-
 </script>
 
 </body>
