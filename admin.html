@@ -2,7 +2,6 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -19,8 +18,6 @@ font-family:Arial;
 background:#f1f4fb;
 display:flex;
 }
-
-/* MENU */
 
 .sidebar{
 width:220px;
@@ -53,35 +50,11 @@ font-size:15px;
 background:#123c8a;
 }
 
-/* CONTEUDO */
-
 .main{
 margin-left:220px;
 padding:30px;
 width:100%;
 }
-
-.dashboard{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
-}
-
-.card{
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-text-align:center;
-}
-
-.card p{
-font-size:32px;
-color:#0a2a66;
-font-weight:bold;
-}
-
-/* BOX */
 
 .box{
 background:white;
@@ -90,8 +63,6 @@ border-radius:10px;
 box-shadow:0 4px 10px rgba(0,0,0,0.1);
 margin-top:20px;
 }
-
-/* INPUT */
 
 input,textarea{
 width:100%;
@@ -118,11 +89,9 @@ background:#123c8a;
 #editor{
 height:200px;
 margin-top:10px;
-background:white;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -144,36 +113,12 @@ background:white;
 <div class="main">
 
 <!-- DASHBOARD -->
-
 <div id="dashboard" class="section">
-
 <h2>Dashboard</h2>
-
-<div class="dashboard">
-
-<div class="card">
-<h3>Alunos</h3>
-<p id="totalAlunos">0</p>
-</div>
-
-<div class="card">
-<h3>Professores</h3>
-<p id="totalProfessores">0</p>
-</div>
-
-<div class="card">
-<h3>Notas</h3>
-<p id="totalNotas">0</p>
-</div>
-
-</div>
-
 </div>
 
 <!-- ALUNOS -->
-
 <div id="alunos" class="section" style="display:none">
-
 <div class="box">
 
 <h3>Cadastrar Aluno</h3>
@@ -189,11 +134,9 @@ background:white;
 </form>
 
 </div>
-
 </div>
 
 <!-- PROFESSORES -->
-
 <div id="professores" class="section" style="display:none">
 
 <div class="box">
@@ -212,11 +155,9 @@ background:white;
 </form>
 
 </div>
-
 </div>
 
 <!-- AVISOS -->
-
 <div id="avisos" class="section" style="display:none">
 
 <div class="box">
@@ -233,11 +174,9 @@ background:white;
 </form>
 
 </div>
-
 </div>
 
 <!-- NOTICIAS -->
-
 <div id="noticias" class="section" style="display:none">
 
 <div class="box">
@@ -270,7 +209,7 @@ background:white;
 
 <h3>Publicações</h3>
 
-<table id="tabelaPublicacoes"></table>
+<div id="listaPublicacoes"></div>
 
 </div>
 
@@ -311,7 +250,7 @@ let nome=document.getElementById("nomeAluno").value
 let cpf=document.getElementById("cpfAluno").value
 let senha=document.getElementById("senhaAluno").value
 
-await fetch(API+"/aluno",{
+let res=await fetch(API+"/aluno",{
 
 method:"POST",
 
@@ -323,7 +262,17 @@ body:JSON.stringify({nome,cpf,senha})
 
 })
 
-alert("Aluno cadastrado")
+let data=await res.json()
+
+if(data.success){
+
+alert("Aluno cadastrado!")
+
+}else{
+
+alert("Erro ao cadastrar aluno")
+
+}
 
 }
 
@@ -338,7 +287,7 @@ let cpf=document.getElementById("cpfProfessor").value
 let senha=document.getElementById("senhaProfessor").value
 let disciplina=document.getElementById("disciplinaProfessor").value
 
-await fetch(API+"/professor",{
+let res=await fetch(API+"/professor",{
 
 method:"POST",
 
@@ -350,7 +299,17 @@ body:JSON.stringify({nome,cpf,senha,disciplina})
 
 })
 
-alert("Professor cadastrado")
+let data=await res.json()
+
+if(data.success){
+
+alert("Professor cadastrado!")
+
+}else{
+
+alert("Erro ao cadastrar professor")
+
+}
 
 }
 
@@ -377,7 +336,9 @@ body:formData
 let data=await res.json()
 
 if(data.success){
+
 return data.url
+
 }
 
 return ""
@@ -393,25 +354,36 @@ e.preventDefault()
 let titulo=document.getElementById("tituloAviso").value
 let conteudo=document.getElementById("textoAviso").value
 
-await fetch(API+"/publicacao",{
+let res=await fetch(API+"/publicacao",{
 
 method:"POST",
 
 headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+localStorage.getItem("token")
+"Content-Type":"application/json"
 },
 
 body:JSON.stringify({
+
 titulo,
 conteudo,
 imagem:"",
 tipo:"aviso"
-})
 
 })
 
-alert("Aviso publicado")
+})
+
+let data=await res.json()
+
+if(data.success){
+
+alert("Aviso publicado!")
+
+}else{
+
+alert("Erro ao salvar aviso")
+
+}
 
 }
 
@@ -437,13 +409,12 @@ imagem=await uploadImagem(img.files[0])
 
 let tituloFinal=subtitulo?titulo+" - "+subtitulo:titulo
 
-await fetch(API+"/publicacao",{
+let res=await fetch(API+"/publicacao",{
 
 method:"POST",
 
 headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+localStorage.getItem("token")
+"Content-Type":"application/json"
 },
 
 body:JSON.stringify({
@@ -457,7 +428,17 @@ tipo:"noticia"
 
 })
 
-alert("Notícia publicada")
+let data=await res.json()
+
+if(data.success){
+
+alert("Notícia publicada com sucesso!")
+
+}else{
+
+alert("Erro ao salvar notícia")
+
+}
 
 }
 
