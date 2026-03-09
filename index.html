@@ -210,11 +210,6 @@ async function carregarConteudo(){
 try{
 
 let res = await fetch(API + "/publicacoes")
-
-if(!res.ok){
-throw new Error("Erro servidor")
-}
-
 let dados = await res.json()
 
 let avisoDiv = document.getElementById("aviso-diretor")
@@ -222,6 +217,10 @@ let noticiasDiv = document.getElementById("listaNoticias")
 
 avisoDiv.innerHTML=""
 noticiasDiv.innerHTML=""
+
+/* ordenar por data mais recente */
+
+dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
 
 let avisoMostrado = false
 
@@ -231,7 +230,7 @@ let data = p.data_publicacao
 ? new Date(p.data_publicacao).toLocaleDateString()
 : ""
 
-/* MOSTRAR APENAS O AVISO MAIS RECENTE */
+/* AVISO MAIS RECENTE */
 
 if(p.tipo==="aviso" && !avisoMostrado){
 
@@ -248,7 +247,7 @@ avisoMostrado = true
 
 }
 
-/* MOSTRAR NOTÍCIAS */
+/* LISTA DE NOTÍCIAS */
 
 if(p.tipo==="noticia"){
 
