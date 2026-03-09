@@ -15,10 +15,37 @@
 
 <style>
 
+.admin-menu{
+display:flex;
+gap:10px;
+margin-bottom:30px;
+flex-wrap:wrap;
+}
+
+.admin-menu button{
+background:#0a2a66;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.admin-menu button:hover{
+background:#1c4cb3;
+}
+
+.admin-section{
+display:none;
+}
+
+.admin-section.active{
+display:block;
+}
+
 .dashboard{
 display:flex;
 gap:20px;
-margin-bottom:30px;
 flex-wrap:wrap;
 }
 
@@ -118,6 +145,25 @@ window.location="login-admin.html"
 
 <h2>Painel Administrativo</h2>
 
+
+<!-- MENU ADMIN -->
+
+<div class="admin-menu">
+
+<button onclick="mostrar('dashboard')">Dashboard</button>
+<button onclick="mostrar('alunos')">Alunos</button>
+<button onclick="mostrar('professores')">Professores</button>
+<button onclick="mostrar('avisos')">Avisos</button>
+<button onclick="mostrar('noticias')">Notícias</button>
+<button onclick="mostrar('publicacoes')">Publicações</button>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="admin-section active">
+
 <div class="dashboard">
 
 <div class="card">
@@ -137,8 +183,51 @@ window.location="login-admin.html"
 
 </div>
 
+</div>
+
+
+<!-- CADASTRAR ALUNO -->
+
+<div id="alunos" class="admin-section">
+
+<h3>Cadastrar Aluno</h3>
+
+<form onsubmit="cadastrarAluno(event)">
+
+<input id="nomeAluno" placeholder="Nome do aluno" required>
+<input id="cpfAluno" placeholder="CPF" required>
+<input id="senhaAluno" placeholder="Senha" required>
+
+<button type="submit">Cadastrar</button>
+
+</form>
+
+</div>
+
+
+<!-- CADASTRAR PROFESSOR -->
+
+<div id="professores" class="admin-section">
+
+<h3>Cadastrar Professor</h3>
+
+<form onsubmit="cadastrarProfessor(event)">
+
+<input id="nomeProfessor" placeholder="Nome do professor" required>
+<input id="cpfProfessor" placeholder="CPF" required>
+<input id="senhaProfessor" placeholder="Senha" required>
+<input id="disciplinaProfessor" placeholder="Disciplina" required>
+
+<button type="submit">Cadastrar</button>
+
+</form>
+
+</div>
+
 
 <!-- AVISO -->
+
+<div id="avisos" class="admin-section">
 
 <div class="publicacao-box">
 
@@ -156,8 +245,12 @@ window.location="login-admin.html"
 
 </div>
 
+</div>
+
 
 <!-- NOTICIA -->
+
+<div id="noticias" class="admin-section">
 
 <div class="publicacao-box">
 
@@ -166,11 +259,10 @@ window.location="login-admin.html"
 <form onsubmit="publicarNoticia(event)">
 
 <input id="tituloNoticia" placeholder="Título da notícia" required>
-
 <input id="subtituloNoticia" placeholder="Subtítulo">
 
-<label>Imagem da notícia</label>
-<input type="file" id="imagemUpload" accept="image/*">
+<label>Imagem</label>
+<input type="file" id="imagemUpload">
 
 <label>Conteúdo</label>
 <div id="editor"></div>
@@ -181,6 +273,12 @@ window.location="login-admin.html"
 
 </div>
 
+</div>
+
+
+<!-- PUBLICAÇÕES -->
+
+<div id="publicacoes" class="admin-section">
 
 <h3>Publicações</h3>
 
@@ -198,65 +296,66 @@ window.location="login-admin.html"
 
 </div>
 
+</div>
+
 
 <script>
 
-const API = "https://portal-escola-backend.onrender.com"
+const API="https://portal-escola-backend.onrender.com"
 
-
-/* EDITOR */
-
-var quill = new Quill('#editor',{
-theme:'snow'
-})
-
-
-/* LOGOUT */
 
 function logout(){
-
 localStorage.clear()
 window.location="login-admin.html"
+}
+
+
+function mostrar(sec){
+
+document.querySelectorAll(".admin-section").forEach(s=>{
+s.classList.remove("active")
+})
+
+document.getElementById(sec).classList.add("active")
 
 }
 
 
-/* UPLOAD IMAGEM */
+/* EDITOR */
+
+var quill = new Quill('#editor',{theme:'snow'})
+
+
+/* UPLOAD */
 
 async function uploadImagem(file){
 
-let formData = new FormData()
+let formData=new FormData()
 formData.append("imagem",file)
 
-let res = await fetch(API+"/upload",{
-
+let res=await fetch(API+"/upload",{
 method:"POST",
-
-headers:{
-Authorization:"Bearer "+localStorage.getItem("token")
-},
-
+headers:{Authorization:"Bearer "+localStorage.getItem("token")},
 body:formData
-
 })
 
-let data = await res.json()
+let data=await res.json()
 
 return data.url
 
 }
 
 
-/* PUBLICAR AVISO */
+/* AVISO */
 
 async function publicarAviso(e){
 
 e.preventDefault()
 
-let titulo = document.getElementById("tituloAviso").value
-let conteudo = document.getElementById("textoAviso").value
+let titulo=document.getElementById("tituloAviso").value
+let conteudo=document.getElementById("textoAviso").value
 
-let res = await fetch(API+"/publicacao",{
+let res=await fetch(API+"/publicacao",{
 
 method:"POST",
 
@@ -266,49 +365,44 @@ Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({
-
 titulo,
 conteudo,
 imagem:"",
 tipo:"aviso"
-
 })
 
 })
 
-let data = await res.json()
+let data=await res.json()
 
 if(data.success){
 
 alert("Aviso publicado")
-location.reload()
 
 }
 
 }
 
 
-/* PUBLICAR NOTICIA */
+/* NOTICIA */
 
 async function publicarNoticia(e){
 
 e.preventDefault()
 
-let titulo = document.getElementById("tituloNoticia").value
-let subtitulo = document.getElementById("subtituloNoticia").value
-let conteudo = quill.root.innerHTML
+let titulo=document.getElementById("tituloNoticia").value
+let subtitulo=document.getElementById("subtituloNoticia").value
+let conteudo=quill.root.innerHTML
 
 let imagem=""
 
-let imgInput = document.getElementById("imagemUpload")
+let img=document.getElementById("imagemUpload")
 
-if(imgInput.files.length){
-
-imagem = await uploadImagem(imgInput.files[0])
-
+if(img.files.length){
+imagem=await uploadImagem(img.files[0])
 }
 
-let res = await fetch(API+"/publicacao",{
+let res=await fetch(API+"/publicacao",{
 
 method:"POST",
 
@@ -319,7 +413,7 @@ Authorization:"Bearer "+localStorage.getItem("token")
 
 body:JSON.stringify({
 
-titulo: titulo+" - "+subtitulo,
+titulo:titulo+" - "+subtitulo,
 conteudo,
 imagem,
 tipo:"noticia"
@@ -328,37 +422,27 @@ tipo:"noticia"
 
 })
 
-let data = await res.json()
+let data=await res.json()
 
 if(data.success){
 
 alert("Notícia publicada")
-location.reload()
 
 }
 
 }
 
 
-/* CARREGAR PUBLICAÇÕES */
+/* LISTAR PUBLICAÇÕES */
 
 async function carregarPublicacoes(){
 
-let res = await fetch(API+"/publicacoes")
+let res=await fetch(API+"/publicacoes")
+let dados=await res.json()
 
-let dados = await res.json()
+let tabela=document.getElementById("tabelaPublicacoes")
 
-let tabela = document.getElementById("tabelaPublicacoes")
-
-tabela.innerHTML=`
-<tr>
-<th>ID</th>
-<th>Título</th>
-<th>Tipo</th>
-<th>Data</th>
-<th>Ações</th>
-</tr>
-`
+tabela.innerHTML=""
 
 dados.forEach(p=>{
 
@@ -367,11 +451,8 @@ tabela.innerHTML+=`
 <tr>
 
 <td>${p.id}</td>
-
 <td>${p.titulo}</td>
-
 <td>${p.tipo}</td>
-
 <td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
 
 <td>
@@ -379,11 +460,13 @@ tabela.innerHTML+=`
 </td>
 
 </tr>
+
 `
 
 })
 
 }
+
 
 async function excluirPublicacao(id){
 
@@ -391,14 +474,13 @@ if(!confirm("Excluir publicação?")) return
 
 await fetch(API+"/publicacao/"+id,{
 method:"DELETE",
-headers:{
-Authorization:"Bearer "+localStorage.getItem("token")
-}
+headers:{Authorization:"Bearer "+localStorage.getItem("token")}
 })
 
 carregarPublicacoes()
 
 }
+
 
 carregarPublicacoes()
 
