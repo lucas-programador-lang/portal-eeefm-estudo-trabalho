@@ -110,11 +110,16 @@ let usuario = document.getElementById("usuario").value
 let senha = document.getElementById("senha").value
 
 if(!usuario || !senha){
-alert("Preencha os campos")
+
+alert("Preencha usuário e senha")
 return
+
 }
 
 try{
+
+// limpa sessão antiga
+localStorage.clear()
 
 let res = await fetch(API + "/login-admin",{
 
@@ -130,6 +135,14 @@ senha
 })
 
 })
+
+// verifica erro servidor
+if(!res.ok){
+
+alert("Servidor indisponível")
+return
+
+}
 
 let data = await res.json()
 
@@ -149,14 +162,24 @@ alert("Usuário ou senha inválidos")
 
 }catch(err){
 
+console.error(err)
+
 alert("Erro ao conectar com servidor")
 
 }
 
 }
 
+// permitir ENTER para logar
+document.addEventListener("keypress",function(e){
+
+if(e.key === "Enter"){
+loginAdmin()
+}
+
+})
+
 </script>
 
 </body>
-
 </html>
