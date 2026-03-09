@@ -24,7 +24,7 @@ const token = getToken()
 
 if(!token){
 alert("Sessão expirada, faça login novamente")
-window.location="login.html"
+window.location="login-admin.html"
 }
 
 }
@@ -143,6 +143,8 @@ document.getElementById("nomeProfessor").value=""
 document.getElementById("cpfProfessor").value=""
 document.getElementById("senhaProfessor").value=""
 document.getElementById("disciplinaProfessor").value=""
+
+carregarProfessores()
 
 }else{
 
@@ -265,8 +267,6 @@ let tabela = document.getElementById("tabelaAlunos")
 
 if(!tabela) return
 
-verificarLogin()
-
 try{
 
 let res = await fetch(API + "/alunos",{
@@ -276,13 +276,6 @@ headers:{
 }
 
 })
-
-if(res.status===401){
-
-logout()
-return
-
-}
 
 let alunos = await res.json()
 
@@ -316,22 +309,19 @@ console.log("Erro ao carregar alunos")
 
 
 // ==========================
-// REGISTRAR NOTA
+// PUBLICAR AVISO
 // ==========================
 
-async function registrarNota(e){
+async function publicarAviso(e){
 
 e.preventDefault()
 
-verificarLogin()
-
-let aluno_id = document.getElementById("idAluno").value
-let disciplina = document.getElementById("disciplinaNota").value
-let nota = document.getElementById("notaAluno").value
+let titulo = document.getElementById("tituloAviso").value
+let conteudo = document.getElementById("textoAviso").value
 
 try{
 
-let res = await fetch(API + "/nota",{
+let res = await fetch(API + "/publicacao",{
 
 method:"POST",
 
@@ -340,7 +330,12 @@ headers:{
 "Authorization":"Bearer "+getToken()
 },
 
-body:JSON.stringify({aluno_id,disciplina,nota})
+body:JSON.stringify({
+titulo,
+conteudo,
+imagem:"",
+tipo:"aviso"
+})
 
 })
 
@@ -348,21 +343,18 @@ let data = await res.json()
 
 if(data.success){
 
-alert("Nota registrada!")
+alert("Aviso publicado!")
 
-document.getElementById("idAluno").value=""
-document.getElementById("disciplinaNota").value=""
-document.getElementById("notaAluno").value=""
+document.getElementById("tituloAviso").value=""
+document.getElementById("textoAviso").value=""
 
-}else{
-
-alert("Erro ao registrar nota")
+carregarPublicacoes()
 
 }
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao publicar aviso")
 
 }
 
@@ -370,24 +362,124 @@ alert("Erro de conexão com servidor")
 
 
 // ==========================
-// BOLETIM
+// PUBLICAR NOTICIA
 // ==========================
 
-async function carregarBoletim(){
+async function publicarNoticia(e){
 
-let tabela = document.getElementById("tabela")
+e.preventDefault()
 
-if(!tabela) return
-
-verificarLogin()
-
-let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
-
-if(!usuario.id) return
+let titulo = document.getElementById("tituloNoticia").value
+let conteudo = document.getElementById("conteudoNoticia").value
+let imagem = document.getElementById("imagemNoticia").value
 
 try{
 
-let res = await fetch(API + "/boletim/" + usuario.id,{
+let res = await fetch(API + "/publicacao",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+getToken()
+},
+
+body:JSON.stringify({
+titulo,
+conteudo,
+imagem,
+tipo:"noticia"
+})
+
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Notícia publicada!")
+
+document.getElementById("tituloNoticia").value=""
+document.getElementById("conteudoNoticia").value=""
+document.getElementById("imagemNoticia").value=""
+
+carregarPublicacoes()
+
+}
+
+}catch(err){
+
+alert("Erro ao publicar notícia")
+
+}
+
+}
+
+
+// ==========================
+// LISTAR PUBLICAÇÕES
+// ==========================
+
+async function carregarPublicacoes(){
+
+let tabela = document.getElementById("tabelaPublicacoes")
+
+if(!tabela) return
+
+try{
+
+let res = await fetch(API + "/publicacoes")
+
+let publicacoes = await res.json()
+
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Título</th>
+<th>Tipo</th>
+<th>Data</th>
+<th>Ações</th>
+</tr>
+`
+
+publicacoes.forEach(p=>{
+
+tabela.innerHTML += `
+<tr>
+<td>${p.id}</td>
+<td>${p.titulo}</td>
+<td>${p.tipo}</td>
+<td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
+<td>
+<button onclick="excluirPublicacao(${p.id})">Excluir</button>
+</td>
+</tr>
+`
+
+})
+
+}catch(err){
+
+console.log("Erro ao carregar publicações")
+
+}
+
+}
+
+
+// ==========================
+// EXCLUIR PUBLICAÇÃO
+// ==========================
+
+async function excluirPublicacao(id){
+
+if(!confirm("Excluir publicação?")) return
+
+try{
+
+let res = await fetch(API + "/publicacao/"+id,{
+
+method:"DELETE",
 
 headers:{
 "Authorization":"Bearer "+getToken()
@@ -395,47 +487,19 @@ headers:{
 
 })
 
-let notas = await res.json()
+let data = await res.json()
 
-let soma = 0
+if(data.success){
 
-tabela.innerHTML = `
-<tr>
-<th>Disciplina</th>
-<th>Nota</th>
-</tr>
-`
+alert("Publicação excluída")
 
-notas.forEach(n=>{
+carregarPublicacoes()
 
-tabela.innerHTML += `
-<tr>
-<td>${n.disciplina}</td>
-<td>${n.nota}</td>
-</tr>
-`
-
-soma += Number(n.nota)
-
-})
-
-let media = notas.length ? (soma/notas.length).toFixed(1) : 0
-let situacao = media >= 6 ? "Aprovado" : "Reprovado"
-
-tabela.innerHTML += `
-<tr>
-<td><strong>Média</strong></td>
-<td>${media}</td>
-</tr>
-<tr>
-<td><strong>Situação</strong></td>
-<td>${situacao}</td>
-</tr>
-`
+}
 
 }catch(err){
 
-console.log("Erro ao carregar boletim")
+alert("Erro ao excluir publicação")
 
 }
 
@@ -450,7 +514,7 @@ function logout(){
 
 localStorage.clear()
 
-window.location="login.html"
+window.location="login-admin.html"
 
 }
 
@@ -463,5 +527,6 @@ window.onload=function(){
 
 carregarBoletim()
 carregarAlunos()
+carregarPublicacoes()
 
 }
