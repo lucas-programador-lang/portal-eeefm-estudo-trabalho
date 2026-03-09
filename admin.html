@@ -60,6 +60,18 @@ color:white;
 
 <body>
 
+<script>
+
+/* =========================
+PROTEGER ADMIN
+========================= */
+
+if(!localStorage.getItem("adminLogado")){
+window.location="login-admin.html"
+}
+
+</script>
+
 <header>
 
 <div class="container">
