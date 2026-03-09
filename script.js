@@ -15,6 +15,22 @@ return localStorage.getItem("token")
 
 
 // ==========================
+// VERIFICAR LOGIN
+// ==========================
+
+function verificarLogin(){
+
+const token = getToken()
+
+if(!token){
+alert("Sessão expirada, faça login novamente")
+window.location="login.html"
+}
+
+}
+
+
+// ==========================
 // FORMATAR CPF
 // ==========================
 
@@ -39,25 +55,49 @@ async function cadastrarAluno(e){
 
 e.preventDefault()
 
+verificarLogin()
+
 let nome = document.getElementById("nomeAluno").value
 let cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'')
 let senha = document.getElementById("senhaAluno").value
 
+try{
+
 let res = await fetch(API + "/aluno",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json",
 "Authorization":"Bearer "+getToken()
 },
+
 body:JSON.stringify({nome,cpf,senha})
+
 })
 
 let data = await res.json()
 
 if(data.success){
+
 alert("Aluno cadastrado!")
+
+document.getElementById("nomeAluno").value=""
+document.getElementById("cpfAluno").value=""
+document.getElementById("senhaAluno").value=""
+
+carregarAlunos()
+
 }else{
+
 alert("Erro ao cadastrar aluno")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
 }
 
 }
@@ -71,26 +111,49 @@ async function cadastrarProfessor(e){
 
 e.preventDefault()
 
+verificarLogin()
+
 let nome = document.getElementById("nomeProfessor").value
 let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
 let senha = document.getElementById("senhaProfessor").value
 let disciplina = document.getElementById("disciplinaProfessor").value
 
+try{
+
 let res = await fetch(API + "/professor",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json",
 "Authorization":"Bearer "+getToken()
 },
+
 body:JSON.stringify({nome,cpf,senha,disciplina})
+
 })
 
 let data = await res.json()
 
 if(data.success){
+
 alert("Professor cadastrado!")
+
+document.getElementById("nomeProfessor").value=""
+document.getElementById("cpfProfessor").value=""
+document.getElementById("senhaProfessor").value=""
+document.getElementById("disciplinaProfessor").value=""
+
 }else{
+
 alert("Erro ao cadastrar professor")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
 }
 
 }
@@ -105,12 +168,18 @@ async function loginAluno(){
 let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
 let senha = document.getElementById("senha").value
 
+try{
+
 let res = await fetch(API + "/login",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({cpf,senha})
+
 })
 
 let data = await res.json()
@@ -129,6 +198,12 @@ alert("CPF ou senha incorretos")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
@@ -141,12 +216,18 @@ async function loginProfessor(){
 let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
 let senha = document.getElementById("senha").value
 
+try{
+
 let res = await fetch(API + "/login-professor",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({cpf,senha})
+
 })
 
 let data = await res.json()
@@ -165,6 +246,12 @@ alert("CPF ou senha inválidos")
 
 }
 
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
 }
 
 
@@ -178,11 +265,24 @@ let tabela = document.getElementById("tabelaAlunos")
 
 if(!tabela) return
 
+verificarLogin()
+
+try{
+
 let res = await fetch(API + "/alunos",{
+
 headers:{
 "Authorization":"Bearer "+getToken()
 }
+
 })
+
+if(res.status===401){
+
+logout()
+return
+
+}
 
 let alunos = await res.json()
 
@@ -206,6 +306,12 @@ tabela.innerHTML += `
 
 })
 
+}catch(err){
+
+console.log("Erro ao carregar alunos")
+
+}
+
 }
 
 
@@ -217,25 +323,47 @@ async function registrarNota(e){
 
 e.preventDefault()
 
+verificarLogin()
+
 let aluno_id = document.getElementById("idAluno").value
 let disciplina = document.getElementById("disciplinaNota").value
 let nota = document.getElementById("notaAluno").value
 
+try{
+
 let res = await fetch(API + "/nota",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json",
 "Authorization":"Bearer "+getToken()
 },
+
 body:JSON.stringify({aluno_id,disciplina,nota})
+
 })
 
 let data = await res.json()
 
 if(data.success){
+
 alert("Nota registrada!")
+
+document.getElementById("idAluno").value=""
+document.getElementById("disciplinaNota").value=""
+document.getElementById("notaAluno").value=""
+
 }else{
+
 alert("Erro ao registrar nota")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
 }
 
 }
@@ -251,12 +379,20 @@ let tabela = document.getElementById("tabela")
 
 if(!tabela) return
 
-let alunoID = JSON.parse(localStorage.getItem("usuario")).id
+verificarLogin()
 
-let res = await fetch(API + "/boletim/" + alunoID,{
+let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
+
+if(!usuario.id) return
+
+try{
+
+let res = await fetch(API + "/boletim/" + usuario.id,{
+
 headers:{
 "Authorization":"Bearer "+getToken()
 }
+
 })
 
 let notas = await res.json()
@@ -297,6 +433,12 @@ tabela.innerHTML += `
 </tr>
 `
 
+}catch(err){
+
+console.log("Erro ao carregar boletim")
+
+}
+
 }
 
 
@@ -306,9 +448,7 @@ tabela.innerHTML += `
 
 function logout(){
 
-localStorage.removeItem("token")
-localStorage.removeItem("usuario")
-localStorage.removeItem("tipo")
+localStorage.clear()
 
 window.location="login.html"
 
@@ -316,7 +456,7 @@ window.location="login.html"
 
 
 // ==========================
-// INICIALIZAÇÃO
+// INICIAR SISTEMA
 // ==========================
 
 window.onload=function(){
