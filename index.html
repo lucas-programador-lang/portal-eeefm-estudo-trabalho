@@ -40,15 +40,11 @@
 
 </header>
 
-<!-- AVISO DA DIREÇÃO -->
 
-<div class="aviso-diretor">
-<div class="container">
-📢 <strong>Aviso da Direção:</strong>
-Entrega de boletins nesta sexta-feira às 18h no auditório da escola.
-Pais e responsáveis estão convidados.
-</div>
-</div>
+<!-- AVISO DA DIREÇÃO AUTOMÁTICO -->
+
+<div id="aviso-diretor"></div>
+
 
 <!-- BANNER -->
 
@@ -121,48 +117,13 @@ incentivando o conhecimento, a responsabilidade e o trabalho.
 </section>
 
 
-<!-- NOTÍCIAS -->
+<!-- NOTÍCIAS AUTOMÁTICAS -->
 
 <section class="container">
 
 <h2>Notícias da Escola</h2>
 
-<div class="news">
-
-<h3>Início do Ano Letivo</h3>
-<p>
-As aulas do novo ano letivo começam em fevereiro.
-Fique atento ao calendário escolar.
-</p>
-
-</div>
-
-<div class="news">
-
-<h3>Feira de Ciências</h3>
-<p>
-Os alunos participarão da feira de ciências
-apresentando projetos educacionais.
-</p>
-
-</div>
-
-</section>
-
-
-<!-- AVISOS -->
-
-<section class="container">
-
-<h2>Avisos Importantes</h2>
-
-<div class="aviso">
-⚠ Entrega de boletins será realizada na próxima semana.
-</div>
-
-<div class="aviso">
-⚠ Pais e responsáveis devem atualizar os dados na secretaria da escola.
-</div>
+<div id="listaNoticias"></div>
 
 </section>
 
@@ -238,6 +199,69 @@ loading="lazy">
 </div>
 
 </footer>
+
+
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+
+async function carregarConteudo(){
+
+let res = await fetch(API + "/publicacoes")
+
+let dados = await res.json()
+
+let avisoDiv = document.getElementById("aviso-diretor")
+let noticiasDiv = document.getElementById("listaNoticias")
+
+avisoDiv.innerHTML=""
+noticiasDiv.innerHTML=""
+
+dados.forEach(p=>{
+
+let data = new Date(p.data_publicacao).toLocaleDateString()
+
+if(p.tipo==="aviso"){
+
+avisoDiv.innerHTML = `
+<div class="aviso-diretor">
+<div class="container">
+📢 <strong>Aviso da Direção:</strong>
+${p.conteudo}
+</div>
+</div>
+`
+
+}
+
+if(p.tipo==="noticia"){
+
+noticiasDiv.innerHTML += `
+<div class="news">
+
+<h3>${p.titulo}</h3>
+
+${p.imagem ? `<img src="${p.imagem}" style="width:100%;margin-top:10px;border-radius:6px;">` : ""}
+
+<p style="margin-top:10px;">
+${p.conteudo}
+</p>
+
+<small>${data}</small>
+
+</div>
+`
+
+}
+
+})
+
+}
+
+carregarConteudo()
+
+</script>
 
 </body>
 </html>
