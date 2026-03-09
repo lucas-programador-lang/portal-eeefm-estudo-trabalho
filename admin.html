@@ -64,6 +64,24 @@ margin-top:15px;
 margin-bottom:30px;
 }
 
+.publicacao-box{
+background:white;
+padding:20px;
+border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+margin-bottom:30px;
+}
+
+textarea{
+width:100%;
+min-height:120px;
+padding:10px;
+margin-top:10px;
+border:1px solid #ccc;
+border-radius:6px;
+resize:vertical;
+}
+
 @media(max-width:768px){
 
 .dashboard{
@@ -148,9 +166,7 @@ window.location="login-admin.html"
 <form onsubmit="cadastrarAluno(event)">
 
 <input id="nomeAluno" placeholder="Nome do aluno" required>
-
 <input id="cpfAluno" placeholder="CPF" oninput="formatarCPF(this)" required>
-
 <input id="senhaAluno" placeholder="Senha" required>
 
 <button type="submit">Cadastrar</button>
@@ -166,11 +182,8 @@ window.location="login-admin.html"
 <form onsubmit="cadastrarProfessor(event)">
 
 <input id="nomeProfessor" placeholder="Nome do professor" required>
-
 <input id="cpfProfessor" placeholder="CPF" oninput="formatarCPF(this)" required>
-
 <input id="senhaProfessor" placeholder="Senha" required>
-
 <input id="disciplinaProfessor" placeholder="Disciplina" required>
 
 <button type="submit">Cadastrar</button>
@@ -218,6 +231,70 @@ window.location="login-admin.html"
 
 </div>
 
+
+
+<!-- PUBLICAR AVISO -->
+
+<div class="publicacao-box">
+
+<h3>Publicar Aviso</h3>
+
+<form onsubmit="publicarAviso(event)">
+
+<input id="tituloAviso" placeholder="Título do aviso" required>
+
+<textarea id="textoAviso" placeholder="Texto do aviso" required></textarea>
+
+<button type="submit">Publicar Aviso</button>
+
+</form>
+
+</div>
+
+
+
+<!-- PUBLICAR NOTÍCIA -->
+
+<div class="publicacao-box">
+
+<h3>Publicar Notícia</h3>
+
+<form onsubmit="publicarNoticia(event)">
+
+<input id="tituloNoticia" placeholder="Título da notícia" required>
+
+<input id="imagemNoticia" placeholder="URL da imagem">
+
+<textarea id="conteudoNoticia" placeholder="Texto da notícia" required></textarea>
+
+<button type="submit">Publicar Notícia</button>
+
+</form>
+
+</div>
+
+
+
+<!-- LISTA DE PUBLICAÇÕES -->
+
+<h3>Publicações</h3>
+
+<div class="table-container">
+
+<table id="tabelaPublicacoes">
+
+<tr>
+<th>ID</th>
+<th>Título</th>
+<th>Tipo</th>
+<th>Data</th>
+<th>Ações</th>
+</tr>
+
+</table>
+
+</div>
+
 </div>
 
 
@@ -241,18 +318,16 @@ async function carregarDashboard(){
 try{
 
 let res = await fetch(API + "/dashboard",{
-
 headers:{
 Authorization:"Bearer "+getToken()
 }
-
 })
 
 let dados = await res.json()
 
-document.getElementById("totalAlunos").innerText = dados.alunos
-document.getElementById("totalProfessores").innerText = dados.professores
-document.getElementById("totalNotas").innerText = dados.notas
+document.getElementById("totalAlunos").innerText = dados.alunos || 0
+document.getElementById("totalProfessores").innerText = dados.professores || 0
+document.getElementById("totalNotas").innerText = dados.notas || 0
 
 }catch(err){
 
@@ -272,11 +347,9 @@ async function carregarProfessores(){
 try{
 
 let res = await fetch(API + "/professores",{
-
 headers:{
 Authorization:"Bearer "+getToken()
 }
-
 })
 
 let professores = await res.json()
@@ -342,6 +415,203 @@ alert("Erro ao excluir aluno")
 
 
 /* =========================
+PUBLICAR AVISO
+========================= */
+
+async function publicarAviso(e){
+
+e.preventDefault()
+
+let titulo = document.getElementById("tituloAviso").value
+let conteudo = document.getElementById("textoAviso").value
+
+try{
+
+let res = await fetch(API + "/publicacao",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer "+getToken()
+},
+body:JSON.stringify({
+titulo,
+conteudo,
+imagem:"",
+tipo:"aviso"
+})
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Aviso publicado com sucesso!")
+
+document.getElementById("tituloAviso").value=""
+document.getElementById("textoAviso").value=""
+
+carregarPublicacoes()
+
+}else{
+
+alert("Erro ao publicar aviso")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
+}
+
+
+/* =========================
+PUBLICAR NOTÍCIA
+========================= */
+
+async function publicarNoticia(e){
+
+e.preventDefault()
+
+let titulo = document.getElementById("tituloNoticia").value
+let imagem = document.getElementById("imagemNoticia").value
+let conteudo = document.getElementById("conteudoNoticia").value
+
+try{
+
+let res = await fetch(API + "/publicacao",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer "+getToken()
+},
+body:JSON.stringify({
+titulo,
+conteudo,
+imagem,
+tipo:"noticia"
+})
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Notícia publicada com sucesso!")
+
+document.getElementById("tituloNoticia").value=""
+document.getElementById("imagemNoticia").value=""
+document.getElementById("conteudoNoticia").value=""
+
+carregarPublicacoes()
+
+}else{
+
+alert("Erro ao publicar notícia")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
+}
+
+
+/* =========================
+CARREGAR PUBLICAÇÕES
+========================= */
+
+async function carregarPublicacoes(){
+
+try{
+
+let res = await fetch(API + "/publicacoes")
+let publicacoes = await res.json()
+
+let tabela = document.getElementById("tabelaPublicacoes")
+
+tabela.innerHTML = `
+<tr>
+<th>ID</th>
+<th>Título</th>
+<th>Tipo</th>
+<th>Data</th>
+<th>Ações</th>
+</tr>
+`
+
+publicacoes.forEach(p=>{
+
+let dataFormatada = p.data_publicacao || p.data || ""
+
+tabela.innerHTML += `
+<tr>
+<td>${p.id}</td>
+<td>${p.titulo}</td>
+<td>${p.tipo}</td>
+<td>${dataFormatada}</td>
+<td>
+<button class="btn btn-excluir" onclick="excluirPublicacao(${p.id})">Excluir</button>
+</td>
+</tr>
+`
+
+})
+
+}catch(err){
+
+console.log("Erro ao carregar publicações")
+
+}
+
+}
+
+
+/* =========================
+EXCLUIR PUBLICAÇÃO
+========================= */
+
+async function excluirPublicacao(id){
+
+if(!confirm("Deseja excluir esta publicação?")) return
+
+try{
+
+let res = await fetch(API + "/publicacao/" + id,{
+method:"DELETE",
+headers:{
+Authorization:"Bearer "+getToken()
+}
+})
+
+let data = await res.json()
+
+if(data.success){
+
+alert("Publicação excluída com sucesso!")
+carregarPublicacoes()
+
+}else{
+
+alert("Erro ao excluir publicação")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
+
+}
+
+}
+
+
+/* =========================
 INICIAR
 ========================= */
 
@@ -350,6 +620,7 @@ window.onload=function(){
 carregarAlunos()
 carregarProfessores()
 carregarDashboard()
+carregarPublicacoes()
 
 }
 
