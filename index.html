@@ -10,56 +10,6 @@
 
 <link rel="stylesheet" href="style.css">
 
-<style>
-
-.destaque{
-background:white;
-border-radius:8px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-margin-top:30px;
-overflow:hidden;
-cursor:pointer;
-}
-
-.destaque img{
-width:100%;
-max-height:400px;
-object-fit:cover;
-}
-
-.destaque-conteudo{
-padding:20px;
-}
-
-.slider{
-display:flex;
-gap:15px;
-overflow-x:auto;
-margin-top:20px;
-}
-
-.slider-card{
-min-width:250px;
-background:white;
-border-radius:8px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-cursor:pointer;
-overflow:hidden;
-}
-
-.slider-card img{
-width:100%;
-height:150px;
-object-fit:cover;
-}
-
-.slider-card h4{
-padding:10px;
-font-size:14px;
-}
-
-</style>
-
 </head>
 
 <body>
@@ -91,8 +41,12 @@ font-size:14px;
 </header>
 
 
+<!-- AVISO DA DIREÇÃO -->
+
 <div id="aviso-diretor"></div>
 
+
+<!-- BANNER -->
 
 <section class="banner">
 
@@ -106,6 +60,8 @@ font-size:14px;
 
 </section>
 
+
+<!-- CARDS -->
 
 <section class="container">
 
@@ -140,23 +96,7 @@ font-size:14px;
 </section>
 
 
-<section class="container">
-
-<h2>Notícia em Destaque</h2>
-
-<div id="noticiaDestaque"></div>
-
-</section>
-
-
-<section class="container">
-
-<h2>Últimas Notícias</h2>
-
-<div class="slider" id="sliderNoticias"></div>
-
-</section>
-
+<!-- SOBRE -->
 
 <section class="container">
 
@@ -177,6 +117,77 @@ incentivando o conhecimento, a responsabilidade e o trabalho.
 </section>
 
 
+<!-- NOTÍCIAS -->
+
+<section class="container">
+
+<h2>Notícias da Escola</h2>
+
+<div id="listaNoticias"></div>
+
+</section>
+
+
+<!-- CALENDÁRIO -->
+
+<section class="container">
+
+<h2>Calendário Escolar</h2>
+
+<div class="calendario">
+
+<table>
+
+<tr>
+<th>Evento</th>
+<th>Data</th>
+</tr>
+
+<tr>
+<td>Início das aulas</td>
+<td>05/02</td>
+</tr>
+
+<tr>
+<td>Feira de Ciências</td>
+<td>20/04</td>
+</tr>
+
+<tr>
+<td>Recesso Escolar</td>
+<td>15/07</td>
+</tr>
+
+</table>
+
+</div>
+
+</section>
+
+
+<!-- MAPA -->
+
+<section class="container">
+
+<h2>Localização da Escola</h2>
+
+<div class="mapa">
+
+<iframe 
+src="https://www.google.com/maps?q=EEEFM%20Estudo%20e%20Trabalho%20Porto%20Velho&output=embed"
+width="100%"
+height="350"
+style="border:0;"
+loading="lazy">
+</iframe>
+
+</div>
+
+</section>
+
+
+<!-- RODAPÉ -->
+
 <footer>
 
 <div class="container">
@@ -188,6 +199,8 @@ incentivando o conhecimento, a responsabilidade e o trabalho.
 </div>
 
 </footer>
+
+
 <script>
 
 const API = "https://portal-escola-backend.onrender.com"
@@ -218,7 +231,7 @@ let data = p.data_publicacao
 ? new Date(p.data_publicacao).toLocaleDateString()
 : ""
 
-/* MOSTRAR SOMENTE O AVISO MAIS RECENTE */
+/* MOSTRAR APENAS O AVISO MAIS RECENTE */
 
 if(p.tipo==="aviso" && !avisoMostrado){
 
@@ -235,7 +248,7 @@ avisoMostrado = true
 
 }
 
-/* MOSTRAR TODAS AS NOTÍCIAS */
+/* MOSTRAR NOTÍCIAS */
 
 if(p.tipo==="noticia"){
 
@@ -275,7 +288,6 @@ document.getElementById("listaNoticias").innerHTML =
 document.addEventListener("DOMContentLoaded",carregarConteudo)
 
 </script>
-
 
 </body>
 </html>
