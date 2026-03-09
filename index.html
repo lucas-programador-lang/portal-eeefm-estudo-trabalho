@@ -10,6 +10,56 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.destaque{
+background:white;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+margin-top:30px;
+overflow:hidden;
+cursor:pointer;
+}
+
+.destaque img{
+width:100%;
+max-height:400px;
+object-fit:cover;
+}
+
+.destaque-conteudo{
+padding:20px;
+}
+
+.slider{
+display:flex;
+gap:15px;
+overflow-x:auto;
+margin-top:20px;
+}
+
+.slider-card{
+min-width:250px;
+background:white;
+border-radius:8px;
+box-shadow:0 3px 10px rgba(0,0,0,0.1);
+cursor:pointer;
+overflow:hidden;
+}
+
+.slider-card img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.slider-card h4{
+padding:10px;
+font-size:14px;
+}
+
+</style>
+
 </head>
 
 <body>
@@ -41,12 +91,8 @@
 </header>
 
 
-<!-- AVISO DA DIREÇÃO AUTOMÁTICO -->
-
 <div id="aviso-diretor"></div>
 
-
-<!-- BANNER -->
 
 <section class="banner">
 
@@ -60,8 +106,6 @@
 
 </section>
 
-
-<!-- CARDS PRINCIPAIS -->
 
 <section class="container">
 
@@ -96,7 +140,23 @@
 </section>
 
 
-<!-- SOBRE -->
+<section class="container">
+
+<h2>Notícia em Destaque</h2>
+
+<div id="noticiaDestaque"></div>
+
+</section>
+
+
+<section class="container">
+
+<h2>Últimas Notícias</h2>
+
+<div class="slider" id="sliderNoticias"></div>
+
+</section>
+
 
 <section class="container">
 
@@ -117,77 +177,6 @@ incentivando o conhecimento, a responsabilidade e o trabalho.
 </section>
 
 
-<!-- NOTÍCIAS AUTOMÁTICAS -->
-
-<section class="container">
-
-<h2>Notícias da Escola</h2>
-
-<div id="listaNoticias"></div>
-
-</section>
-
-
-<!-- CALENDÁRIO -->
-
-<section class="container">
-
-<h2>Calendário Escolar</h2>
-
-<div class="calendario">
-
-<table>
-
-<tr>
-<th>Evento</th>
-<th>Data</th>
-</tr>
-
-<tr>
-<td>Início das aulas</td>
-<td>05/02</td>
-</tr>
-
-<tr>
-<td>Feira de Ciências</td>
-<td>20/04</td>
-</tr>
-
-<tr>
-<td>Recesso Escolar</td>
-<td>15/07</td>
-</tr>
-
-</table>
-
-</div>
-
-</section>
-
-
-<!-- MAPA -->
-
-<section class="container">
-
-<h2>Localização da Escola</h2>
-
-<div class="mapa">
-
-<iframe 
-src="https://www.google.com/maps?q=EEEFM%20Estudo%20e%20Trabalho%20Porto%20Velho&output=embed"
-width="100%"
-height="350"
-style="border:0;"
-loading="lazy">
-</iframe>
-
-</div>
-
-</section>
-
-
-<!-- RODAPÉ -->
-
 <footer>
 
 <div class="container">
@@ -206,37 +195,27 @@ loading="lazy">
 const API = "https://portal-escola-backend.onrender.com"
 
 
-async function carregarConteudo(){
-
-try{
+async function carregarPortal(){
 
 let res = await fetch(API + "/publicacoes")
-
-if(!res.ok){
-throw new Error("Erro servidor")
-}
 
 let dados = await res.json()
 
 let avisoDiv = document.getElementById("aviso-diretor")
-let noticiasDiv = document.getElementById("listaNoticias")
+let destaqueDiv = document.getElementById("noticiaDestaque")
+let sliderDiv = document.getElementById("sliderNoticias")
 
-avisoDiv.innerHTML=""
-noticiasDiv.innerHTML=""
+let noticias = []
 
 dados.forEach(p=>{
-
-let data = p.data_publicacao
-? new Date(p.data_publicacao).toLocaleDateString()
-: ""
 
 if(p.tipo==="aviso"){
 
 avisoDiv.innerHTML += `
 <div class="aviso-diretor">
 <div class="container">
-📢 <strong>${p.titulo || "Aviso da Direção"}:</strong>
-${p.conteudo || ""}
+📢 <strong>${p.titulo}</strong>
+${p.conteudo}
 </div>
 </div>
 `
@@ -245,42 +224,57 @@ ${p.conteudo || ""}
 
 if(p.tipo==="noticia"){
 
-noticiasDiv.innerHTML += `
-<div class="news">
+noticias.push(p)
 
-<h3>${p.titulo}</h3>
+}
 
-${p.imagem ? `<img src="${p.imagem}" style="width:100%;margin-top:10px;border-radius:6px;">` : ""}
+})
 
-<div style="margin-top:10px;">
-${p.conteudo}
+if(noticias.length){
+
+let principal = noticias[0]
+
+destaqueDiv.innerHTML = `
+<div class="destaque" onclick="abrirNoticia(${principal.id})">
+
+${principal.imagem ? `<img src="${principal.imagem}">` : ""}
+
+<div class="destaque-conteudo">
+
+<h2>${principal.titulo}</h2>
+
+<p>${principal.conteudo.substring(0,200)}...</p>
+
 </div>
-
-<small style="display:block;margin-top:10px;color:#777;">
-${data}
-</small>
 
 </div>
 `
 
 }
 
+noticias.forEach(n=>{
+
+sliderDiv.innerHTML += `
+<div class="slider-card" onclick="abrirNoticia(${n.id})">
+
+${n.imagem ? `<img src="${n.imagem}">` : ""}
+
+<h4>${n.titulo}</h4>
+
+</div>
+`
+
 })
 
-}catch(err){
+}
 
-console.error(err)
+function abrirNoticia(id){
 
-document.getElementById("listaNoticias").innerHTML =
-"<p>Erro ao carregar notícias.</p>"
+window.location = "noticia.html?id=" + id
 
 }
 
-}
-
-
-// esperar carregar página
-document.addEventListener("DOMContentLoaded",carregarConteudo)
+carregarPortal()
 
 </script>
 
