@@ -1,1 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
 
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Notícia</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+.noticia-container{
+max-width:900px;
+margin:auto;
+padding:40px 20px;
+}
+
+.titulo{
+font-size:32px;
+color:#0a2a66;
+margin-bottom:10px;
+}
+
+.data{
+color:#777;
+font-size:14px;
+margin-bottom:20px;
+}
+
+.imagem{
+width:100%;
+max-height:450px;
+object-fit:cover;
+border-radius:8px;
+margin-bottom:20px;
+}
+
+.conteudo{
+line-height:1.7;
+font-size:18px;
+}
+
+.voltar{
+margin-top:30px;
+display:inline-block;
+padding:10px 20px;
+background:#0a2a66;
+color:white;
+border-radius:6px;
+text-decoration:none;
+}
+
+.voltar:hover{
+background:#1c4cb3;
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+
+<div class="container">
+
+<nav>
+
+<div class="logo">
+<img src="logo.png">
+<strong>EEEFM Estudo e Trabalho</strong>
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="noticias.html">Notícias</a>
+</div>
+
+</nav>
+
+</div>
+
+</header>
+
+
+<div class="noticia-container">
+
+<h1 class="titulo" id="titulo"></h1>
+
+<div class="data" id="data"></div>
+
+<img id="imagem" class="imagem" style="display:none">
+
+<div id="conteudo" class="conteudo"></div>
+
+<a href="noticias.html" class="voltar">⬅ Voltar para notícias</a>
+
+</div>
+
+
+<script>
+
+const API = "https://portal-escola-backend.onrender.com"
+
+
+function pegarId(){
+
+const params = new URLSearchParams(window.location.search)
+
+return params.get("id")
+
+}
+
+
+async function carregarNoticia(){
+
+let id = pegarId()
+
+if(!id) return
+
+let res = await fetch(API + "/publicacoes")
+
+let dados = await res.json()
+
+let noticia = dados.find(p => p.id == id)
+
+if(!noticia){
+
+document.getElementById("titulo").innerText="Notícia não encontrada"
+return
+
+}
+
+document.getElementById("titulo").innerText = noticia.titulo
+
+document.getElementById("data").innerText =
+new Date(noticia.data_publicacao).toLocaleDateString()
+
+document.getElementById("conteudo").innerHTML = noticia.conteudo
+
+
+if(noticia.imagem){
+
+let img = document.getElementById("imagem")
+
+img.src = noticia.imagem
+
+img.style.display="block"
+
+}
+
+}
+
+carregarNoticia()
+
+</script>
+
+</body>
+</html>
