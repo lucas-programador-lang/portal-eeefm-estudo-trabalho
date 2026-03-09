@@ -56,15 +56,6 @@ gap:15px;
 margin-bottom:30px;
 }
 
-.slider::-webkit-scrollbar{
-height:6px;
-}
-
-.slider::-webkit-scrollbar-thumb{
-background:#ccc;
-border-radius:4px;
-}
-
 .slider-card{
 min-width:250px;
 background:white;
@@ -179,8 +170,9 @@ async function carregarNoticias(){
 try{
 
 let res = await fetch(API + "/publicacoes")
-
 let dados = await res.json()
+
+dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
 
 let avisosDiv = document.getElementById("avisos")
 let noticiasDiv = document.getElementById("noticias")
@@ -196,14 +188,16 @@ todasNoticias = dados.filter(p=>p.tipo==="noticia")
 
 dados.forEach(p=>{
 
-let data = new Date(p.data_publicacao).toLocaleDateString()
+let data = p.data_publicacao
+? new Date(p.data_publicacao).toLocaleDateString()
+: ""
 
 if(p.tipo==="aviso"){
 
 avisosDiv.innerHTML += `
 <div class="aviso-diretor">
-📢 ${p.titulo}<br>
-${p.conteudo}
+📢 <strong>${p.titulo || ""}</strong><br>
+${p.conteudo || ""}
 <div class="data">${data}</div>
 </div>
 `
@@ -223,7 +217,7 @@ ${destaque.imagem ? `<img src="${destaque.imagem}">` : ""}
 
 <div class="destaque-conteudo">
 <h2>${destaque.titulo}</h2>
-<p>${destaque.conteudo.substring(0,150)}...</p>
+<p>${(destaque.conteudo || "").substring(0,150)}...</p>
 </div>
 
 </div>
@@ -263,7 +257,9 @@ noticiasDiv.innerHTML=""
 
 lista.forEach(p=>{
 
-let data = new Date(p.data_publicacao).toLocaleDateString()
+let data = p.data_publicacao
+? new Date(p.data_publicacao).toLocaleDateString()
+: ""
 
 noticiasDiv.innerHTML += `
 <div class="noticia-card" onclick="abrirNoticia(${p.id})">
@@ -274,7 +270,7 @@ ${p.imagem ? `<img src="${p.imagem}">` : ""}
 
 <h3>${p.titulo}</h3>
 
-<p>${p.conteudo.substring(0,200)}...</p>
+<p>${(p.conteudo || "").substring(0,200)}...</p>
 
 <div class="data">${data}</div>
 
@@ -292,8 +288,8 @@ function filtrarNoticias(){
 let busca = document.getElementById("busca").value.toLowerCase()
 
 let filtradas = todasNoticias.filter(n =>
-n.titulo.toLowerCase().includes(busca) ||
-n.conteudo.toLowerCase().includes(busca)
+(n.titulo || "").toLowerCase().includes(busca) ||
+(n.conteudo || "").toLowerCase().includes(busca)
 )
 
 renderNoticias(filtradas)
