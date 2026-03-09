@@ -12,6 +12,12 @@
 
 <style>
 
+body{
+background:#f1f3f6;
+font-family:Arial, Helvetica, sans-serif;
+margin:0;
+}
+
 .trocar-senha-box{
 max-width:400px;
 margin:40px auto;
@@ -39,6 +45,27 @@ color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
+}
+
+.boletim-container{
+max-width:800px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 2px 10px rgba(0,0,0,0.15);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+table th, table td{
+border:1px solid #ddd;
+padding:10px;
+text-align:left;
 }
 
 </style>
@@ -103,8 +130,6 @@ Baixar Boletim em PDF
 
 
 
-<!-- TROCAR SENHA -->
-
 <div class="trocar-senha-box" id="trocarSenhaBox">
 
 <h3>Alterar Senha</h3>
@@ -132,12 +157,17 @@ placeholder="Nova senha"
 const API = "https://portal-escola-backend.onrender.com"
 
 
-/* =========================
-PEGAR TOKEN
-========================= */
-
 function getToken(){
 return localStorage.getItem("token")
+}
+
+
+function logout(){
+
+localStorage.clear()
+
+window.location="login.html"
+
 }
 
 
@@ -145,7 +175,9 @@ return localStorage.getItem("token")
 PROTEGER LOGIN
 ========================= */
 
-if(!localStorage.getItem("token")){
+const token = getToken()
+
+if(!token){
 window.location="login.html"
 }
 
@@ -158,15 +190,29 @@ async function carregarBoletim(){
 
 let tabela=document.getElementById("tabela")
 
-let usuario=JSON.parse(localStorage.getItem("usuario"))
+let usuarioJSON=localStorage.getItem("usuario")
+
+if(!usuarioJSON){
+logout()
+return
+}
+
+let usuario=JSON.parse(usuarioJSON)
+
+try{
 
 let res=await fetch(API + "/boletim/" + usuario.id,{
 
 headers:{
-Authorization:"Bearer "+getToken()
+Authorization:"Bearer "+token
 }
 
 })
+
+if(res.status===401){
+logout()
+return
+}
 
 let notas=await res.json()
 
@@ -192,11 +238,7 @@ soma+=Number(n.nota)
 
 })
 
-let media=0
-
-if(notas.length>0){
-media=(soma/notas.length).toFixed(1)
-}
+let media=notas.length ? (soma/notas.length).toFixed(1) : 0
 
 let situacao=media>=6?"Aprovado":"Reprovado"
 
@@ -214,6 +256,12 @@ tabela.innerHTML+=`
 
 `
 
+}catch(err){
+
+console.log("Erro ao carregar boletim")
+
+}
+
 }
 
 
@@ -225,11 +273,7 @@ function abrirTrocarSenha(){
 
 let box=document.getElementById("trocarSenhaBox")
 
-if(box.style.display==="none"){
-box.style.display="block"
-}else{
-box.style.display="none"
-}
+box.style.display = box.style.display==="block" ? "none" : "block"
 
 }
 
@@ -243,12 +287,14 @@ async function trocarSenha(){
 let senhaAtual=document.getElementById("senhaAtual").value
 let novaSenha=document.getElementById("novaSenha").value
 
-let usuario=JSON.parse(localStorage.getItem("usuario"))
+let usuario=JSON.parse(localStorage.getItem("usuario") || "{}")
 
 if(!senhaAtual || !novaSenha){
 alert("Preencha os campos")
 return
 }
+
+try{
 
 let res=await fetch(API+"/trocar-senha",{
 
@@ -260,8 +306,8 @@ headers:{
 
 body:JSON.stringify({
 cpf:usuario.cpf,
-senhaAtual:senhaAtual,
-novaSenha:novaSenha,
+senhaAtual,
+novaSenha,
 tipo:"aluno"
 })
 
@@ -278,6 +324,12 @@ document.getElementById("trocarSenhaBox").style.display="none"
 }else{
 
 alert("Senha atual incorreta")
+
+}
+
+}catch(err){
+
+alert("Erro de conexão com servidor")
 
 }
 
