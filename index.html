@@ -208,7 +208,13 @@ const API = "https://portal-escola-backend.onrender.com"
 
 async function carregarConteudo(){
 
+try{
+
 let res = await fetch(API + "/publicacoes")
+
+if(!res.ok){
+throw new Error("Erro servidor")
+}
 
 let dados = await res.json()
 
@@ -220,15 +226,17 @@ noticiasDiv.innerHTML=""
 
 dados.forEach(p=>{
 
-let data = new Date(p.data_publicacao).toLocaleDateString()
+let data = p.data_publicacao
+? new Date(p.data_publicacao).toLocaleDateString()
+: ""
 
 if(p.tipo==="aviso"){
 
-avisoDiv.innerHTML = `
+avisoDiv.innerHTML += `
 <div class="aviso-diretor">
 <div class="container">
-📢 <strong>Aviso da Direção:</strong>
-${p.conteudo}
+📢 <strong>${p.titulo || "Aviso da Direção"}:</strong>
+${p.conteudo || ""}
 </div>
 </div>
 `
@@ -244,11 +252,13 @@ noticiasDiv.innerHTML += `
 
 ${p.imagem ? `<img src="${p.imagem}" style="width:100%;margin-top:10px;border-radius:6px;">` : ""}
 
-<p style="margin-top:10px;">
+<div style="margin-top:10px;">
 ${p.conteudo}
-</p>
+</div>
 
-<small>${data}</small>
+<small style="display:block;margin-top:10px;color:#777;">
+${data}
+</small>
 
 </div>
 `
@@ -257,9 +267,20 @@ ${p.conteudo}
 
 })
 
+}catch(err){
+
+console.error(err)
+
+document.getElementById("listaNoticias").innerHTML =
+"<p>Erro ao carregar notícias.</p>"
+
 }
 
-carregarConteudo()
+}
+
+
+// esperar carregar página
+document.addEventListener("DOMContentLoaded",carregarConteudo)
 
 </script>
 
