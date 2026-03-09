@@ -170,6 +170,7 @@ padding:20px;
 border-radius:8px;
 box-shadow:0 3px 10px rgba(0,0,0,0.1);
 margin-top:20px;
+overflow-x:auto;
 }
 
 /* MAPA */
@@ -283,8 +284,6 @@ width:100%;
 margin-top:20px;
 border-collapse:collapse;
 background:white;
-overflow-x:auto;
-display:block;
 }
 
 th,td{
