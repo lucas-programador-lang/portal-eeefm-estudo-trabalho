@@ -89,7 +89,7 @@ background:#1c4cb3;
 
 <div class="noticia-container">
 
-<h1 class="titulo" id="titulo"></h1>
+<h1 class="titulo" id="titulo">Carregando...</h1>
 
 <div class="data" id="data"></div>
 
@@ -106,42 +106,45 @@ background:#1c4cb3;
 
 const API = "https://portal-escola-backend.onrender.com"
 
-
 function pegarId(){
-
 const params = new URLSearchParams(window.location.search)
-
 return params.get("id")
-
 }
-
 
 async function carregarNoticia(){
 
+try{
+
 let id = pegarId()
 
-if(!id) return
+if(!id){
+document.getElementById("titulo").innerText="Notícia não encontrada"
+return
+}
 
 let res = await fetch(API + "/publicacoes")
+
+if(!res.ok){
+throw new Error("Erro API")
+}
 
 let dados = await res.json()
 
 let noticia = dados.find(p => p.id == id)
 
 if(!noticia){
-
 document.getElementById("titulo").innerText="Notícia não encontrada"
 return
-
 }
 
-document.getElementById("titulo").innerText = noticia.titulo
+document.getElementById("titulo").innerText = noticia.titulo || ""
 
 document.getElementById("data").innerText =
-new Date(noticia.data_publicacao).toLocaleDateString()
+noticia.data_publicacao
+? new Date(noticia.data_publicacao).toLocaleDateString()
+: ""
 
-document.getElementById("conteudo").innerHTML = noticia.conteudo
-
+document.getElementById("conteudo").innerHTML = noticia.conteudo || ""
 
 if(noticia.imagem){
 
@@ -153,9 +156,17 @@ img.style.display="block"
 
 }
 
+}catch(err){
+
+console.error(err)
+
+document.getElementById("titulo").innerText="Erro ao carregar notícia"
+
 }
 
-carregarNoticia()
+}
+
+document.addEventListener("DOMContentLoaded",carregarNoticia)
 
 </script>
 
