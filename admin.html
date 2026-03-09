@@ -30,10 +30,15 @@ text-align:center;
 min-width:180px;
 }
 
+.table-container{
+overflow-x:auto;
+}
+
 table{
 width:100%;
 border-collapse:collapse;
 margin-top:10px;
+min-width:500px;
 }
 
 table th, table td{
@@ -52,6 +57,19 @@ cursor:pointer;
 .btn-excluir{
 background:#dc3545;
 color:white;
+}
+
+form{
+margin-top:15px;
+margin-bottom:30px;
+}
+
+@media(max-width:768px){
+
+.dashboard{
+flex-direction:column;
+}
+
 }
 
 </style>
@@ -98,7 +116,7 @@ window.location="login-admin.html"
 
 <div class="container">
 
-<h2>Painel Administrativo</h2>
+<h2 style="margin-top:30px;">Painel Administrativo</h2>
 
 
 <!-- DASHBOARD -->
@@ -165,6 +183,8 @@ window.location="login-admin.html"
 
 <h3>Lista de Alunos</h3>
 
+<div class="table-container">
+
 <table id="tabelaAlunos">
 
 <tr>
@@ -176,11 +196,15 @@ window.location="login-admin.html"
 
 </table>
 
+</div>
+
 
 
 <!-- LISTA DE PROFESSORES -->
 
 <h3>Lista de Professores</h3>
+
+<div class="table-container">
 
 <table id="tabelaProfessores">
 
@@ -191,6 +215,8 @@ window.location="login-admin.html"
 </tr>
 
 </table>
+
+</div>
 
 </div>
 
