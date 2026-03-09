@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -112,13 +113,12 @@ margin-top:10px;
 
 <div class="main">
 
-<!-- DASHBOARD -->
 <div id="dashboard" class="section">
 <h2>Dashboard</h2>
 </div>
 
-<!-- ALUNOS -->
 <div id="alunos" class="section" style="display:none">
+
 <div class="box">
 
 <h3>Cadastrar Aluno</h3>
@@ -136,7 +136,6 @@ margin-top:10px;
 </div>
 </div>
 
-<!-- PROFESSORES -->
 <div id="professores" class="section" style="display:none">
 
 <div class="box">
@@ -157,7 +156,6 @@ margin-top:10px;
 </div>
 </div>
 
-<!-- AVISOS -->
 <div id="avisos" class="section" style="display:none">
 
 <div class="box">
@@ -176,7 +174,6 @@ margin-top:10px;
 </div>
 </div>
 
-<!-- NOTICIAS -->
 <div id="noticias" class="section" style="display:none">
 
 <div class="box">
@@ -201,8 +198,6 @@ margin-top:10px;
 
 </div>
 
-<!-- PUBLICACOES -->
-
 <div id="publicacoes" class="section" style="display:none">
 
 <div class="box">
@@ -222,20 +217,15 @@ margin-top:10px;
 const API="https://portal-escola-backend.onrender.com"
 
 function mostrar(sec){
-
 document.querySelectorAll(".section").forEach(s=>{
 s.style.display="none"
 })
-
 document.getElementById(sec).style.display="block"
-
 }
 
 function logout(){
-
 localStorage.clear()
 window.location="login-admin.html"
-
 }
 
 var quill=new Quill('#editor',{theme:'snow'})
@@ -255,7 +245,8 @@ let res=await fetch(API+"/aluno",{
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({nome,cpf,senha})
@@ -265,13 +256,9 @@ body:JSON.stringify({nome,cpf,senha})
 let data=await res.json()
 
 if(data.success){
-
 alert("Aluno cadastrado!")
-
 }else{
-
 alert("Erro ao cadastrar aluno")
-
 }
 
 }
@@ -292,7 +279,8 @@ let res=await fetch(API+"/professor",{
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({nome,cpf,senha,disciplina})
@@ -302,13 +290,9 @@ body:JSON.stringify({nome,cpf,senha,disciplina})
 let data=await res.json()
 
 if(data.success){
-
 alert("Professor cadastrado!")
-
 }else{
-
 alert("Erro ao cadastrar professor")
-
 }
 
 }
@@ -336,9 +320,7 @@ body:formData
 let data=await res.json()
 
 if(data.success){
-
 return data.url
-
 }
 
 return ""
@@ -359,16 +341,15 @@ let res=await fetch(API+"/publicacao",{
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({
-
 titulo,
 conteudo,
 imagem:"",
 tipo:"aviso"
-
 })
 
 })
@@ -376,13 +357,9 @@ tipo:"aviso"
 let data=await res.json()
 
 if(data.success){
-
 alert("Aviso publicado!")
-
 }else{
-
 alert("Erro ao salvar aviso")
-
 }
 
 }
@@ -402,9 +379,7 @@ let imagem=""
 let img=document.getElementById("imagemUpload")
 
 if(img.files.length){
-
 imagem=await uploadImagem(img.files[0])
-
 }
 
 let tituloFinal=subtitulo?titulo+" - "+subtitulo:titulo
@@ -414,16 +389,15 @@ let res=await fetch(API+"/publicacao",{
 method:"POST",
 
 headers:{
-"Content-Type":"application/json"
+"Content-Type":"application/json",
+Authorization:"Bearer "+localStorage.getItem("token")
 },
 
 body:JSON.stringify({
-
 titulo:tituloFinal,
 conteudo,
 imagem,
 tipo:"noticia"
-
 })
 
 })
@@ -431,13 +405,9 @@ tipo:"noticia"
 let data=await res.json()
 
 if(data.success){
-
-alert("Notícia publicada com sucesso!")
-
+alert("Notícia publicada!")
 }else{
-
 alert("Erro ao salvar notícia")
-
 }
 
 }
