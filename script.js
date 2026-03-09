@@ -23,10 +23,12 @@ function verificarLogin(){
 const token = getToken()
 
 if(!token){
-alert("Sessão expirada, faça login novamente")
+alert("Sessão expirada. Faça login novamente.")
 window.location="login-admin.html"
+return false
 }
 
+return true
 }
 
 
@@ -55,11 +57,11 @@ async function cadastrarAluno(e){
 
 e.preventDefault()
 
-verificarLogin()
+if(!verificarLogin()) return
 
-let nome = document.getElementById("nomeAluno").value
-let cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'')
-let senha = document.getElementById("senhaAluno").value
+let nome = document.getElementById("nomeAluno")?.value
+let cpf = document.getElementById("cpfAluno")?.value.replace(/\D/g,'')
+let senha = document.getElementById("senhaAluno")?.value
 
 try{
 
@@ -75,6 +77,8 @@ headers:{
 body:JSON.stringify({nome,cpf,senha})
 
 })
+
+if(!res.ok) throw new Error("Erro servidor")
 
 let data = await res.json()
 
@@ -96,7 +100,7 @@ alert("Erro ao cadastrar aluno")
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -111,12 +115,12 @@ async function cadastrarProfessor(e){
 
 e.preventDefault()
 
-verificarLogin()
+if(!verificarLogin()) return
 
-let nome = document.getElementById("nomeProfessor").value
-let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
-let senha = document.getElementById("senhaProfessor").value
-let disciplina = document.getElementById("disciplinaProfessor").value
+let nome = document.getElementById("nomeProfessor")?.value
+let cpf = document.getElementById("cpfProfessor")?.value.replace(/\D/g,'')
+let senha = document.getElementById("senhaProfessor")?.value
+let disciplina = document.getElementById("disciplinaProfessor")?.value
 
 try{
 
@@ -132,6 +136,8 @@ headers:{
 body:JSON.stringify({nome,cpf,senha,disciplina})
 
 })
+
+if(!res.ok) throw new Error("Erro servidor")
 
 let data = await res.json()
 
@@ -154,7 +160,7 @@ alert("Erro ao cadastrar professor")
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -167,8 +173,8 @@ alert("Erro de conexão com servidor")
 
 async function loginAluno(){
 
-let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
-let senha = document.getElementById("senha").value
+let cpf = document.getElementById("cpf")?.value.replace(/\D/g,'')
+let senha = document.getElementById("senha")?.value
 
 try{
 
@@ -202,7 +208,7 @@ alert("CPF ou senha incorretos")
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -215,8 +221,8 @@ alert("Erro de conexão com servidor")
 
 async function loginProfessor(){
 
-let cpf = document.getElementById("cpf").value.replace(/\D/g,'')
-let senha = document.getElementById("senha").value
+let cpf = document.getElementById("cpf")?.value.replace(/\D/g,'')
+let senha = document.getElementById("senha")?.value
 
 try{
 
@@ -250,7 +256,7 @@ alert("CPF ou senha inválidos")
 
 }catch(err){
 
-alert("Erro de conexão com servidor")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -316,8 +322,8 @@ async function publicarAviso(e){
 
 e.preventDefault()
 
-let titulo = document.getElementById("tituloAviso").value
-let conteudo = document.getElementById("textoAviso").value
+let titulo = document.getElementById("tituloAviso")?.value
+let conteudo = document.getElementById("textoAviso")?.value
 
 try{
 
@@ -354,7 +360,7 @@ carregarPublicacoes()
 
 }catch(err){
 
-alert("Erro ao publicar aviso")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -362,16 +368,16 @@ alert("Erro ao publicar aviso")
 
 
 // ==========================
-// PUBLICAR NOTICIA
+// PUBLICAR NOTÍCIA
 // ==========================
 
 async function publicarNoticia(e){
 
 e.preventDefault()
 
-let titulo = document.getElementById("tituloNoticia").value
-let conteudo = document.getElementById("conteudoNoticia").value
-let imagem = document.getElementById("imagemNoticia").value
+let titulo = document.getElementById("tituloNoticia")?.value
+let conteudo = document.getElementById("conteudoNoticia")?.value
+let imagem = document.getElementById("imagemNoticia")?.value
 
 try{
 
@@ -409,7 +415,7 @@ carregarPublicacoes()
 
 }catch(err){
 
-alert("Erro ao publicar notícia")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -499,7 +505,7 @@ carregarPublicacoes()
 
 }catch(err){
 
-alert("Erro ao excluir publicação")
+alert("Erro ao conectar com servidor")
 
 }
 
@@ -512,7 +518,10 @@ alert("Erro ao excluir publicação")
 
 function logout(){
 
-localStorage.clear()
+localStorage.removeItem("token")
+localStorage.removeItem("tipo")
+localStorage.removeItem("usuario")
+localStorage.removeItem("adminLogado")
 
 window.location="login-admin.html"
 
@@ -525,7 +534,6 @@ window.location="login-admin.html"
 
 window.onload=function(){
 
-carregarBoletim()
 carregarAlunos()
 carregarPublicacoes()
 
