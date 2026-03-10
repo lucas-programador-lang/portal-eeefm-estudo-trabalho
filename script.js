@@ -1,82 +1,86 @@
 // ==========================
 // URL BACKEND
 // ==========================
-
 const API = "https://portal-escola-backend.onrender.com"
+
+
+// ==========================
+// MOSTRAR SEÇÕES DO MENU
+// ==========================
+function mostrar(sec){
+  document.querySelectorAll(".section").forEach(function(s){
+    s.classList.remove("active")
+  })
+
+  const el = document.getElementById(sec)
+  if(el){
+    el.classList.add("active")
+  }
+}
 
 
 // ==========================
 // TOKEN
 // ==========================
-
 function getToken(){
-return localStorage.getItem("token")
+  return localStorage.getItem("token")
 }
 
 
 // ==========================
 // VERIFICAR LOGIN
 // ==========================
-
 function verificarLogin(){
-
-if(!getToken()){
-
-alert("Sessão expirada")
-window.location="login-admin.html"
-
-return false
-
-}
-
-return true
+  if(!getToken()){
+    alert("Sessão expirada")
+    window.location="login-admin.html"
+    return false
+  }
+  return true
 }
 
 
 // ==========================
 // FORMATAR CPF
 // ==========================
-
 function formatarCPF(campo){
+  let cpf = campo.value.replace(/\D/g,'')
 
-let cpf = campo.value.replace(/\D/g,'')
+  cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+  cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+  cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
 
-cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-
-campo.value = cpf
-
+  campo.value = cpf
 }
 
 
 // ==========================
 // DASHBOARD
 // ==========================
-
 async function carregarDashboard(){
 
-try{
+  try{
 
-let res = await fetch(API+"/dashboard",{
+    let res = await fetch(API+"/dashboard",{
+      headers:{
+        Authorization:"Bearer "+getToken()
+      }
+    })
 
-headers:{
-Authorization:"Bearer "+getToken()
-}
+    let dados = await res.json()
 
-})
+    if(document.getElementById("totalAlunos"))
+      document.getElementById("totalAlunos").innerText = dados.alunos || 0
 
-let dados = await res.json()
+    if(document.getElementById("totalProfessores"))
+      document.getElementById("totalProfessores").innerText = dados.professores || 0
 
-document.getElementById("totalAlunos").innerText = dados.alunos || 0
-document.getElementById("totalProfessores").innerText = dados.professores || 0
-document.getElementById("totalPublicacoes").innerText = dados.publicacoes || 0
+    if(document.getElementById("totalPublicacoes"))
+      document.getElementById("totalPublicacoes").innerText = dados.publicacoes || 0
 
-}catch{
-
-console.log("Erro dashboard")
-
-}
+  }catch{
+    console.log("Erro dashboard")
+  }
 
 }
 
@@ -84,41 +88,42 @@ console.log("Erro dashboard")
 // ==========================
 // CADASTRAR ALUNO
 // ==========================
-
 async function cadastrarAluno(e){
 
-e.preventDefault()
+  e.preventDefault()
 
-let nome = nomeAluno.value
-let cpf = cpfAluno.value.replace(/\D/g,'')
-let senha = senhaAluno.value
+  let nome = document.getElementById("nomeAluno").value
+  let cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'')
+  let senha = document.getElementById("senhaAluno").value
 
-let res = await fetch(API+"/aluno",{
+  try{
 
-method:"POST",
+    let res = await fetch(API+"/aluno",{
 
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
+      method:"POST",
 
-body:JSON.stringify({nome,cpf,senha})
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer "+getToken()
+      },
 
-})
+      body:JSON.stringify({nome,cpf,senha})
 
-let data = await res.json()
+    })
 
-if(data.success){
+    let data = await res.json()
 
-alert("Aluno cadastrado")
+    if(data.success){
+      alert("Aluno cadastrado")
+      e.target.reset()
+      carregarDashboard()
+    }else{
+      alert("Erro ao cadastrar aluno")
+    }
 
-e.target.reset()
-
-}else{
-
-alert("Erro ao cadastrar")
-
-}
+  }catch{
+    alert("Erro de conexão com servidor")
+  }
 
 }
 
@@ -126,42 +131,43 @@ alert("Erro ao cadastrar")
 // ==========================
 // CADASTRAR PROFESSOR
 // ==========================
-
 async function cadastrarProfessor(e){
 
-e.preventDefault()
+  e.preventDefault()
 
-let nome = nomeProfessor.value
-let cpf = cpfProfessor.value.replace(/\D/g,'')
-let senha = senhaProfessor.value
-let disciplina = disciplinaProfessor.value
+  let nome = document.getElementById("nomeProfessor").value
+  let cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'')
+  let senha = document.getElementById("senhaProfessor").value
+  let disciplina = document.getElementById("disciplinaProfessor").value
 
-let res = await fetch(API+"/professor",{
+  try{
 
-method:"POST",
+    let res = await fetch(API+"/professor",{
 
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
+      method:"POST",
 
-body:JSON.stringify({nome,cpf,senha,disciplina})
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer "+getToken()
+      },
 
-})
+      body:JSON.stringify({nome,cpf,senha,disciplina})
 
-let data = await res.json()
+    })
 
-if(data.success){
+    let data = await res.json()
 
-alert("Professor cadastrado")
+    if(data.success){
+      alert("Professor cadastrado")
+      e.target.reset()
+      carregarDashboard()
+    }else{
+      alert("Erro ao cadastrar professor")
+    }
 
-e.target.reset()
-
-}else{
-
-alert("Erro ao cadastrar professor")
-
-}
+  }catch{
+    alert("Erro de conexão com servidor")
+  }
 
 }
 
@@ -169,102 +175,107 @@ alert("Erro ao cadastrar professor")
 // ==========================
 // PUBLICAR AVISO
 // ==========================
-
 async function publicarAviso(e){
 
-e.preventDefault()
+  e.preventDefault()
 
-let titulo = tituloAviso.value
-let conteudo = textoAviso.value
+  let titulo = document.getElementById("tituloAviso").value
+  let conteudo = document.getElementById("textoAviso").value
 
-let res = await fetch(API+"/publicacao",{
+  try{
 
-method:"POST",
+    let res = await fetch(API+"/publicacao",{
 
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
+      method:"POST",
 
-body:JSON.stringify({
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer "+getToken()
+      },
 
-titulo,
-conteudo,
-tipo:"aviso"
+      body:JSON.stringify({
+        titulo,
+        conteudo,
+        tipo:"aviso"
+      })
 
-})
+    })
 
-})
+    let data = await res.json()
 
-let data = await res.json()
+    if(data.success){
+      alert("Aviso publicado")
+      e.target.reset()
+      carregarPublicacoes()
+    }else{
+      alert("Erro ao publicar aviso")
+    }
 
-if(data.success){
-
-alert("Aviso publicado")
-
-e.target.reset()
-
-carregarPublicacoes()
-
-}else{
-
-alert("Erro ao publicar")
-
-}
+  }catch{
+    alert("Erro de conexão com servidor")
+  }
 
 }
 
 
 // ==========================
-// PUBLICAR NOTICIA
+// PUBLICAR NOTÍCIA
 // ==========================
-
 async function publicarNoticia(e){
 
-e.preventDefault()
+  e.preventDefault()
 
-let titulo = tituloNoticia.value
-let subtitulo = subtituloNoticia.value
-let conteudo = quill.root.innerHTML
+  let titulo = document.getElementById("tituloNoticia").value
+  let subtitulo = document.getElementById("subtituloNoticia").value
 
-let tituloFinal = subtitulo ? titulo+" - "+subtitulo : titulo
+  let conteudo = ""
+  if(window.quill){
+    conteudo = quill.root.innerHTML
+  }
 
-let res = await fetch(API+"/publicacao",{
+  let tituloFinal = subtitulo ? titulo+" - "+subtitulo : titulo
 
-method:"POST",
+  try{
 
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
+    let res = await fetch(API+"/publicacao",{
 
-body:JSON.stringify({
+      method:"POST",
 
-titulo:tituloFinal,
-conteudo,
-tipo:"noticia"
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer "+getToken()
+      },
 
-})
+      body:JSON.stringify({
+        titulo:tituloFinal,
+        conteudo,
+        tipo:"noticia"
+      })
 
-})
+    })
 
-let data = await res.json()
+    let data = await res.json()
 
-if(data.success){
+    if(data.success){
 
-alert("Notícia publicada")
+      alert("Notícia publicada")
 
-tituloNoticia.value=""
-subtituloNoticia.value=""
-quill.root.innerHTML=""
+      document.getElementById("tituloNoticia").value=""
+      document.getElementById("subtituloNoticia").value=""
 
-carregarPublicacoes()
+      if(window.quill){
+        quill.root.innerHTML=""
+      }
 
-}else{
+      carregarPublicacoes()
 
-alert("Erro ao publicar")
+    }else{
+      alert("Erro ao publicar notícia")
+    }
 
-}
+  }catch{
+    alert("Erro de conexão com servidor")
+  }
 
 }
 
@@ -272,39 +283,32 @@ alert("Erro ao publicar")
 // ==========================
 // CARREGAR PUBLICAÇÕES
 // ==========================
-
 async function carregarPublicacoes(){
 
-let tabela = document.getElementById("listaPublicacoes")
+  let tabela = document.getElementById("listaPublicacoes")
+  if(!tabela) return
 
-if(!tabela) return
+  let res = await fetch(API+"/publicacoes")
+  let dados = await res.json()
 
-let res = await fetch(API+"/publicacoes")
+  tabela.innerHTML=""
 
-let dados = await res.json()
+  dados.forEach(p=>{
 
-tabela.innerHTML=""
+    tabela.innerHTML+=`
 
-dados.forEach(p=>{
+    <tr>
+      <td>${p.id}</td>
+      <td>${p.titulo}</td>
+      <td>${p.tipo}</td>
+      <td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
+      <td>
+        <button onclick="excluirPublicacao(${p.id})">Excluir</button>
+      </td>
+    </tr>
 
-tabela.innerHTML+=`
-
-<tr>
-
-<td>${p.id}</td>
-<td>${p.titulo}</td>
-<td>${p.tipo}</td>
-<td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
-
-<td>
-<button onclick="excluirPublicacao(${p.id})">Excluir</button>
-</td>
-
-</tr>
-
-`
-
-})
+    `
+  })
 
 }
 
@@ -312,22 +316,18 @@ tabela.innerHTML+=`
 // ==========================
 // EXCLUIR PUBLICAÇÃO
 // ==========================
-
 async function excluirPublicacao(id){
 
-if(!confirm("Excluir publicação?")) return
+  if(!confirm("Excluir publicação?")) return
 
-await fetch(API+"/publicacao/"+id,{
+  await fetch(API+"/publicacao/"+id,{
+    method:"DELETE",
+    headers:{
+      Authorization:"Bearer "+getToken()
+    }
+  })
 
-method:"DELETE",
-
-headers:{
-Authorization:"Bearer "+getToken()
-}
-
-})
-
-carregarPublicacoes()
+  carregarPublicacoes()
 
 }
 
@@ -335,27 +335,32 @@ carregarPublicacoes()
 // ==========================
 // LOGOUT
 // ==========================
-
 function logout(){
-
-localStorage.clear()
-window.location="login-admin.html"
-
+  localStorage.clear()
+  window.location="login-admin.html"
 }
 
 
 // ==========================
 // INICIAR
 // ==========================
-
 window.onload=function(){
 
-carregarDashboard()
-carregarPublicacoes()
+  if(!verificarLogin()) return
 
-document.getElementById("formAluno")?.addEventListener("submit",cadastrarAluno)
-document.getElementById("formProfessor")?.addEventListener("submit",cadastrarProfessor)
-document.getElementById("formAviso")?.addEventListener("submit",publicarAviso)
-document.getElementById("formNoticia")?.addEventListener("submit",publicarNoticia)
+  carregarDashboard()
+  carregarPublicacoes()
+
+  const fAluno = document.getElementById("formAluno")
+  if(fAluno) fAluno.addEventListener("submit", cadastrarAluno)
+
+  const fProfessor = document.getElementById("formProfessor")
+  if(fProfessor) fProfessor.addEventListener("submit", cadastrarProfessor)
+
+  const fAviso = document.getElementById("formAviso")
+  if(fAviso) fAviso.addEventListener("submit", publicarAviso)
+
+  const fNoticia = document.getElementById("formNoticia")
+  if(fNoticia) fNoticia.addEventListener("submit", publicarNoticia)
 
 }
