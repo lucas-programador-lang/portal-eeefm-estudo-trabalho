@@ -1,493 +1,587 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Administrativo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo</title>
 
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:#f1f4fb;
-  display:flex;
-}
-.sidebar{
-  width:220px;
-  background:#0a2a66;
-  min-height:100vh;
-  color:white;
-  padding-top:20px;
-  position:fixed;
-}
-.sidebar h2{
-  text-align:center;
-  margin-bottom:30px;
-}
-.sidebar button{
-  display:block;
-  width:100%;
-  padding:12px 20px;
-  background:none;
-  border:none;
-  color:white;
-  text-align:left;
-  cursor:pointer;
-  font-size:15px;
-}
-.sidebar button:hover{
-  background:#123c8a;
-}
-.main{
-  margin-left:220px;
-  padding:30px;
-  width:100%;
-}
-.box{
-  background:white;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-  margin-top:20px;
-}
-input, textarea{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:1px solid #ccc;
-  border-radius:6px;
-  box-sizing:border-box;
-}
-button.action{
-  margin-top:15px;
-  padding:10px 15px;
-  background:#0a2a66;
-  color:white;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-button.action:hover{
-  background:#123c8a;
-}
-#editor{
-  height:200px;
-  margin-top:10px;
-  background:white;
-}
-.dashboard{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-}
-.card{
-  background:white;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-  text-align:center;
-}
-.card p{
-  font-size:32px;
-  color:#0a2a66;
-  font-weight:bold;
-}
-.section{
-  display:none;
-}
-.section.active{
-  display:block;
-}
-#mensagem{
-  margin:0 0 15px 0;
-  padding:12px;
-  border-radius:8px;
-  display:none;
-}
-.msg-ok{
-  background:#e8f7ed;
-  color:#166534;
-  border:1px solid #86efac;
-}
-.msg-erro{
-  background:#fef2f2;
-  color:#991b1b;
-  border:1px solid #fca5a5;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-  margin-top:15px;
-}
-th, td{
-  border:1px solid #ddd;
-  padding:10px;
-  text-align:left;
-}
-th{
-  background:#0a2a66;
-  color:white;
-}
-.small-btn{
-  background:#dc2626;
-  color:white;
-  border:none;
-  padding:6px 10px;
-  border-radius:6px;
-  cursor:pointer;
-}
-</style>
+  <style>
+    body{
+      margin:0;
+      font-family:Arial, Helvetica, sans-serif;
+      background:#f1f4fb;
+      display:flex;
+    }
+
+    .sidebar{
+      width:220px;
+      background:#0a2a66;
+      min-height:100vh;
+      color:white;
+      padding-top:20px;
+      position:fixed;
+    }
+
+    .sidebar h2{
+      text-align:center;
+      margin-bottom:30px;
+    }
+
+    .sidebar button{
+      display:block;
+      width:100%;
+      padding:12px 20px;
+      background:none;
+      border:none;
+      color:white;
+      text-align:left;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    .sidebar button:hover{
+      background:#123c8a;
+    }
+
+    .main{
+      margin-left:220px;
+      padding:30px;
+      width:100%;
+      box-sizing:border-box;
+    }
+
+    .box{
+      background:white;
+      padding:25px;
+      border-radius:10px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      margin-top:20px;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:10px;
+      margin-top:10px;
+      border:1px solid #ccc;
+      border-radius:6px;
+      box-sizing:border-box;
+      font-size:15px;
+    }
+
+    label{
+      display:block;
+      margin-top:12px;
+      font-weight:bold;
+    }
+
+    button.action{
+      margin-top:15px;
+      padding:10px 15px;
+      background:#0a2a66;
+      color:white;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:15px;
+    }
+
+    button.action:hover{
+      background:#123c8a;
+    }
+
+    #editor{
+      height:200px;
+      margin-top:10px;
+      background:white;
+    }
+
+    .dashboard{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:20px;
+    }
+
+    .card{
+      background:white;
+      padding:25px;
+      border-radius:10px;
+      box-shadow:0 4px 10px rgba(0,0,0,0.1);
+      text-align:center;
+    }
+
+    .card p{
+      font-size:32px;
+      color:#0a2a66;
+      font-weight:bold;
+      margin:10px 0 0;
+    }
+
+    .section{
+      display:none;
+    }
+
+    .section.active{
+      display:block;
+    }
+
+    #mensagem{
+      margin:0 0 15px 0;
+      padding:12px;
+      border-radius:8px;
+      display:none;
+    }
+
+    .msg-ok{
+      background:#e8f7ed;
+      color:#166534;
+      border:1px solid #86efac;
+    }
+
+    .msg-erro{
+      background:#fef2f2;
+      color:#991b1b;
+      border:1px solid #fca5a5;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:15px;
+      background:white;
+    }
+
+    th, td{
+      border:1px solid #ddd;
+      padding:10px;
+      text-align:left;
+    }
+
+    th{
+      background:#0a2a66;
+      color:white;
+    }
+
+    .small-btn{
+      background:#dc2626;
+      color:white;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      cursor:pointer;
+    }
+
+    .small-btn:hover{
+      background:#b91c1c;
+    }
+  </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h2>Admin</h2>
-  <button onclick="mostrar('dashboard')">Dashboard</button>
-  <button onclick="mostrar('alunos')">Alunos</button>
-  <button onclick="mostrar('professores')">Professores</button>
-  <button onclick="mostrar('avisos')">Avisos</button>
-  <button onclick="mostrar('noticias')">Notícias</button>
-  <button onclick="mostrar('publicacoes')">Publicações</button>
-  <button onclick="logout()">Sair</button>
-</div>
+  <div class="sidebar">
+    <h2>Admin</h2>
+    <button type="button" onclick="mostrar('dashboard')">Dashboard</button>
+    <button type="button" onclick="mostrar('alunos')">Alunos</button>
+    <button type="button" onclick="mostrar('professores')">Professores</button>
+    <button type="button" onclick="mostrar('avisos')">Avisos</button>
+    <button type="button" onclick="mostrar('noticias')">Notícias</button>
+    <button type="button" onclick="mostrar('publicacoes')">Publicações</button>
+    <button type="button" onclick="logout()">Sair</button>
+  </div>
 
-<div class="main">
-  <div id="mensagem"></div>
+  <div class="main">
+    <div id="mensagem"></div>
 
-  <div id="dashboard" class="section active">
-    <h2>Dashboard</h2>
-    <div class="dashboard">
-      <div class="card">
-        <h3>Alunos</h3>
-        <p id="totalAlunos">0</p>
+    <div id="dashboard" class="section active">
+      <h2>Dashboard</h2>
+
+      <div class="dashboard">
+        <div class="card">
+          <h3>Alunos</h3>
+          <p id="totalAlunos">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Professores</h3>
+          <p id="totalProfessores">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Publicações</h3>
+          <p id="totalPublicacoes">0</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>Professores</h3>
-        <p id="totalProfessores">0</p>
+    </div>
+
+    <div id="alunos" class="section">
+      <div class="box">
+        <h3>Cadastrar Aluno</h3>
+
+        <form id="formAluno">
+          <input id="nomeAluno" placeholder="Nome" required>
+          <input id="cpfAluno" placeholder="CPF" required maxlength="14">
+          <input id="senhaAluno" placeholder="Senha" required>
+          <button class="action" type="submit">Cadastrar</button>
+        </form>
       </div>
-      <div class="card">
-        <h3>Notas</h3>
-        <p id="totalNotas">0</p>
+    </div>
+
+    <div id="professores" class="section">
+      <div class="box">
+        <h3>Cadastrar Professor</h3>
+
+        <form id="formProfessor">
+          <input id="nomeProfessor" placeholder="Nome" required>
+          <input id="cpfProfessor" placeholder="CPF" required maxlength="14">
+          <input id="senhaProfessor" placeholder="Senha" required>
+          <input id="disciplinaProfessor" placeholder="Disciplina" required>
+          <button class="action" type="submit">Cadastrar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="avisos" class="section">
+      <div class="box">
+        <h3>Publicar Aviso</h3>
+
+        <form id="formAviso">
+          <input id="tituloAviso" placeholder="Título" required>
+          <textarea id="textoAviso" placeholder="Mensagem" required></textarea>
+          <button class="action" type="submit">Publicar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="noticias" class="section">
+      <div class="box">
+        <h3>Publicar Notícia</h3>
+
+        <form id="formNoticia">
+          <input id="tituloNoticia" placeholder="Título" required>
+          <input id="subtituloNoticia" placeholder="Subtítulo">
+
+          <label for="imagemUpload">📷 Imagem</label>
+          <input type="file" id="imagemUpload" accept="image/*">
+
+          <label>Conteúdo</label>
+          <div id="editor"></div>
+
+          <button class="action" type="submit">Publicar</button>
+        </form>
+      </div>
+    </div>
+
+    <div id="publicacoes" class="section">
+      <div class="box">
+        <h3>Publicações</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Título</th>
+              <th>Tipo</th>
+              <th>Data</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody id="listaPublicacoes"></tbody>
+        </table>
       </div>
     </div>
   </div>
 
-  <div id="alunos" class="section">
-    <div class="box">
-      <h3>Cadastrar Aluno</h3>
-      <form id="formAluno">
-        <input id="nomeAluno" placeholder="Nome" required>
-        <input id="cpfAluno" placeholder="CPF" required>
-        <input id="senhaAluno" placeholder="Senha" required>
-        <button class="action" type="submit">Cadastrar</button>
-      </form>
-    </div>
-  </div>
+  <script>
+    const API = "https://portal-escola-backend.onrender.com";
+    const token = localStorage.getItem("token");
 
-  <div id="professores" class="section">
-    <div class="box">
-      <h3>Cadastrar Professor</h3>
-      <form id="formProfessor">
-        <input id="nomeProfessor" placeholder="Nome" required>
-        <input id="cpfProfessor" placeholder="CPF" required>
-        <input id="senhaProfessor" placeholder="Senha" required>
-        <input id="disciplinaProfessor" placeholder="Disciplina" required>
-        <button class="action" type="submit">Cadastrar</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="avisos" class="section">
-    <div class="box">
-      <h3>Publicar Aviso</h3>
-      <form id="formAviso">
-        <input id="tituloAviso" placeholder="Título" required>
-        <textarea id="textoAviso" placeholder="Mensagem" required></textarea>
-        <button class="action" type="submit">Publicar</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="noticias" class="section">
-    <div class="box">
-      <h3>Publicar Notícia</h3>
-      <form id="formNoticia">
-        <input id="tituloNoticia" placeholder="Título" required>
-        <input id="subtituloNoticia" placeholder="Subtítulo">
-        <label>📷 Imagem</label>
-        <input type="file" id="imagemUpload" accept="image/*">
-        <div id="editor"></div>
-        <button class="action" type="submit">Publicar</button>
-      </form>
-    </div>
-  </div>
-
-  <div id="publicacoes" class="section">
-    <div class="box">
-      <h3>Publicações</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Tipo</th>
-            <th>Data</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody id="listaPublicacoes"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<script>
-const API = "https://portal-escola-backend.onrender.com";
-const token = localStorage.getItem("token");
-
-if(!localStorage.getItem("adminLogado") || !token){
-  alert("Sessão expirada. Faça login novamente.");
-  window.location = "login-admin.html";
-}
-
-function mostrar(sec){
-  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
-  document.getElementById(sec).classList.add("active");
-}
-
-function logout(){
-  localStorage.clear();
-  window.location = "login-admin.html";
-}
-
-function mostrarMensagem(texto, tipo="ok"){
-  const box = document.getElementById("mensagem");
-  box.className = tipo === "ok" ? "msg-ok" : "msg-erro";
-  box.textContent = texto;
-  box.style.display = "block";
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function apiFetch(url, options = {}){
-  const headers = {
-    ...(options.headers || {}),
-    Authorization: "Bearer " + token
-  };
-
-  const res = await fetch(url, { ...options, headers });
-
-  let data = {};
-  try {
-    data = await res.json();
-  } catch {
-    data = {};
-  }
-
-  if (!res.ok) {
-    throw new Error(data.erro || "Erro na requisição");
-  }
-
-  return data;
-}
-
-const quill = new Quill('#editor', { theme: 'snow' });
-
-async function carregarDashboard(){
-  try{
-    const dados = await apiFetch(API + "/dashboard");
-    document.getElementById("totalAlunos").textContent = dados.alunos || 0;
-    document.getElementById("totalProfessores").textContent = dados.professores || 0;
-    document.getElementById("totalNotas").textContent = dados.notas || 0;
-  }catch(err){
-    mostrarMensagem("Erro ao carregar dashboard: " + err.message, "erro");
-  }
-}
-
-async function carregarPublicacoes(){
-  try{
-    const res = await fetch(API + "/publicacoes");
-    const dados = await res.json();
-    const lista = document.getElementById("listaPublicacoes");
-    lista.innerHTML = "";
-
-    if(!Array.isArray(dados) || dados.length === 0){
-      lista.innerHTML = `<tr><td colspan="5">Nenhuma publicação encontrada.</td></tr>`;
-      return;
+    if(!localStorage.getItem("adminLogado") || !token){
+      alert("Sessão expirada. Faça login novamente.");
+      window.location = "login-admin.html";
     }
 
-    dados.forEach(p => {
-      const data = p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : "";
-      lista.innerHTML += `
-        <tr>
-          <td>${p.id}</td>
-          <td>${p.titulo || ""}</td>
-          <td>${p.tipo || ""}</td>
-          <td>${data}</td>
-          <td><button class="small-btn" onclick="excluirPublicacao(${p.id})">Excluir</button></td>
-        </tr>
-      `;
-    });
-  }catch(err){
-    mostrarMensagem("Erro ao carregar publicações.", "erro");
-  }
-}
+    const quill = new Quill("#editor", { theme: "snow" });
 
-async function excluirPublicacao(id){
-  if(!confirm("Excluir publicação?")) return;
-  try{
-    const data = await apiFetch(API + "/publicacao/" + id, { method: "DELETE" });
-    if(data.success){
-      mostrarMensagem("Publicação excluída com sucesso.");
-      carregarPublicacoes();
-    }else{
-      mostrarMensagem("Erro ao excluir publicação.", "erro");
+    function mostrar(sec){
+      document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+      document.getElementById(sec).classList.add("active");
     }
-  }catch(err){
-    mostrarMensagem("Erro ao excluir publicação: " + err.message, "erro");
-  }
-}
 
-async function uploadImagem(file){
-  const formData = new FormData();
-  formData.append("imagem", file);
+    function logout(){
+      localStorage.clear();
+      window.location = "login-admin.html";
+    }
 
-  const data = await apiFetch(API + "/upload", {
-    method: "POST",
-    body: formData,
-    headers: {}
-  });
+    function mostrarMensagem(texto, tipo="ok"){
+      const box = document.getElementById("mensagem");
+      box.className = tipo === "ok" ? "msg-ok" : "msg-erro";
+      box.textContent = texto;
+      box.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
-  if(!data.success) throw new Error("Erro no upload da imagem");
-  return data.url;
-}
+    function formatarCPF(campo){
+      let cpf = campo.value.replace(/\D/g,'');
+      cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2");
+      cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2");
+      cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
+      campo.value = cpf;
+    }
 
-document.getElementById("formAluno").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try{
-    const nome = document.getElementById("nomeAluno").value;
-    const cpf = document.getElementById("cpfAluno").value;
-    const senha = document.getElementById("senhaAluno").value;
-
-    const data = await apiFetch(API + "/aluno", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, cpf, senha })
+    document.getElementById("cpfAluno").addEventListener("input", function(){
+      formatarCPF(this);
     });
 
-    if(data.success){
-      mostrarMensagem("Aluno cadastrado com sucesso.");
-      e.target.reset();
-      carregarDashboard();
-    }else{
-      mostrarMensagem("Erro ao cadastrar aluno.", "erro");
-    }
-  }catch(err){
-    mostrarMensagem("Erro ao cadastrar aluno: " + err.message, "erro");
-  }
-});
-
-document.getElementById("formProfessor").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try{
-    const nome = document.getElementById("nomeProfessor").value;
-    const cpf = document.getElementById("cpfProfessor").value;
-    const senha = document.getElementById("senhaProfessor").value;
-    const disciplina = document.getElementById("disciplinaProfessor").value;
-
-    const data = await apiFetch(API + "/professor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, cpf, senha, disciplina })
+    document.getElementById("cpfProfessor").addEventListener("input", function(){
+      formatarCPF(this);
     });
 
-    if(data.success){
-      mostrarMensagem("Professor cadastrado com sucesso.");
-      e.target.reset();
-      carregarDashboard();
-    }else{
-      mostrarMensagem("Erro ao cadastrar professor.", "erro");
+    async function apiFetch(url, options = {}){
+      const finalHeaders = {
+        ...(options.headers || {}),
+        Authorization: "Bearer " + token
+      };
+
+      const config = {
+        ...options,
+        headers: finalHeaders
+      };
+
+      const res = await fetch(url, config);
+
+      let data = {};
+      try{
+        data = await res.json();
+      }catch{
+        data = {};
+      }
+
+      if(!res.ok){
+        throw new Error(data.erro || "Erro na requisição");
+      }
+
+      return data;
     }
-  }catch(err){
-    mostrarMensagem("Erro ao cadastrar professor: " + err.message, "erro");
-  }
-});
 
-document.getElementById("formAviso").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try{
-    const titulo = document.getElementById("tituloAviso").value;
-    const conteudo = document.getElementById("textoAviso").value;
+    async function carregarDashboard(){
+      try{
+        const dados = await apiFetch(API + "/dashboard");
 
-    const data = await apiFetch(API + "/publicacao", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        titulo,
-        conteudo,
-        imagem: "",
-        tipo: "aviso"
-      })
+        document.getElementById("totalAlunos").textContent = dados.alunos || 0;
+        document.getElementById("totalProfessores").textContent = dados.professores || 0;
+        document.getElementById("totalPublicacoes").textContent = dados.publicacoes || 0;
+
+      }catch(err){
+        mostrarMensagem("Erro ao carregar dashboard: " + err.message, "erro");
+      }
+    }
+
+    async function carregarPublicacoes(){
+      try{
+        const res = await fetch(API + "/publicacoes");
+        const dados = await res.json();
+
+        const lista = document.getElementById("listaPublicacoes");
+        lista.innerHTML = "";
+
+        if(!Array.isArray(dados) || dados.length === 0){
+          lista.innerHTML = `<tr><td colspan="5">Nenhuma publicação encontrada.</td></tr>`;
+          return;
+        }
+
+        dados.forEach(p => {
+          const data = p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : "";
+
+          lista.innerHTML += `
+            <tr>
+              <td>${p.id}</td>
+              <td>${p.titulo || ""}</td>
+              <td>${p.tipo || ""}</td>
+              <td>${data}</td>
+              <td><button class="small-btn" onclick="excluirPublicacao(${p.id})">Excluir</button></td>
+            </tr>
+          `;
+        });
+
+      }catch(err){
+        mostrarMensagem("Erro ao carregar publicações.", "erro");
+      }
+    }
+
+    async function excluirPublicacao(id){
+      if(!confirm("Excluir publicação?")) return;
+
+      try{
+        const data = await apiFetch(API + "/publicacao/" + id, {
+          method: "DELETE"
+        });
+
+        if(data.success){
+          mostrarMensagem("Publicação excluída com sucesso.");
+          carregarPublicacoes();
+          carregarDashboard();
+        }else{
+          mostrarMensagem(data.erro || "Erro ao excluir publicação.", "erro");
+        }
+
+      }catch(err){
+        mostrarMensagem("Erro ao excluir publicação: " + err.message, "erro");
+      }
+    }
+
+    async function uploadImagem(file){
+      const formData = new FormData();
+      formData.append("imagem", file);
+
+      const data = await apiFetch(API + "/upload", {
+        method: "POST",
+        body: formData,
+        headers: {}
+      });
+
+      if(!data.success){
+        throw new Error("Erro no upload da imagem");
+      }
+
+      return data.url || "";
+    }
+
+    document.getElementById("formAluno").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      try{
+        const nome = document.getElementById("nomeAluno").value.trim();
+        const cpf = document.getElementById("cpfAluno").value.replace(/\D/g,'');
+        const senha = document.getElementById("senhaAluno").value.trim();
+
+        const data = await apiFetch(API + "/aluno", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, cpf, senha })
+        });
+
+        if(data.success){
+          mostrarMensagem("Aluno cadastrado com sucesso.");
+          e.target.reset();
+          carregarDashboard();
+        }else{
+          mostrarMensagem(data.erro || "Erro ao cadastrar aluno.", "erro");
+        }
+
+      }catch(err){
+        mostrarMensagem("Erro ao cadastrar aluno: " + err.message, "erro");
+      }
     });
 
-    if(data.success){
-      mostrarMensagem("Aviso publicado com sucesso.");
-      e.target.reset();
-      carregarPublicacoes();
-      mostrar("publicacoes");
-    }else{
-      mostrarMensagem("Erro ao salvar aviso.", "erro");
-    }
-  }catch(err){
-    mostrarMensagem("Erro ao publicar aviso: " + err.message, "erro");
-  }
-});
+    document.getElementById("formProfessor").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-document.getElementById("formNoticia").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  try{
-    const titulo = document.getElementById("tituloNoticia").value;
-    const subtitulo = document.getElementById("subtituloNoticia").value;
-    const conteudo = quill.root.innerHTML;
-    const imgInput = document.getElementById("imagemUpload");
+      try{
+        const nome = document.getElementById("nomeProfessor").value.trim();
+        const cpf = document.getElementById("cpfProfessor").value.replace(/\D/g,'');
+        const senha = document.getElementById("senhaProfessor").value.trim();
+        const disciplina = document.getElementById("disciplinaProfessor").value.trim();
 
-    let imagem = "";
-    if(imgInput.files.length){
-      imagem = await uploadImagem(imgInput.files[0]);
-    }
+        const data = await apiFetch(API + "/professor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, cpf, senha, disciplina })
+        });
 
-    const tituloFinal = subtitulo ? titulo + " - " + subtitulo : titulo;
+        if(data.success){
+          mostrarMensagem("Professor cadastrado com sucesso.");
+          e.target.reset();
+          carregarDashboard();
+        }else{
+          mostrarMensagem(data.erro || "Erro ao cadastrar professor.", "erro");
+        }
 
-    const data = await apiFetch(API + "/publicacao", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        titulo: tituloFinal,
-        conteudo,
-        imagem,
-        tipo: "noticia"
-      })
+      }catch(err){
+        mostrarMensagem("Erro ao cadastrar professor: " + err.message, "erro");
+      }
     });
 
-    if(data.success){
-      mostrarMensagem("Notícia publicada com sucesso.");
-      e.target.reset();
-      quill.root.innerHTML = "";
-      carregarPublicacoes();
-      mostrar("publicacoes");
-    }else{
-      mostrarMensagem("Erro ao salvar notícia.", "erro");
-    }
-  }catch(err){
-    mostrarMensagem("Erro ao publicar notícia: " + err.message, "erro");
-  }
-});
+    document.getElementById("formAviso").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-carregarDashboard();
-carregarPublicacoes();
-</script>
+      try{
+        const titulo = document.getElementById("tituloAviso").value.trim();
+        const conteudo = document.getElementById("textoAviso").value.trim();
+
+        const data = await apiFetch(API + "/publicacao", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            titulo,
+            conteudo,
+            imagem: "",
+            tipo: "aviso"
+          })
+        });
+
+        if(data.success){
+          mostrarMensagem("Aviso publicado com sucesso.");
+          e.target.reset();
+          carregarPublicacoes();
+          carregarDashboard();
+          mostrar("publicacoes");
+        }else{
+          mostrarMensagem(data.erro || "Erro ao salvar aviso.", "erro");
+        }
+
+      }catch(err){
+        mostrarMensagem("Erro ao publicar aviso: " + err.message, "erro");
+      }
+    });
+
+    document.getElementById("formNoticia").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      try{
+        const titulo = document.getElementById("tituloNoticia").value.trim();
+        const subtitulo = document.getElementById("subtituloNoticia").value.trim();
+        const conteudo = quill.root.innerHTML;
+        const imgInput = document.getElementById("imagemUpload");
+
+        let imagem = "";
+        if(imgInput.files.length){
+          imagem = await uploadImagem(imgInput.files[0]);
+        }
+
+        const tituloFinal = subtitulo ? titulo + " - " + subtitulo : titulo;
+
+        const data = await apiFetch(API + "/publicacao", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            titulo: tituloFinal,
+            conteudo,
+            imagem,
+            tipo: "noticia"
+          })
+        });
+
+        if(data.success){
+          mostrarMensagem("Notícia publicada com sucesso.");
+          e.target.reset();
+          quill.root.innerHTML = "";
+          carregarPublicacoes();
+          carregarDashboard();
+          mostrar("publicacoes");
+        }else{
+          mostrarMensagem(data.erro || "Erro ao salvar notícia.", "erro");
+        }
+
+      }catch(err){
+        mostrarMensagem("Erro ao publicar notícia: " + err.message, "erro");
+      }
+    });
+
+    carregarDashboard();
+    carregarPublicacoes();
+  </script>
 
 </body>
 </html>
