@@ -61,7 +61,7 @@
 </section>
 
 
-<!-- CARDS -->
+<!-- CARDS PRINCIPAIS -->
 
 <section class="container">
 
@@ -96,13 +96,13 @@
 </section>
 
 
-<!-- SOBRE -->
+<!-- SOBRE A ESCOLA -->
 
 <section class="container">
 
 <h2>Sobre a Escola</h2>
 
-<p style="margin-top:15px; line-height:1.6;">
+<p class="texto">
 
 A Escola Estadual de Ensino Fundamental e Médio
 <strong>Estudo e Trabalho</strong>
@@ -123,7 +123,7 @@ incentivando o conhecimento, a responsabilidade e o trabalho.
 
 <h2>Notícias da Escola</h2>
 
-<div id="listaNoticias"></div>
+<div id="listaNoticias" class="noticias"></div>
 
 </section>
 
@@ -218,8 +218,6 @@ let noticiasDiv = document.getElementById("listaNoticias")
 avisoDiv.innerHTML=""
 noticiasDiv.innerHTML=""
 
-/* ordenar por data mais recente */
-
 dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
 
 let avisoMostrado = false
@@ -229,8 +227,6 @@ dados.forEach(p=>{
 let data = p.data_publicacao
 ? new Date(p.data_publicacao).toLocaleDateString()
 : ""
-
-/* AVISO MAIS RECENTE */
 
 if(p.tipo==="aviso" && !avisoMostrado){
 
@@ -247,8 +243,6 @@ avisoMostrado = true
 
 }
 
-/* LISTA DE NOTÍCIAS */
-
 if(p.tipo==="noticia"){
 
 noticiasDiv.innerHTML += `
@@ -256,13 +250,13 @@ noticiasDiv.innerHTML += `
 
 <h3>${p.titulo}</h3>
 
-${p.imagem ? `<img src="${p.imagem}" style="width:100%;margin-top:10px;border-radius:6px;">` : ""}
+${p.imagem ? `<img src="${p.imagem}" class="img-noticia">` : ""}
 
-<div style="margin-top:10px;">
+<div class="conteudo-noticia">
 ${p.conteudo}
 </div>
 
-<small style="display:block;margin-top:10px;color:#777;">
+<small class="data-noticia">
 ${data}
 </small>
 
