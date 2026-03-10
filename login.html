@@ -18,8 +18,6 @@ font-family:Arial, Helvetica, sans-serif;
 margin:0;
 }
 
-/* HEADER */
-
 header{
 background:#0a2a66;
 padding:15px 0;
@@ -59,9 +57,6 @@ font-weight:500;
 .menu a:hover{
 text-decoration:underline;
 }
-
-
-/* LOGIN */
 
 .login-container{
 max-width:400px;
@@ -116,8 +111,6 @@ color:#0a2a66;
 
 <body>
 
-<!-- HEADER / MENU -->
-
 <header>
 
 <div class="container">
@@ -143,107 +136,40 @@ color:#0a2a66;
 </header>
 
 
-<!-- LOGIN -->
-
 <div class="login-container" id="loginBox">
 
 <h2>Portal do Aluno</h2>
 
-<input
-id="cpf"
-placeholder="Digite seu CPF"
-maxlength="14"
-oninput="formatarCPF(this)"
->
-
-<input
-type="password"
-id="senha"
-placeholder="Senha"
->
+<input id="cpf" placeholder="Digite seu CPF">
+<input type="password" id="senha" placeholder="Senha">
 
 <button onclick="loginAluno()">Entrar</button>
 
-<span class="link" onclick="abrirRecuperar()">Esqueci minha senha</span>
-
 </div>
 
 
-
-<!-- RECUPERAR SENHA -->
-
-<div class="login-container" id="recuperarBox" style="display:none;">
-
-<h2>Recuperar Senha</h2>
-
-<input
-id="cpfRecuperar"
-placeholder="Digite seu CPF"
-maxlength="14"
-oninput="formatarCPF(this)"
->
-
-<button onclick="recuperarSenha()">Continuar</button>
-
-<span class="link" onclick="voltarLogin()">Voltar</span>
-
-</div>
-
-
-
-<!-- NOVA SENHA -->
-
-<div class="login-container" id="novaSenhaBox" style="display:none;">
-
-<h2>Nova Senha</h2>
-
-<input
-type="password"
-id="novaSenha"
-placeholder="Digite a nova senha"
->
-
-<button onclick="redefinirSenha()">Salvar Nova Senha</button>
-
-</div>
-
-
-
-<script src="script.js"></script>
 
 <script>
 
-let cpfRecuperacao = ""
+const API="https://portal-escola-backend.onrender.com"
 
+/* =========================
+LOGIN ALUNO
+========================= */
 
-function abrirRecuperar(){
+async function loginAluno(){
 
-document.getElementById("loginBox").style.display="none"
-document.getElementById("recuperarBox").style.display="block"
+let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
+let senha=document.getElementById("senha").value
 
-}
-
-
-function voltarLogin(){
-
-document.getElementById("recuperarBox").style.display="none"
-document.getElementById("loginBox").style.display="block"
-
-}
-
-
-async function recuperarSenha(){
-
-let cpf=document.getElementById("cpfRecuperar").value.replace(/\D/g,'')
-
-if(!cpf){
-alert("Digite seu CPF")
+if(!cpf || !senha){
+alert("Digite CPF e senha")
 return
 }
 
 try{
 
-let res=await fetch(API+"/recuperar-senha",{
+let res=await fetch(API+"/login-aluno",{
 
 method:"POST",
 
@@ -252,8 +178,8 @@ headers:{
 },
 
 body:JSON.stringify({
-cpf:cpf,
-tipo:"aluno"
+cpf,
+senha
 })
 
 })
@@ -262,70 +188,20 @@ let data=await res.json()
 
 if(data.success){
 
-cpfRecuperacao=cpf
+localStorage.setItem("token",data.token)
+localStorage.setItem("alunoLogado","true")
 
-document.getElementById("recuperarBox").style.display="none"
-document.getElementById("novaSenhaBox").style.display="block"
-
-}else{
-
-alert("CPF não encontrado")
-
-}
-
-}catch(err){
-
-alert("Erro de conexão com servidor")
-
-}
-
-}
-
-
-async function redefinirSenha(){
-
-let senha=document.getElementById("novaSenha").value
-
-if(!senha){
-alert("Digite a nova senha")
-return
-}
-
-try{
-
-let res=await fetch(API+"/redefinir-senha",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-cpf:cpfRecuperacao,
-novaSenha:senha,
-tipo:"aluno"
-})
-
-})
-
-let data=await res.json()
-
-if(data.success){
-
-alert("Senha alterada com sucesso!")
-
-window.location="login.html"
+window.location="aluno.html"
 
 }else{
 
-alert("Erro ao redefinir senha")
+alert("CPF ou senha inválidos")
 
 }
 
-}catch(err){
+}catch{
 
-alert("Erro de conexão com servidor")
+alert("Erro ao conectar com servidor")
 
 }
 
