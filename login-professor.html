@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 
 <meta charset="UTF-8">
@@ -95,25 +94,12 @@ color:#0a2a66;
 </header>
 
 
-
-<!-- LOGIN PROFESSOR -->
-
 <div class="login-box" id="loginBox">
 
 <h2>Portal do Professor</h2>
 
-<input
-id="cpf"
-placeholder="Digite seu CPF"
-maxlength="14"
-oninput="formatarCPF(this)"
->
-
-<input
-type="password"
-id="senha"
-placeholder="Senha"
->
+<input id="cpf" placeholder="Digite seu CPF">
+<input type="password" id="senha" placeholder="Senha">
 
 <button onclick="loginProfessor()">Entrar</button>
 
@@ -122,19 +108,11 @@ placeholder="Senha"
 </div>
 
 
-
-<!-- RECUPERAR SENHA -->
-
 <div class="login-box" id="recuperarBox" style="display:none;">
 
 <h2>Recuperar Senha</h2>
 
-<input
-id="cpfRecuperar"
-placeholder="Digite seu CPF"
-maxlength="14"
-oninput="formatarCPF(this)"
->
+<input id="cpfRecuperar" placeholder="Digite seu CPF">
 
 <button onclick="recuperarSenha()">Continuar</button>
 
@@ -143,31 +121,76 @@ oninput="formatarCPF(this)"
 </div>
 
 
-
-<!-- NOVA SENHA -->
-
 <div class="login-box" id="novaSenhaBox" style="display:none;">
 
 <h2>Nova Senha</h2>
 
-<input
-type="password"
-id="novaSenha"
-placeholder="Digite a nova senha"
->
+<input type="password" id="novaSenha" placeholder="Digite a nova senha">
 
 <button onclick="redefinirSenha()">Salvar Nova Senha</button>
 
 </div>
 
 
-
-<script src="script.js"></script>
-
 <script>
+
+const API="https://portal-escola-backend.onrender.com"
 
 let cpfRecuperacao=""
 
+/* =========================
+LOGIN PROFESSOR
+========================= */
+
+async function loginProfessor(){
+
+let cpf=document.getElementById("cpf").value
+let senha=document.getElementById("senha").value
+
+if(!cpf || !senha){
+alert("Digite CPF e senha")
+return
+}
+
+try{
+
+let res=await fetch(API+"/login-professor",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+cpf,
+senha
+})
+
+})
+
+let data=await res.json()
+
+if(data.success){
+
+localStorage.setItem("token",data.token)
+localStorage.setItem("professorLogado","true")
+
+window.location="professor.html"
+
+}else{
+
+alert("CPF ou senha inválidos")
+
+}
+
+}catch(err){
+
+alert("Erro ao conectar com servidor")
+
+}
+
+}
 
 
 /* =========================
@@ -182,7 +205,6 @@ document.getElementById("recuperarBox").style.display="block"
 }
 
 
-
 /* =========================
 VOLTAR LOGIN
 ========================= */
@@ -195,14 +217,13 @@ document.getElementById("loginBox").style.display="block"
 }
 
 
-
 /* =========================
 RECUPERAR SENHA
 ========================= */
 
 async function recuperarSenha(){
 
-let cpf=document.getElementById("cpfRecuperar").value.replace(/\D/g,'')
+let cpf=document.getElementById("cpfRecuperar").value
 
 if(!cpf){
 alert("Digite seu CPF")
@@ -250,7 +271,6 @@ alert("Erro de conexão com servidor")
 }
 
 
-
 /* =========================
 REDEFINIR SENHA
 ========================= */
@@ -287,7 +307,6 @@ let data=await res.json()
 if(data.success){
 
 alert("Senha alterada com sucesso!")
-
 window.location="login-professor.html"
 
 }else{
