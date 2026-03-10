@@ -102,6 +102,11 @@ let nome = document.getElementById("nomeAluno")?.value
 let cpf = document.getElementById("cpfAluno")?.value.replace(/\D/g,'')
 let senha = document.getElementById("senhaAluno")?.value
 
+if(!nome || !cpf){
+alert("Preencha nome e CPF")
+return
+}
+
 try{
 
 let res = await fetch(API+"/aluno",{
@@ -124,6 +129,10 @@ if(data.success){
 alert("Aluno cadastrado!")
 
 e.target.reset()
+
+}else{
+
+alert("Erro ao cadastrar aluno")
 
 }
 
@@ -151,6 +160,14 @@ let cpf = document.getElementById("cpfProfessor")?.value.replace(/\D/g,'')
 let senha = document.getElementById("senhaProfessor")?.value
 let disciplina = document.getElementById("disciplinaProfessor")?.value
 
+if(!nome || !cpf || !disciplina){
+
+alert("Preencha todos os campos")
+
+return
+
+}
+
 try{
 
 let res = await fetch(API+"/professor",{
@@ -173,6 +190,10 @@ if(data.success){
 alert("Professor cadastrado!")
 
 e.target.reset()
+
+}else{
+
+alert("Erro ao cadastrar professor")
 
 }
 
@@ -209,7 +230,7 @@ body:formData
 
 let data = await res.json()
 
-return data.url
+return data?.url || ""
 
 }
 
@@ -224,6 +245,11 @@ e.preventDefault()
 
 let titulo = document.getElementById("tituloAviso")?.value
 let conteudo = document.getElementById("textoAviso")?.value
+
+if(!titulo || !conteudo){
+alert("Preencha título e mensagem")
+return
+}
 
 try{
 
@@ -256,6 +282,10 @@ alert("Aviso publicado!")
 e.target.reset()
 
 carregarPublicacoes()
+
+}else{
+
+alert("Erro ao publicar aviso")
 
 }
 
@@ -308,7 +338,7 @@ Authorization:"Bearer "+getToken()
 
 body:JSON.stringify({
 
-titulo: titulo+" - "+subtitulo,
+titulo: subtitulo ? titulo+" - "+subtitulo : titulo,
 conteudo,
 imagem,
 tipo:"noticia"
@@ -331,6 +361,10 @@ quill.root.innerHTML=""
 }
 
 carregarPublicacoes()
+
+}else{
+
+alert("Erro ao publicar notícia")
 
 }
 
@@ -454,7 +488,7 @@ window.location="login-admin.html"
 
 
 // ==========================
-// INICIAR SISTEMA
+// INICIAR
 // ==========================
 
 window.onload=function(){
