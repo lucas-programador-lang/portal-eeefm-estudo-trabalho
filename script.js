@@ -51,16 +51,18 @@ return true
 
 
 // ==========================
-// FETCH PADRÃO (ROBUSTO)
+// FETCH PADRÃO (CORRIGIDO)
 // ==========================
 async function apiFetch(url, options={}){
 
 try{
 
+const isFormData = options.body instanceof FormData
+
 const res = await fetch(API+url,{
 ...options,
 headers:{
-"Content-Type":"application/json",
+...(isFormData ? {} : {"Content-Type":"application/json"}),
 Authorization:"Bearer "+getToken(),
 ...(options.headers || {})
 }
@@ -72,6 +74,8 @@ return null
 }
 
 if(!res.ok){
+const text = await res.text()
+console.log("Erro servidor:", text)
 throw new Error("Erro servidor")
 }
 
@@ -190,7 +194,7 @@ alert(data.erro || "Erro ao cadastrar professor")
 
 
 // ==========================
-// PUBLICAR AVISO
+// PUBLICAR AVISO (CORRIGIDO)
 // ==========================
 async function publicarAviso(e){
 
@@ -228,7 +232,7 @@ alert(data.erro || "Erro ao publicar aviso")
 
 
 // ==========================
-// PUBLICAR NOTÍCIA
+// PUBLICAR NOTÍCIA (CORRIGIDO)
 // ==========================
 async function publicarNoticia(e){
 
@@ -237,7 +241,8 @@ e.preventDefault()
 let titulo = document.getElementById("tituloNoticia").value
 let subtitulo = document.getElementById("subtituloNoticia").value
 
-let conteudo = window.quill ? quill.root.innerHTML : ""
+// 🔥 CORREÇÃO AQUI
+let conteudo = (window.quill && quill.root) ? quill.root.innerHTML : ""
 
 let tituloFinal = subtitulo ? titulo+" - "+subtitulo : titulo
 
@@ -296,7 +301,7 @@ tabela.innerHTML+=`
 <td>${p.id}</td>
 <td>${p.titulo}</td>
 <td>${p.tipo}</td>
-<td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
+<td>${p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : "-"}</td>
 <td>
 <button class="small-btn" onclick="excluirPublicacao(${p.id})">
 Excluir
