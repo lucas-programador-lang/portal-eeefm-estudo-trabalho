@@ -2,58 +2,29 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Boletim Escolar - EEEFM Estudo e Trabalho</title>
+<title>Boletim Escolar</title>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
 
 body{
-background:#f1f3f6;
-font-family:Arial, Helvetica, sans-serif;
-margin:0;
-}
-
-.trocar-senha-box{
-max-width:400px;
-margin:40px auto;
-background:white;
-padding:25px;
-border-radius:8px;
-box-shadow:0 2px 10px rgba(0,0,0,0.15);
-display:none;
-}
-
-.trocar-senha-box input{
-width:100%;
-padding:10px;
-margin-top:10px;
-border:1px solid #ccc;
-border-radius:6px;
-}
-
-.trocar-senha-box button{
-margin-top:10px;
-padding:10px;
-width:100%;
-background:#0a2a66;
+background:#0f172a;
 color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
 }
 
+/* BOLETIM */
 .boletim-container{
 max-width:800px;
 margin:40px auto;
-background:white;
+background:#020617;
 padding:30px;
-border-radius:8px;
-box-shadow:0 2px 10px rgba(0,0,0,0.15);
+border-radius:12px;
+border:1px solid #1e293b;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
 }
 
 table{
@@ -62,10 +33,58 @@ border-collapse:collapse;
 margin-top:20px;
 }
 
-table th, table td{
-border:1px solid #ddd;
+th{
+background:#0ea5e9;
+color:white;
 padding:10px;
-text-align:left;
+}
+
+td{
+padding:10px;
+border:1px solid #1e293b;
+}
+
+/* STATUS */
+.aprovado{
+color:#22c55e;
+font-weight:bold;
+}
+
+.reprovado{
+color:#ef4444;
+font-weight:bold;
+}
+
+/* BOTÃO */
+.btn{
+margin-top:20px;
+padding:12px;
+background:#0ea5e9;
+border:none;
+border-radius:8px;
+cursor:pointer;
+color:white;
+}
+
+/* TROCAR SENHA */
+.trocar-senha-box{
+max-width:400px;
+margin:20px auto;
+background:#020617;
+padding:20px;
+border-radius:10px;
+border:1px solid #1e293b;
+display:none;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #1e293b;
+background:#0f172a;
+color:white;
 }
 
 </style>
@@ -74,113 +93,45 @@ text-align:left;
 
 <body>
 
-<header>
-
-<div class="container">
-
-<nav>
-
-<div class="logo">
-<img src="logo.png">
-<strong>EEEFM Estudo e Trabalho</strong>
-</div>
-
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="login.html">Portal do Aluno</a>
-<a href="login-professor.html">Portal do Professor</a>
-<a href="matricula.html">Matrícula</a>
-
-<button onclick="abrirTrocarSenha()" style="margin-left:20px;">
-Trocar senha
-</button>
-
-<button onclick="logout()" style="margin-left:10px;">
-Sair
-</button>
-
-</div>
-
-</nav>
-
-</div>
-
-</header>
-
-
 <div class="boletim-container">
 
-<h2>EEEFM Estudo e Trabalho</h2>
-<h3>Boletim Escolar</h3>
+<h2>📘 Boletim Escolar</h2>
 
-<table id="tabela">
+<table id="tabela"></table>
 
-<tr>
-<th>Disciplina</th>
-<th>Nota</th>
-</tr>
-
-</table>
-
-<button onclick="exportarPDF()" style="margin-top:20px;">
-Baixar Boletim em PDF
-</button>
+<button class="btn" onclick="exportarPDF()">📄 Baixar PDF</button>
+<button class="btn" onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
+<button class="btn" onclick="logout()">🚪 Sair</button>
 
 </div>
-
-
 
 <div class="trocar-senha-box" id="trocarSenhaBox">
 
 <h3>Alterar Senha</h3>
 
-<input
-type="password"
-id="senhaAtual"
-placeholder="Senha atual"
->
+<input type="password" id="senhaAtual" placeholder="Senha atual">
+<input type="password" id="novaSenha" placeholder="Nova senha">
 
-<input
-type="password"
-id="novaSenha"
-placeholder="Nova senha"
->
-
-<button onclick="trocarSenha()">Salvar nova senha</button>
+<button class="btn" onclick="trocarSenha()">Salvar</button>
 
 </div>
-
-
 
 <script>
 
 const API = "https://portal-escola-backend.onrender.com"
 
-
 function getToken(){
 return localStorage.getItem("token")
 }
 
-
 function logout(){
-
 localStorage.clear()
-
-window.location="login.html"
-
-}
-
-
-/* =========================
-PROTEGER LOGIN
-========================= */
-
-const token = getToken()
-
-if(!token){
 window.location="login.html"
 }
 
+if(!getToken()){
+logout()
+}
 
 /* =========================
 CARREGAR BOLETIM
@@ -188,37 +139,27 @@ CARREGAR BOLETIM
 
 async function carregarBoletim(){
 
-let tabela=document.getElementById("tabela")
-
-let usuarioJSON=localStorage.getItem("usuario")
-
-if(!usuarioJSON){
-logout()
-return
-}
-
-let usuario=JSON.parse(usuarioJSON)
+let tabela = document.getElementById("tabela")
+let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
 
 try{
 
-let res=await fetch(API + "/boletim/" + usuario.id,{
-
+let res = await fetch(API+"/notas/"+usuario.id,{
 headers:{
-Authorization:"Bearer "+token
+Authorization:"Bearer "+getToken()
 }
-
 })
 
-if(res.status===401){
+if(res.status === 401){
 logout()
 return
 }
 
-let notas=await res.json()
+let notas = await res.json()
 
-let soma=0
+let soma = 0
 
-tabela.innerHTML=`
+tabela.innerHTML = `
 <tr>
 <th>Disciplina</th>
 <th>Nota</th>
@@ -227,23 +168,22 @@ tabela.innerHTML=`
 
 notas.forEach(n=>{
 
-tabela.innerHTML+=`
+tabela.innerHTML += `
 <tr>
 <td>${n.disciplina}</td>
 <td>${n.nota}</td>
 </tr>
 `
 
-soma+=Number(n.nota)
+soma += Number(n.nota)
 
 })
 
-let media=notas.length ? (soma/notas.length).toFixed(1) : 0
+let media = notas.length ? (soma/notas.length).toFixed(1) : 0
 
-let situacao=media>=6?"Aprovado":"Reprovado"
+let aprovado = media >= 6
 
-tabela.innerHTML+=`
-
+tabela.innerHTML += `
 <tr>
 <td><strong>Média</strong></td>
 <td>${media}</td>
@@ -251,117 +191,67 @@ tabela.innerHTML+=`
 
 <tr>
 <td><strong>Situação</strong></td>
-<td>${situacao}</td>
+<td class="${aprovado ? "aprovado":"reprovado"}">
+${aprovado ? "Aprovado":"Reprovado"}
+</td>
 </tr>
-
 `
 
-}catch(err){
-
-console.log("Erro ao carregar boletim")
-
+}catch{
+alert("Erro ao carregar boletim")
 }
 
 }
-
-
-/* =========================
-ABRIR TROCAR SENHA
-========================= */
-
-function abrirTrocarSenha(){
-
-let box=document.getElementById("trocarSenhaBox")
-
-box.style.display = box.style.display==="block" ? "none" : "block"
-
-}
-
 
 /* =========================
 TROCAR SENHA
 ========================= */
 
-async function trocarSenha(){
-
-let senhaAtual=document.getElementById("senhaAtual").value
-let novaSenha=document.getElementById("novaSenha").value
-
-let usuario=JSON.parse(localStorage.getItem("usuario") || "{}")
-
-if(!senhaAtual || !novaSenha){
-alert("Preencha os campos")
-return
+function abrirTrocarSenha(){
+let box = document.getElementById("trocarSenhaBox")
+box.style.display = box.style.display === "block" ? "none":"block"
 }
 
-try{
+async function trocarSenha(){
 
-let res=await fetch(API+"/trocar-senha",{
+let senhaAtual = document.getElementById("senhaAtual").value
+let novaSenha = document.getElementById("novaSenha").value
 
+let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
+
+let res = await fetch(API+"/trocar-senha",{
 method:"POST",
-
 headers:{
 "Content-Type":"application/json"
 },
-
 body:JSON.stringify({
 cpf:usuario.cpf,
 senhaAtual,
 novaSenha,
 tipo:"aluno"
 })
-
 })
 
-let data=await res.json()
+let data = await res.json()
 
 if(data.success){
-
-alert("Senha alterada com sucesso")
-
+alert("Senha alterada")
 document.getElementById("trocarSenhaBox").style.display="none"
-
 }else{
-
-alert("Senha atual incorreta")
-
-}
-
-}catch(err){
-
-alert("Erro de conexão com servidor")
-
+alert("Senha incorreta")
 }
 
 }
-
 
 /* =========================
-EXPORTAR PDF
+PDF
 ========================= */
 
 function exportarPDF(){
-
-let conteudo=document.querySelector(".boletim-container")
-
-let janela=window.open("","","width=800,height=600")
-
-janela.document.write("<html><head><title>Boletim</title></head><body>")
-janela.document.write(conteudo.innerHTML)
-janela.document.write("</body></html>")
-
-janela.document.close()
-
-janela.print()
-
+window.print()
 }
 
-
-window.onload=function(){
-
-carregarBoletim()
-
-}
+window.onload = carregarBoletim
 
 </script>
 
