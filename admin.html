@@ -24,7 +24,6 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
   z-index:999;
   animation:slideDown 0.5s ease;
 }
-
 .header-comum .container{
   max-width:1200px;
   margin:auto;
@@ -33,16 +32,13 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
   justify-content:space-between;
   align-items:center;
 }
-
 .header-comum .logo{
   display:flex;
   align-items:center;
   gap:10px;
 }
-
 .header-comum .logo img{width:50px;}
 .header-comum .logo strong{color:#38bdf8;font-size:18px;}
-
 .header-comum .menu a, .header-comum .menu button{
   color:#cbd5f5;
   margin-left:15px;
@@ -54,93 +50,90 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
   transition:0.2s;
 }
 .header-comum .menu a:hover, .header-comum .menu button:hover{color:#38bdf8;}
-
 @keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
 
 /* SIDEBAR */
 .sidebar{
-width:230px;
-background:#020617;
-min-height:100vh;
-padding-top:70px;
-position:fixed;
-border-right:1px solid #1e293b;
+  width:230px;
+  background:#020617;
+  min-height:100vh;
+  padding-top:70px;
+  position:fixed;
+  border-right:1px solid #1e293b;
 }
-
 .sidebar h2{text-align:center;margin-bottom:30px;color:#38bdf8;}
 .sidebar button{
-display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;transition:0.2s;
+  display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;transition:0.2s;
 }
 .sidebar button:hover{background:#0ea5e9;color:white;}
 
 /* MAIN */
 .main{
-margin-left:230px;
-padding:100px 30px 30px 30px;
-width:100%;
+  margin-left:230px;
+  padding:100px 30px 30px 30px;
+  width:100%;
 }
 
 /* BOX */
 .box{
-background:#020617;
-padding:25px;
-border-radius:12px;
-box-shadow:0 0 20px rgba(0,0,0,0.4);
-margin-top:20px;
-border:1px solid #1e293b;
+  background:#020617;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 0 20px rgba(0,0,0,0.4);
+  margin-top:20px;
+  border:1px solid #1e293b;
 }
 
 /* INPUTS */
 input, textarea{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:1px solid #1e293b;
-border-radius:8px;
-background:#0f172a;
-color:white;
-font-size:14px;
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:1px solid #1e293b;
+  border-radius:8px;
+  background:#0f172a;
+  color:white;
+  font-size:14px;
 }
-
 input:focus, textarea:focus{outline:none;border-color:#38bdf8;}
 
 /* BOTÃO */
 button.action{
-margin-top:15px;
-padding:12px;
-background:#0ea5e9;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-font-weight:bold;
-transition:0.2s;
+  margin-top:15px;
+  padding:12px;
+  background:#0ea5e9;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  transition:0.2s;
 }
 button.action:hover{background:#0284c7;}
 
 /* DASHBOARD */
 .dashboard{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
 }
 .card{
-background:#020617;
-padding:25px;
-border-radius:12px;
-border:1px solid #1e293b;
-text-align:center;
+  background:#020617;
+  padding:25px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  text-align:center;
 }
 .card p{
-font-size:30px;color:#38bdf8;font-weight:bold;
+  font-size:30px;color:#38bdf8;font-weight:bold;
 }
 
 /* SEÇÕES */
 .section{
-display:none;
-opacity:0;
-transform:translateY(10px);
-transition:0.3s;
+  display:none;
+  opacity:0;
+  transform:translateY(10px);
+  transition:0.3s;
 }
 .section.active{display:block;}
 .section.fade{opacity:1;transform:translateY(0);}
@@ -157,10 +150,10 @@ th{background:#0ea5e9;color:white;}
 
 /* RESPONSIVO */
 @media(max-width:768px){
-.sidebar{width:100%;position:relative;border-right:none;padding-top:20px;}
-.main{margin-left:0;padding:30px;}
-.header-comum .menu{flex-wrap:wrap;justify-content:center;}
-.header-comum .menu a, .header-comum .menu button{margin:5px;}
+  .sidebar{width:100%;position:relative;border-right:none;padding-top:20px;}
+  .main{margin-left:0;padding:30px;}
+  .header-comum .menu{flex-wrap:wrap;justify-content:center;}
+  .header-comum .menu a, .header-comum .menu button{margin:5px;}
 }
 </style>
 </head>
@@ -169,125 +162,125 @@ th{background:#0ea5e9;color:white;}
 
 <!-- HEADER COMUM -->
 <header class="header-comum">
-<div class="container">
-<div class="logo">
-<img src="logo.png" alt="Logo Escola">
-<strong>EEEFM Estudo e Trabalho</strong>
-</div>
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="noticias.html">Notícias</a>
-<button onclick="logout()">Sair</button>
-</div>
-</div>
+  <div class="container">
+    <div class="logo">
+      <img src="logo.png" alt="Logo Escola">
+      <strong>EEEFM Estudo e Trabalho</strong>
+    </div>
+    <div class="menu">
+      <a href="index.html">Início</a>
+      <a href="noticias.html">Notícias</a>
+      <button onclick="logout()">Sair</button>
+    </div>
+  </div>
 </header>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-<h2>⚙️ Admin</h2>
-<button onclick="mostrar('dashboard')">📊 Dashboard</button>
-<button onclick="mostrar('alunos')">👨‍🎓 Alunos</button>
-<button onclick="mostrar('professores')">👨‍🏫 Professores</button>
-<button onclick="mostrar('avisos')">📢 Avisos</button>
-<button onclick="mostrar('noticias')">📰 Notícias</button>
-<button onclick="mostrar('publicacoes')">📋 Publicações</button>
-<button onclick="logout()">🚪 Sair</button>
+  <h2>⚙️ Admin</h2>
+  <button onclick="mostrar('dashboard')">📊 Dashboard</button>
+  <button onclick="mostrar('alunos')">👨‍🎓 Alunos</button>
+  <button onclick="mostrar('professores')">👨‍🏫 Professores</button>
+  <button onclick="mostrar('avisos')">📢 Avisos</button>
+  <button onclick="mostrar('noticias')">📰 Notícias</button>
+  <button onclick="mostrar('publicacoes')">📋 Publicações</button>
+  <button onclick="logout()">🚪 Sair</button>
 </div>
 
 <div class="main">
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="section active fade">
-<h2>Dashboard</h2>
-<div class="dashboard">
-<div class="card">
-<h3>Alunos</h3>
-<p id="totalAlunos">0</p>
-</div>
-<div class="card">
-<h3>Professores</h3>
-<p id="totalProfessores">0</p>
-</div>
-<div class="card">
-<h3>Publicações</h3>
-<p id="totalPublicacoes">0</p>
-</div>
-</div>
-</div>
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active fade">
+    <h2>Dashboard</h2>
+    <div class="dashboard">
+      <div class="card">
+        <h3>Alunos</h3>
+        <p id="totalAlunos">0</p>
+      </div>
+      <div class="card">
+        <h3>Professores</h3>
+        <p id="totalProfessores">0</p>
+      </div>
+      <div class="card">
+        <h3>Publicações</h3>
+        <p id="totalPublicacoes">0</p>
+      </div>
+    </div>
+  </div>
 
-<!-- ALUNOS -->
-<div id="alunos" class="section">
-<div class="box">
-<h3>Cadastrar Aluno</h3>
-<form id="formAluno">
-<input id="nomeAluno" placeholder="Nome" required>
-<input id="cpfAluno" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
-<input id="senhaAluno" placeholder="Senha" required>
-<button class="action">Cadastrar</button>
-</form>
-</div>
-</div>
+  <!-- ALUNOS -->
+  <div id="alunos" class="section">
+    <div class="box">
+      <h3>Cadastrar Aluno</h3>
+      <form id="formAluno">
+        <input id="nomeAluno" placeholder="Nome" required>
+        <input id="cpfAluno" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
+        <input id="senhaAluno" placeholder="Senha" required>
+        <button class="action">Cadastrar</button>
+      </form>
+    </div>
+  </div>
 
-<!-- PROFESSORES -->
-<div id="professores" class="section">
-<div class="box">
-<h3>Cadastrar Professor</h3>
-<form id="formProfessor">
-<input id="nomeProfessor" placeholder="Nome" required>
-<input id="cpfProfessor" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
-<input id="senhaProfessor" placeholder="Senha" required>
-<input id="disciplinaProfessor" placeholder="Disciplina" required>
-<button class="action">Cadastrar</button>
-</form>
-</div>
-</div>
+  <!-- PROFESSORES -->
+  <div id="professores" class="section">
+    <div class="box">
+      <h3>Cadastrar Professor</h3>
+      <form id="formProfessor">
+        <input id="nomeProfessor" placeholder="Nome" required>
+        <input id="cpfProfessor" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
+        <input id="senhaProfessor" placeholder="Senha" required>
+        <input id="disciplinaProfessor" placeholder="Disciplina" required>
+        <button class="action">Cadastrar</button>
+      </form>
+    </div>
+  </div>
 
-<!-- AVISOS -->
-<div id="avisos" class="section">
-<div class="box">
-<h3>Publicar Aviso</h3>
-<form id="formAviso">
-<input id="tituloAviso" placeholder="Título" required>
-<textarea id="textoAviso" placeholder="Mensagem" required></textarea>
-<button class="action">Publicar</button>
-</form>
-</div>
-</div>
+  <!-- AVISOS -->
+  <div id="avisos" class="section">
+    <div class="box">
+      <h3>Publicar Aviso</h3>
+      <form id="formAviso">
+        <input id="tituloAviso" placeholder="Título" required>
+        <textarea id="textoAviso" placeholder="Mensagem" required></textarea>
+        <button class="action">Publicar</button>
+      </form>
+    </div>
+  </div>
 
-<!-- NOTÍCIAS -->
-<div id="noticias" class="section">
-<div class="box">
-<h3>Publicar Notícia</h3>
-<form id="formNoticia">
-<input id="tituloNoticia" placeholder="Título" required>
-<input id="subtituloNoticia" placeholder="Subtítulo">
-<label>📷 Imagem</label>
-<input type="file" id="imagemUpload" accept="image/*">
-<label>Conteúdo</label>
-<div id="editor"></div>
-<button class="action">Publicar</button>
-</form>
-</div>
-</div>
+  <!-- NOTÍCIAS -->
+  <div id="noticias" class="section">
+    <div class="box">
+      <h3>Publicar Notícia</h3>
+      <form id="formNoticia">
+        <input id="tituloNoticia" placeholder="Título" required>
+        <input id="subtituloNoticia" placeholder="Subtítulo">
+        <label>📷 Imagem</label>
+        <input type="file" id="imagemUpload" accept="image/*">
+        <label>Conteúdo</label>
+        <div id="editor"></div>
+        <button class="action">Publicar</button>
+      </form>
+    </div>
+  </div>
 
-<!-- PUBLICAÇÕES -->
-<div id="publicacoes" class="section">
-<div class="box">
-<h3>Publicações</h3>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Título</th>
-<th>Tipo</th>
-<th>Data</th>
-<th>Ação</th>
-</tr>
-</thead>
-<tbody id="listaPublicacoes"></tbody>
-</table>
-</div>
-</div>
+  <!-- PUBLICAÇÕES -->
+  <div id="publicacoes" class="section">
+    <div class="box">
+      <h3>Publicações</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Tipo</th>
+            <th>Data</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="listaPublicacoes"></tbody>
+      </table>
+    </div>
+  </div>
 
 </div>
 
