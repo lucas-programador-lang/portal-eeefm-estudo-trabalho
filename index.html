@@ -2,284 +2,265 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>EEEFM Estudo e Trabalho</title>
-
 <link rel="stylesheet" href="style.css">
+<style>
+/* HEADER */
+header{
+  background:#020617;
+  border-bottom:1px solid #1e293b;
+}
+header .container{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 20px;
+  flex-wrap:wrap;
+}
+header .logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+header .logo img{width:50px;}
+header .logo strong{color:#38bdf8;font-size:18px;}
+header .menu a{
+  color:#cbd5f5;
+  margin-left:20px;
+  text-decoration:none;
+  font-weight:500;
+  transition:0.3s;
+}
+header .menu a:hover{color:#38bdf8;}
 
+/* BANNER */
+.banner{
+  background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
+  color:white;
+  text-align:center;
+  padding:90px 20px;
+}
+.banner h1{font-size:40px;margin-bottom:10px;}
+.banner p{font-size:18px;opacity:0.9;}
+
+/* CARDS */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:25px;
+  margin-top:40px;
+}
+.card{
+  background:#020617;
+  padding:25px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  text-align:center;
+  transition:0.3s;
+}
+.card:hover{
+  transform:translateY(-6px) scale(1.03);
+  box-shadow:0 10px 30px rgba(0,0,0,0.6);
+}
+.card h3{color:#38bdf8;margin-bottom:10px;}
+.card p{opacity:0.8;margin-bottom:15px;}
+.card .btn{display:inline-block;padding:10px 20px;background:#0ea5e9;color:white;border-radius:8px;text-decoration:none;}
+.card .btn:hover{background:#0284c7;}
+
+/* SEÇÕES */
+.container{
+  max-width:1200px;
+  margin:40px auto;
+  padding:0 20px;
+}
+h2{color:#38bdf8;margin-bottom:15px;}
+.texto{opacity:0.9;line-height:1.6;}
+
+/* NOTÍCIAS */
+.news{
+  background:#020617;
+  padding:20px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  margin-bottom:20px;
+}
+.news h3{color:#38bdf8;margin-bottom:10px;}
+.news img{max-width:100%;border-radius:8px;margin-bottom:10px;}
+
+/* AVISO */
+.aviso-diretor{
+  background:#facc15;
+  color:#111;
+  padding:12px;
+  font-weight:bold;
+  margin-bottom:20px;
+  border-radius:8px;
+  text-align:center;
+}
+
+/* CALENDÁRIO */
+.calendario table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+}
+.calendario th, .calendario td{
+  border:1px solid #1e293b;
+  padding:8px;
+}
+.calendario th{background:#0ea5e9;color:white;}
+
+/* MAPA */
+.mapa iframe{width:100%;border-radius:12px;border:0;}
+
+/* RODAPÉ */
+footer{
+  background:#020617;
+  color:#94a3b8;
+  text-align:center;
+  padding:30px 20px;
+  border-top:1px solid #1e293b;
+  margin-top:40px;
+}
+
+/* RESPONSIVO */
+@media(max-width:768px){
+  header .container{flex-direction:column;gap:10px;}
+  .banner{padding:60px 20px;}
+  .banner h1{font-size:26px;}
+  .banner p{font-size:16px;}
+  .cards{grid-template-columns:1fr;gap:20px;}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-
 <div class="container">
-
-<nav>
-
-<div class="logo">
-<img src="logo.png">
-<strong>EEEFM Estudo e Trabalho</strong>
+  <div class="logo">
+    <img src="logo.png">
+    <strong>EEEFM Estudo e Trabalho</strong>
+  </div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="login.html">Portal do Aluno</a>
+    <a href="login-professor.html">Portal do Professor</a>
+    <a href="matricula.html">Matrícula</a>
+    <a href="login-admin.html">Admin</a>
+    <a href="noticias.html">Notícias</a>
+  </div>
 </div>
-
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="login.html">Portal do Aluno</a>
-<a href="login-professor.html">Portal do Professor</a>
-<a href="matricula.html">Matrícula</a>
-<a href="login-admin.html">Admin</a>
-<a href="noticias.html">Notícias</a>
-</div>
-
-</nav>
-
-</div>
-
 </header>
-
-
-<!-- AVISO DA DIREÇÃO -->
 
 <div id="aviso-diretor"></div>
 
-
-<!-- BANNER -->
-
 <section class="banner">
-
-<div class="container">
-
-<h1>Portal Educacional</h1>
-<p>Escola Estadual de Ensino Fundamental e Médio</p>
-<p><strong>Estudo e Trabalho</strong></p>
-
-</div>
-
+  <div class="container">
+    <h1>Portal Educacional</h1>
+    <p>Escola Estadual de Ensino Fundamental e Médio</p>
+    <p><strong>Estudo e Trabalho</strong></p>
+  </div>
 </section>
 
-
-<!-- CARDS PRINCIPAIS -->
-
 <section class="container">
-
-<div class="cards">
-
-<div class="card">
-<h3>Portal do Aluno</h3>
-<p>Acesse boletim escolar e informações acadêmicas.</p>
-<a class="btn" href="login.html">Acessar</a>
-</div>
-
-<div class="card">
-<h3>Portal do Professor</h3>
-<p>Acesso ao painel de professores e registro de notas.</p>
-<a class="btn" href="login-professor.html">Entrar</a>
-</div>
-
-<div class="card">
-<h3>Matrícula Online</h3>
-<p>Realize sua pré-matrícula de forma rápida.</p>
-<a class="btn" href="matricula.html">Matricular</a>
-</div>
-
-<div class="card">
-<h3>Painel Administrativo</h3>
-<p>Acesso ao painel administrativo da escola.</p>
-<a class="btn" href="login-admin.html">Entrar</a>
-</div>
-
-</div>
-
+  <div class="cards">
+    <div class="card">
+      <h3>Portal do Aluno</h3>
+      <p>Acesse boletim escolar e informações acadêmicas.</p>
+      <a class="btn" href="login.html">Acessar</a>
+    </div>
+    <div class="card">
+      <h3>Portal do Professor</h3>
+      <p>Acesso ao painel de professores e registro de notas.</p>
+      <a class="btn" href="login-professor.html">Entrar</a>
+    </div>
+    <div class="card">
+      <h3>Matrícula Online</h3>
+      <p>Realize sua pré-matrícula de forma rápida.</p>
+      <a class="btn" href="matricula.html">Matricular</a>
+    </div>
+    <div class="card">
+      <h3>Painel Administrativo</h3>
+      <p>Acesso ao painel administrativo da escola.</p>
+      <a class="btn" href="login-admin.html">Entrar</a>
+    </div>
+  </div>
 </section>
 
-
-<!-- SOBRE A ESCOLA -->
-
 <section class="container">
-
 <h2>Sobre a Escola</h2>
-
 <p class="texto">
-
 A Escola Estadual de Ensino Fundamental e Médio
 <strong>Estudo e Trabalho</strong>
 tem como objetivo oferecer educação de qualidade,
 promovendo o desenvolvimento acadêmico, social e cultural dos estudantes.
-
-Nosso compromisso é formar cidadãos preparados para os desafios da sociedade,
-incentivando o conhecimento, a responsabilidade e o trabalho.
-
 </p>
-
 </section>
 
-
-<!-- NOTÍCIAS -->
-
 <section class="container">
-
 <h2>Notícias da Escola</h2>
-
 <div id="listaNoticias" class="noticias"></div>
-
 </section>
 
-
-<!-- CALENDÁRIO -->
-
 <section class="container">
-
 <h2>Calendário Escolar</h2>
-
 <div class="calendario">
-
 <table>
-
-<tr>
-<th>Evento</th>
-<th>Data</th>
-</tr>
-
-<tr>
-<td>Início das aulas</td>
-<td>05/02</td>
-</tr>
-
-<tr>
-<td>Feira de Ciências</td>
-<td>20/04</td>
-</tr>
-
-<tr>
-<td>Recesso Escolar</td>
-<td>15/07</td>
-</tr>
-
+<tr><th>Evento</th><th>Data</th></tr>
+<tr><td>Início das aulas</td><td>05/02</td></tr>
+<tr><td>Feira de Ciências</td><td>20/04</td></tr>
+<tr><td>Recesso Escolar</td><td>15/07</td></tr>
 </table>
-
 </div>
-
 </section>
-
-
-<!-- MAPA -->
 
 <section class="container">
-
 <h2>Localização da Escola</h2>
-
 <div class="mapa">
-
-<iframe 
-src="https://www.google.com/maps?q=EEEFM%20Estudo%20e%20Trabalho%20Porto%20Velho&output=embed"
-width="100%"
-height="350"
-style="border:0;"
-loading="lazy">
-</iframe>
-
+<iframe src="https://www.google.com/maps?q=EEEFM%20Estudo%20e%20Trabalho%20Porto%20Velho&output=embed" height="350" loading="lazy"></iframe>
 </div>
-
 </section>
-
-
-<!-- RODAPÉ -->
 
 <footer>
-
 <div class="container">
-
 <p><strong>EEEFM Estudo e Trabalho</strong></p>
 <p>Escola Estadual de Ensino Fundamental e Médio</p>
 <p>Educação • Conhecimento • Futuro</p>
-
 </div>
-
 </footer>
 
-
 <script>
-
 const API = "https://portal-escola-backend.onrender.com"
-
 async function carregarConteudo(){
-
 try{
-
 let res = await fetch(API + "/publicacoes")
 let dados = await res.json()
-
 let avisoDiv = document.getElementById("aviso-diretor")
 let noticiasDiv = document.getElementById("listaNoticias")
-
 avisoDiv.innerHTML=""
 noticiasDiv.innerHTML=""
-
 dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
-
 let avisoMostrado = false
-
 dados.forEach(p=>{
-
-let data = p.data_publicacao
-? new Date(p.data_publicacao).toLocaleDateString()
-: ""
-
+let data = p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : ""
 if(p.tipo==="aviso" && !avisoMostrado){
-
-avisoDiv.innerHTML = `
-<div class="aviso-diretor">
-<div class="container">
-📢 <strong>${p.titulo || "Aviso da Direção"}:</strong>
-${p.conteudo || ""}
-</div>
-</div>
-`
-
+avisoDiv.innerHTML = `<div class="aviso-diretor"><div class="container">📢 <strong>${p.titulo || "Aviso da Direção"}:</strong> ${p.conteudo || ""}</div></div>`
 avisoMostrado = true
-
 }
-
 if(p.tipo==="noticia"){
-
-noticiasDiv.innerHTML += `
-<div class="news">
-
-<h3>${p.titulo}</h3>
-
-${p.imagem ? `<img src="${p.imagem}" class="img-noticia">` : ""}
-
-<div class="conteudo-noticia">
-${p.conteudo}
-</div>
-
-<small class="data-noticia">
-${data}
-</small>
-
-</div>
-`
-
+noticiasDiv.innerHTML += `<div class="news"><h3>${p.titulo}</h3>${p.imagem ? `<img src="${p.imagem}" class="img-noticia">` : ""}<div class="conteudo-noticia">${p.conteudo}</div><small class="data-noticia">${data}</small></div>`
 }
-
 })
-
 }catch(err){
-
 console.error(err)
-
-document.getElementById("listaNoticias").innerHTML =
-"<p>Erro ao carregar notícias.</p>"
-
-}
-
-}
-
+document.getElementById("listaNoticias").innerHTML = "<p>Erro ao carregar notícias.</p>"
+}}
 document.addEventListener("DOMContentLoaded",carregarConteudo)
-
 </script>
 
 </body>
