@@ -12,36 +12,45 @@
 
 <style>
 
+body{
+background:#0f172a;
+color:white;
+}
+
 .noticias-container{
 max-width:1100px;
 margin:auto;
 padding:40px 20px;
 }
 
-.busca{
-margin:20px 0;
-}
-
+/* BUSCA */
 .busca input{
 width:100%;
 padding:12px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:16px;
+border-radius:8px;
+border:1px solid #1e293b;
+background:#020617;
+color:white;
 }
 
+/* DESTAQUE */
 .destaque{
-background:white;
-border-radius:8px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
+background:#020617;
+border-radius:12px;
 overflow:hidden;
 margin-bottom:30px;
 cursor:pointer;
+border:1px solid #1e293b;
+transition:0.3s;
+}
+
+.destaque:hover{
+transform:scale(1.01);
 }
 
 .destaque img{
 width:100%;
-max-height:400px;
+max-height:350px;
 object-fit:cover;
 }
 
@@ -49,6 +58,7 @@ object-fit:cover;
 padding:20px;
 }
 
+/* SLIDER */
 .slider{
 display:flex;
 overflow-x:auto;
@@ -57,17 +67,21 @@ margin-bottom:30px;
 }
 
 .slider-card{
-min-width:250px;
-background:white;
-border-radius:8px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
+min-width:240px;
+background:#020617;
+border-radius:10px;
+border:1px solid #1e293b;
 cursor:pointer;
-overflow:hidden;
+transition:0.3s;
+}
+
+.slider-card:hover{
+transform:scale(1.05);
 }
 
 .slider-card img{
 width:100%;
-height:150px;
+height:140px;
 object-fit:cover;
 }
 
@@ -76,26 +90,32 @@ padding:10px;
 font-size:14px;
 }
 
+/* AVISO */
 .aviso-diretor{
-background:#ffd43b;
+background:#facc15;
+color:black;
 padding:15px;
 margin-bottom:20px;
-border-left:6px solid #e0b800;
-font-weight:bold;
+border-radius:8px;
 }
 
+/* NOTÍCIAS */
 .noticia-card{
-background:white;
-border-radius:8px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
-margin-bottom:30px;
-overflow:hidden;
+background:#020617;
+border-radius:12px;
+margin-bottom:25px;
+border:1px solid #1e293b;
 cursor:pointer;
+transition:0.3s;
+}
+
+.noticia-card:hover{
+transform:translateY(-4px);
 }
 
 .noticia-card img{
 width:100%;
-max-height:350px;
+max-height:300px;
 object-fit:cover;
 }
 
@@ -105,8 +125,15 @@ padding:20px;
 
 .data{
 font-size:12px;
-color:#666;
+color:#94a3b8;
 margin-top:10px;
+}
+
+/* LOADING */
+.loading{
+text-align:center;
+margin-top:30px;
+color:#94a3b8;
 }
 
 </style>
@@ -139,25 +166,22 @@ margin-top:10px;
 
 </header>
 
-
 <div class="noticias-container">
 
-<h2>Notícias e Avisos da Escola</h2>
+<h2>📰 Notícias e Avisos</h2>
 
 <div class="busca">
-<input id="busca" placeholder="Buscar notícia..." oninput="filtrarNoticias()">
+<input id="busca" placeholder="Buscar..." oninput="filtrarNoticias()">
 </div>
 
 <div id="avisos"></div>
-
 <div id="destaque"></div>
-
 <div class="slider" id="sliderNoticias"></div>
-
 <div id="noticias"></div>
 
-</div>
+<div id="loading" class="loading">Carregando...</div>
 
+</div>
 
 <script>
 
@@ -167,115 +191,89 @@ let todasNoticias = []
 
 async function carregarNoticias(){
 
+let loading = document.getElementById("loading")
+
 try{
 
 let res = await fetch(API + "/publicacoes")
 let dados = await res.json()
 
+loading.style.display = "none"
+
 dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
 
 let avisosDiv = document.getElementById("avisos")
-let noticiasDiv = document.getElementById("noticias")
 let destaqueDiv = document.getElementById("destaque")
 let sliderDiv = document.getElementById("sliderNoticias")
 
 avisosDiv.innerHTML=""
-noticiasDiv.innerHTML=""
 destaqueDiv.innerHTML=""
 sliderDiv.innerHTML=""
 
 todasNoticias = dados.filter(p=>p.tipo==="noticia")
 
+/* AVISOS */
 dados.forEach(p=>{
-
-let data = p.data_publicacao
-? new Date(p.data_publicacao).toLocaleDateString()
-: ""
-
 if(p.tipo==="aviso"){
-
 avisosDiv.innerHTML += `
 <div class="aviso-diretor">
-📢 <strong>${p.titulo || ""}</strong><br>
+📢 <strong>${p.titulo}</strong><br>
 ${p.conteudo || ""}
-<div class="data">${data}</div>
 </div>
 `
-
 }
-
 })
 
+/* DESTAQUE */
 if(todasNoticias.length){
 
-let destaque = todasNoticias[0]
+let d = todasNoticias[0]
 
 destaqueDiv.innerHTML = `
-<div class="destaque" onclick="abrirNoticia(${destaque.id})">
-
-${destaque.imagem ? `<img src="${destaque.imagem}">` : ""}
-
+<div class="destaque" onclick="abrirNoticia(${d.id})">
+${d.imagem ? `<img src="${d.imagem}">` : ""}
 <div class="destaque-conteudo">
-<h2>${destaque.titulo}</h2>
-<p>${(destaque.conteudo || "").substring(0,150)}...</p>
+<h2>${d.titulo}</h2>
+<p>${(d.conteudo || "").substring(0,150)}...</p>
 </div>
-
 </div>
 `
 
 }
 
+/* SLIDER */
 todasNoticias.forEach(p=>{
-
 sliderDiv.innerHTML += `
 <div class="slider-card" onclick="abrirNoticia(${p.id})">
-
 ${p.imagem ? `<img src="${p.imagem}">` : ""}
-
 <h4>${p.titulo}</h4>
-
 </div>
 `
-
 })
 
 renderNoticias(todasNoticias)
 
-}catch(err){
-
-console.log("Erro ao carregar notícias")
-
+}catch{
+document.getElementById("loading").innerText="Erro ao carregar"
 }
 
 }
 
+/* LISTA */
 function renderNoticias(lista){
 
 let noticiasDiv = document.getElementById("noticias")
-
 noticiasDiv.innerHTML=""
 
 lista.forEach(p=>{
 
-let data = p.data_publicacao
-? new Date(p.data_publicacao).toLocaleDateString()
-: ""
-
 noticiasDiv.innerHTML += `
 <div class="noticia-card" onclick="abrirNoticia(${p.id})">
-
 ${p.imagem ? `<img src="${p.imagem}">` : ""}
-
 <div class="noticia-conteudo">
-
 <h3>${p.titulo}</h3>
-
 <p>${(p.conteudo || "").substring(0,200)}...</p>
-
-<div class="data">${data}</div>
-
 </div>
-
 </div>
 `
 
@@ -283,6 +281,7 @@ ${p.imagem ? `<img src="${p.imagem}">` : ""}
 
 }
 
+/* BUSCA */
 function filtrarNoticias(){
 
 let busca = document.getElementById("busca").value.toLowerCase()
@@ -296,10 +295,9 @@ renderNoticias(filtradas)
 
 }
 
+/* ABRIR */
 function abrirNoticia(id){
-
 window.location = "noticia.html?id=" + id
-
 }
 
 carregarNoticias()
