@@ -8,69 +8,73 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
-body{background:#0f172a;color:white;transition:0.3s;}
+body{background:#0f172a;color:white;}
 
-/* HEADER COMUM */
+/* HEADER */
 .header-comum{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  background:#020617;
-  border-bottom:1px solid #1e293b;
-  z-index:999;
-  animation:slideDown 0.5s ease;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+background:#020617;
+border-bottom:1px solid #1e293b;
+z-index:999;
 }
-.header-comum .container{
-  max-width:1200px;
-  margin:auto;
-  padding:0 20px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.header-comum .logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.header-comum .logo img{width:50px;}
-.header-comum .logo strong{color:#38bdf8;font-size:18px;}
-.header-comum .menu a, .header-comum .menu button{
-  color:#cbd5f5;
-  margin-left:15px;
-  text-decoration:none;
-  font-weight:500;
-  background:none;
-  border:none;
-  cursor:pointer;
-  transition:0.2s;
-}
-.header-comum .menu a:hover, .header-comum .menu button:hover{color:#38bdf8;}
-@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
 
-/* CONTAINER PRINCIPAL */
+/* CONTAINER */
 .main-container{
-  max-width:900px;
-  margin:120px auto 40px auto;
-  padding:20px;
-  background:#020617;
-  border-radius:12px;
-  border:1px solid #1e293b;
-  box-shadow:0 0 25px rgba(0,0,0,0.5);
+max-width:900px;
+margin:120px auto 40px auto;
+padding:20px;
+background:#020617;
+border-radius:12px;
+border:1px solid #1e293b;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
 }
 
 /* TABELA */
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th{background:#0ea5e9;color:white;padding:10px;}
-td{padding:10px;border:1px solid #1e293b;}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#0ea5e9;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border:1px solid #1e293b;
+}
 
 /* FORM */
-input{width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid #1e293b;background:#0f172a;color:white;}
-button{margin-top:10px;padding:12px;background:#0ea5e9;border:none;border-radius:8px;cursor:pointer;color:white;transition:0.2s;}
-button:hover{background:#0284c7;}
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+border:1px solid #1e293b;
+background:#0f172a;
+color:white;
+}
+
+button{
+margin-top:10px;
+padding:12px;
+background:#0ea5e9;
+border:none;
+border-radius:8px;
+cursor:pointer;
+color:white;
+}
+
+button:hover{
+background:#0284c7;
+}
 
 /* TROCAR SENHA */
 .trocar-senha-box{
@@ -82,35 +86,29 @@ border-radius:10px;
 border:1px solid #1e293b;
 display:none;
 }
-
-/* RESPONSIVO */
-@media(max-width:768px){
-.main-container{margin:150px 20px 40px 20px;}
-.header-comum .menu{flex-wrap:wrap;justify-content:center;}
-.header-comum .menu a, .header-comum .menu button{margin:5px;}
-}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER COMUM -->
+<!-- HEADER PADRÃO (ÚNICO) -->
 <header class="header-comum">
 <div class="container">
-  <div class="logo">
-    <img src="logo.png" alt="Logo Escola">
-    <strong>EEEFM Estudo e Trabalho</strong>
-  </div>
-  <div class="menu">
-    <a href="index.html">Início</a>
-    <a href="noticias.html">Notícias</a>
-    <button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
-    <button onclick="logout()">🚪 Sair</button>
-  </div>
+<div class="logo">
+<img src="logo.png">
+<strong>EEEFM Estudo e Trabalho</strong>
+</div>
+
+<div class="menu">
+<a href="index.html">Início</a>
+<a href="noticias.html">Notícias</a>
+<button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
+<button onclick="logout()">🚪 Sair</button>
+</div>
 </div>
 </header>
 
-<!-- CONTEÚDO PRINCIPAL -->
+<!-- CONTEÚDO -->
 <div class="main-container">
 
 <h2>👨‍🏫 Painel do Professor</h2>
@@ -119,6 +117,7 @@ display:none;
 <table id="tabelaAlunos"></table>
 
 <h3 style="margin-top:30px;">Registrar Nota</h3>
+
 <form onsubmit="registrarNota(event)">
 <input type="number" id="idAluno" placeholder="ID do aluno" required>
 <input type="text" id="disciplinaNota" placeholder="Disciplina" required>
@@ -139,48 +138,118 @@ display:none;
 <script>
 const API="https://portal-escola-backend.onrender.com"
 
-function getToken(){return localStorage.getItem("token")}
-function logout(){localStorage.clear();window.location="login-professor.html"}
-if(!getToken()){logout()}
+function getToken(){
+return localStorage.getItem("token")
+}
+
+function logout(){
+localStorage.clear()
+window.location="login-professor.html"
+}
+
+if(!getToken()){
+logout()
+}
 
 /* CARREGAR ALUNOS */
 async function carregarAlunos(){
+
 let tabela=document.getElementById("tabelaAlunos")
+
 try{
-let res=await fetch(API+"/alunos",{headers:{Authorization:"Bearer "+getToken()}})
-let alunos=await res.json()
-tabela.innerHTML=`<tr><th>ID</th><th>Nome</th><th>CPF</th></tr>`
-alunos.forEach(a=>{
-tabela.innerHTML+=`<tr><td>${a.id}</td><td>${a.nome}</td><td>${a.cpf}</td></tr>`
+
+let res=await fetch(API+"/alunos",{
+headers:{Authorization:"Bearer "+getToken()}
 })
+
+let alunos=await res.json()
+
+tabela.innerHTML=`
+<tr>
+<th>ID</th>
+<th>Nome</th>
+<th>CPF</th>
+</tr>
+`
+
+alunos.forEach(a=>{
+tabela.innerHTML+=`
+<tr>
+<td>${a.id}</td>
+<td>${a.nome}</td>
+<td>${a.cpf}</td>
+</tr>
+`
+})
+
 }catch{
 alert("Erro ao carregar alunos")
 }
+
 }
 
 /* REGISTRAR NOTA */
 async function registrarNota(e){
+
 e.preventDefault()
+
 let aluno_id=document.getElementById("idAluno").value
 let disciplina=document.getElementById("disciplinaNota").value
 let nota=document.getElementById("notaAluno").value
-let res=await fetch(API+"/nota",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+getToken()},body:JSON.stringify({aluno_id,disciplina,nota})})
+
+let res=await fetch(API+"/nota",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:"Bearer "+getToken()
+},
+body:JSON.stringify({aluno_id,disciplina,nota})
+})
+
 let data=await res.json()
-if(data.success){alert("Nota salva");e.target.reset()}else{alert("Erro ao salvar")}
+
+if(data.success){
+alert("Nota salva")
+e.target.reset()
+}else{
+alert("Erro ao salvar")
+}
+
 }
 
 /* TROCAR SENHA */
 function abrirTrocarSenha(){
 let box=document.getElementById("trocarSenhaBox")
-box.style.display = box.style.display==="block"?"none":"block"
+box.style.display = box.style.display==="block" ? "none":"block"
 }
+
 async function trocarSenha(){
+
 let senhaAtual=document.getElementById("senhaAtual").value
 let novaSenha=document.getElementById("novaSenha").value
+
 let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
-let res=await fetch(API+"/trocar-senha",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({cpf:usuario.cpf,senhaAtual,novaSenha,tipo:"professor"})})
+
+let res=await fetch(API+"/trocar-senha",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+cpf:usuario.cpf,
+senhaAtual,
+novaSenha,
+tipo:"professor"
+})
+})
+
 let data=await res.json()
-if(data.success){alert("Senha alterada");document.getElementById("trocarSenhaBox").style.display="none"}else{alert("Erro na senha")}
+
+if(data.success){
+alert("Senha alterada")
+document.getElementById("trocarSenhaBox").style.display="none"
+}else{
+alert("Erro na senha")
+}
+
 }
 
 window.onload=carregarAlunos
