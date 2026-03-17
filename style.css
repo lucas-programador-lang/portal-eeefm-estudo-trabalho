@@ -16,23 +16,15 @@ body{
 background:#0f172a;
 color:#e2e8f0;
 line-height:1.5;
-
-/* ANIMAÇÃO AO CARREGAR */
 animation:fadePage 0.6s ease;
 }
 
 /* =========================
-ANIMAÇÕES GLOBAIS
+ANIMAÇÕES
 ========================= */
 @keyframes fadePage{
-from{
-opacity:0;
-transform:translateY(10px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
 }
 
 @keyframes fadeIn{
@@ -41,38 +33,30 @@ to{opacity:1;}
 }
 
 @keyframes slideUp{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
 }
 
 /* =========================
-HEADER
+HEADER PADRÃO
 ========================= */
-header{
+.header-comum{
+position:fixed;
+top:0;
+left:0;
+width:100%;
 background:#020617;
-color:white;
-padding:15px 0;
-box-shadow:0 0 15px rgba(0,0,0,0.5);
 border-bottom:1px solid #1e293b;
+z-index:999;
 }
 
-.container{
+.header-comum .container{
 max-width:1200px;
 margin:auto;
-padding:0 20px;
-}
-
-nav{
 display:flex;
-justify-content:space-between;
+justify-content:center;
 align-items:center;
-flex-wrap:wrap;
+padding:10px 20px;
 }
 
 .logo{
@@ -82,7 +66,7 @@ gap:10px;
 }
 
 .logo img{
-width:55px;
+width:50px;
 }
 
 .logo strong{
@@ -91,7 +75,7 @@ color:#38bdf8;
 }
 
 /* =========================
-MENU
+MENU (USO GERAL)
 ========================= */
 .menu{
 display:flex;
@@ -127,15 +111,16 @@ color:#38bdf8;
 }
 
 /* =========================
-AVISO
+CONTAINER PADRÃO
 ========================= */
-.aviso-diretor{
-background:#facc15;
-color:#111;
-padding:12px 0;
-text-align:center;
-font-weight:bold;
-animation:fadeIn 0.6s ease;
+.main-container{
+max-width:900px;
+margin:120px auto 40px auto;
+padding:20px;
+background:#020617;
+border-radius:12px;
+border:1px solid #1e293b;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
 }
 
 /* =========================
@@ -193,7 +178,7 @@ margin-bottom:10px;
 /* =========================
 BOTÕES
 ========================= */
-.btn, button{
+.btn{
 display:inline-block;
 margin-top:15px;
 padding:12px 18px;
@@ -207,29 +192,9 @@ cursor:pointer;
 transition:0.3s;
 }
 
-.btn:hover, button:hover{
+.btn:hover{
 background:#0284c7;
 transform:scale(1.03);
-}
-
-/* =========================
-NOTÍCIAS
-========================= */
-.news{
-background:#020617;
-padding:20px;
-border-radius:12px;
-border:1px solid #1e293b;
-box-shadow:0 0 15px rgba(0,0,0,0.4);
-transition:0.3s;
-}
-
-.news:hover{
-transform:translateY(-5px);
-}
-
-.news h3{
-color:#38bdf8;
 }
 
 /* =========================
@@ -286,17 +251,16 @@ color:white;
 }
 
 /* =========================
-BOLETIM
+STATUS
 ========================= */
-.boletim-container{
-max-width:700px;
-margin:80px auto;
-background:#020617;
-padding:30px;
-border-radius:12px;
-border:1px solid #1e293b;
-box-shadow:0 0 25px rgba(0,0,0,0.5);
-animation:slideUp 0.6s ease;
+.aprovado{
+color:#22c55e;
+font-weight:bold;
+}
+
+.reprovado{
+color:#ef4444;
+font-weight:bold;
 }
 
 /* =========================
@@ -311,7 +275,6 @@ border-radius:12px;
 border:1px solid #1e293b;
 box-shadow:0 0 25px rgba(0,0,0,0.5);
 text-align:center;
-animation:fadePage 0.6s ease;
 }
 
 /* =========================
@@ -331,9 +294,8 @@ RESPONSIVO
 ========================= */
 @media(max-width:768px){
 
-nav{
+.header-comum .container{
 flex-direction:column;
-align-items:center;
 gap:10px;
 }
 
