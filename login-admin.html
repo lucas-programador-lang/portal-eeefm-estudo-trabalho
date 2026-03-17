@@ -1,35 +1,26 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login Administrativo</title>
 
 <style>
-body{
-  background:linear-gradient(135deg,#0f172a,#020617);
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
-  font-family:'Segoe UI',sans-serif;
-  color:white;
-  align-items:center;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:linear-gradient(135deg,#0f172a,#020617);min-height:100vh;display:flex;flex-direction:column;align-items:center;color:white;}
 
 /* =========================
-NAVBAR
+HEADER + MENU MOBILE
 ========================= */
 header{
   background:#020617;
   padding:15px 0;
   border-bottom:1px solid #1e293b;
-  width:100%;
   position:fixed;
   top:0;
+  width:100%;
   z-index:100;
 }
-
 header .container{
   max-width:1200px;
   margin:auto;
@@ -38,47 +29,18 @@ header .container{
   justify-content:space-between;
   align-items:center;
 }
-
-header .logo{
+.logo{
   display:flex;
   align-items:center;
   gap:10px;
   color:#38bdf8;
   font-weight:bold;
-  font-size:18px;
 }
-
-header .logo img{
-  width:45px;
-}
-
-header .menu a{
-  color:#cbd5f5;
-  margin-left:20px;
-  text-decoration:none;
-  font-weight:500;
-  transition:0.3s;
-  position:relative;
-}
-
-header .menu a::after{
-  content:"";
-  position:absolute;
-  bottom:-5px;
-  left:0;
-  width:0%;
-  height:2px;
-  background:#38bdf8;
-  transition:0.3s;
-}
-
-header .menu a:hover::after{
-  width:100%;
-}
-
-header .menu a:hover{
-  color:#38bdf8;
-}
+.logo img{width:45px;}
+.menu{display:flex;gap:15px;}
+.menu a{color:#cbd5f5;text-decoration:none;transition:0.3s;}
+.menu a:hover{color:#38bdf8;}
+.menu-toggle{display:none;font-size:24px;color:#38bdf8;cursor:pointer;}
 
 /* =========================
 LOGIN BOX
@@ -92,122 +54,87 @@ LOGIN BOX
   border:1px solid #1e293b;
   box-shadow:0 0 25px rgba(0,0,0,0.5);
   text-align:center;
-  margin:150px auto 0 auto; /* espaço para navbar fixa */
+  margin:150px auto 0 auto;
 }
+.login-box h2{margin-bottom:20px;color:#38bdf8;}
+input{width:100%;padding:12px;margin-top:12px;border-radius:8px;border:1px solid #1e293b;background:#0f172a;color:white;}
+input:focus{outline:none;border-color:#38bdf8;}
+button{width:100%;padding:12px;margin-top:15px;border:none;border-radius:8px;background:#0ea5e9;color:white;font-weight:bold;cursor:pointer;transition:0.2s;}
+button:hover{background:#0284c7;}
+.loading{opacity:0.6;pointer-events:none;}
+.erro{color:#ef4444;margin-top:10px;font-size:14px;}
 
-.login-box h2{
-  margin-bottom:20px;
-  color:#38bdf8;
-}
-
-input{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border-radius:8px;
-  border:1px solid #1e293b;
-  background:#0f172a;
-  color:white;
-}
-
-input:focus{
-  outline:none;
-  border-color:#38bdf8;
-}
-
-button{
-  width:100%;
-  padding:12px;
-  margin-top:15px;
-  border:none;
-  border-radius:8px;
-  background:#0ea5e9;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
-  transition:0.2s;
-}
-
-button:hover{
-  background:#0284c7;
-}
-
-.loading{
-  opacity:0.6;
-  pointer-events:none;
-}
-
-.erro{
-  color:#ef4444;
-  margin-top:10px;
-  font-size:14px;
+/* =========================
+RESPONSIVO
+========================= */
+@media(max-width:768px){
+  .menu{display:none;flex-direction:column;position:absolute;top:60px;right:20px;background:#020617;padding:10px;border-radius:8px;}
+  .menu.show{display:flex;}
+  .menu-toggle{display:block;}
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR FIXA -->
 <header>
-  <div class="container">
-    <div class="logo">
-      <img src="logo.png" alt="Logo Escola">
-      EEEFM Estudo e Trabalho
-    </div>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="noticias.html">Notícias</a>
-      <a href="login.html">Portal do Aluno</a>
-      <a href="login-professor.html">Portal do Professor</a>
-    </div>
+<div class="container">
+  <div class="logo">
+    <img src="logo.png" alt="Logo Escola"> EEEFM Estudo e Trabalho
   </div>
+
+  <div class="menu-toggle" id="menuToggle">&#9776;</div>
+
+  <nav class="menu" id="menuNav">
+    <a href="index.html">Início</a>
+    <a href="noticias.html">Notícias</a>
+    <a href="login.html">Aluno</a>
+    <a href="login-professor.html">Professor</a>
+  </nav>
+</div>
 </header>
 
-<!-- LOGIN -->
-<div class="login-box">
-<h2>Login Administrativo</h2>
-<input id="usuario" placeholder="Usuário">
-<input type="password" id="senha" placeholder="Senha">
-<button id="btnLogin">Entrar</button>
-<div id="erro" class="erro"></div>
+<div class="login-box" id="loginBox">
+  <h2>Login Administrativo</h2>
+  <input id="usuario" placeholder="Usuário">
+  <input type="password" id="senha" placeholder="Senha">
+  <button id="btnLogin">Entrar</button>
+  <div id="erro" class="erro"></div>
 </div>
 
 <script>
-const API = "https://portal-escola-backend.onrender.com"
-const btn = document.getElementById("btnLogin")
-const erro = document.getElementById("erro")
+const API="https://portal-escola-backend.onrender.com"
 
-btn.onclick = loginAdmin
+// MENU MOBILE
+const menuToggle=document.getElementById("menuToggle")
+const menuNav=document.getElementById("menuNav")
+menuToggle.onclick=()=>menuNav.classList.toggle("show")
 
-async function loginAdmin(){
+// LOGIN
+const btnLogin=document.getElementById("btnLogin")
+const erro=document.getElementById("erro")
+
+btnLogin.onclick=async function loginAdmin(){
   erro.innerText=""
-  let usuario = document.getElementById("usuario").value
-  let senha = document.getElementById("senha").value
+  let usuario=document.getElementById("usuario").value
+  let senha=document.getElementById("senha").value
 
-  if(!usuario || !senha){
-    erro.innerText="Preencha usuário e senha"
-    return
-  }
+  if(!usuario||!senha){erro.innerText="Preencha usuário e senha";return}
 
-  btn.classList.add("loading")
-  btn.innerText="Entrando..."
+  btnLogin.classList.add("loading")
+  btnLogin.innerText="Entrando..."
 
   try{
     localStorage.clear()
-    let res = await fetch(API + "/login-admin",{
+    let res=await fetch(API+"/login-admin",{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify({usuario,senha})
     })
 
-    if(!res.ok){
-      erro.innerText="Servidor indisponível"
-      btn.classList.remove("loading")
-      btn.innerText="Entrar"
-      return
-    }
+    if(!res.ok){erro.innerText="Servidor indisponível";btnLogin.classList.remove("loading");btnLogin.innerText="Entrar";return}
 
-    let data = await res.json()
+    let data=await res.json()
     if(data.success){
       localStorage.setItem("token",data.token)
       localStorage.setItem("usuario",JSON.stringify({usuario,tipo:"admin"}))
@@ -215,21 +142,18 @@ async function loginAdmin(){
     }else{
       erro.innerText="Usuário ou senha inválidos"
     }
+
   }catch(err){
     console.error(err)
-    erro.innerText="Erro ao conectar com servidor"
+    erro.innerText="Erro de conexão"
   }
 
-  btn.classList.remove("loading")
-  btn.innerText="Entrar"
+  btnLogin.classList.remove("loading")
+  btnLogin.innerText="Entrar"
 }
 
-// permitir ENTER
-document.addEventListener("keypress",(e)=>{
-  if(e.key==="Enter"){
-    loginAdmin()
-  }
-})
+// ENTER para login
+document.addEventListener("keypress",(e)=>{if(e.key==="Enter") loginAdmin()})
 </script>
 
 </body>
