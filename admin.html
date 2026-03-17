@@ -9,11 +9,10 @@
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <style>
-/* RESET */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
 
-/* HEADER COMUM */
+/* HEADER */
 .header-comum{
   position:fixed;
   top:0;
@@ -22,14 +21,13 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
   background:#020617;
   border-bottom:1px solid #1e293b;
   z-index:999;
-  animation:slideDown 0.5s ease;
 }
 .header-comum .container{
   max-width:1200px;
   margin:auto;
   padding:0 20px;
   display:flex;
-  justify-content:space-between;
+  justify-content:center;
   align-items:center;
 }
 .header-comum .logo{
@@ -39,18 +37,6 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
 }
 .header-comum .logo img{width:50px;}
 .header-comum .logo strong{color:#38bdf8;font-size:18px;}
-.header-comum .menu a, .header-comum .menu button{
-  color:#cbd5f5;
-  margin-left:15px;
-  text-decoration:none;
-  font-weight:500;
-  background:none;
-  border:none;
-  cursor:pointer;
-  transition:0.2s;
-}
-.header-comum .menu a:hover, .header-comum .menu button:hover{color:#38bdf8;}
-@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
 
 /* SIDEBAR */
 .sidebar{
@@ -63,7 +49,7 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
 }
 .sidebar h2{text-align:center;margin-bottom:30px;color:#38bdf8;}
 .sidebar button{
-  display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;transition:0.2s;
+  display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;
 }
 .sidebar button:hover{background:#0ea5e9;color:white;}
 
@@ -79,9 +65,8 @@ body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
   background:#020617;
   padding:25px;
   border-radius:12px;
-  box-shadow:0 0 20px rgba(0,0,0,0.4);
-  margin-top:20px;
   border:1px solid #1e293b;
+  margin-top:20px;
 }
 
 /* INPUTS */
@@ -93,9 +78,7 @@ input, textarea{
   border-radius:8px;
   background:#0f172a;
   color:white;
-  font-size:14px;
 }
-input:focus, textarea:focus{outline:none;border-color:#38bdf8;}
 
 /* BOTÃO */
 button.action{
@@ -106,10 +89,7 @@ button.action{
   border:none;
   border-radius:8px;
   cursor:pointer;
-  font-weight:bold;
-  transition:0.2s;
 }
-button.action:hover{background:#0284c7;}
 
 /* DASHBOARD */
 .dashboard{
@@ -129,48 +109,28 @@ button.action:hover{background:#0284c7;}
 }
 
 /* SEÇÕES */
-.section{
-  display:none;
-  opacity:0;
-  transform:translateY(10px);
-  transition:0.3s;
-}
+.section{display:none;}
 .section.active{display:block;}
-.section.fade{opacity:1;transform:translateY(0);}
 
 /* TABELA */
 table{width:100%;border-collapse:collapse;margin-top:15px;}
 th, td{border:1px solid #1e293b;padding:10px;}
 th{background:#0ea5e9;color:white;}
 .small-btn{background:#ef4444;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
-.small-btn:hover{background:#dc2626;}
 
 /* EDITOR */
 #editor{height:200px;margin-top:10px;background:white;color:black;border-radius:8px;}
-
-/* RESPONSIVO */
-@media(max-width:768px){
-  .sidebar{width:100%;position:relative;border-right:none;padding-top:20px;}
-  .main{margin-left:0;padding:30px;}
-  .header-comum .menu{flex-wrap:wrap;justify-content:center;}
-  .header-comum .menu a, .header-comum .menu button{margin:5px;}
-}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER COMUM -->
+<!-- HEADER (SEM MENU) -->
 <header class="header-comum">
   <div class="container">
     <div class="logo">
       <img src="logo.png" alt="Logo Escola">
       <strong>EEEFM Estudo e Trabalho</strong>
-    </div>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="noticias.html">Notícias</a>
-      <button onclick="logout()">Sair</button>
     </div>
   </div>
 </header>
@@ -189,8 +149,7 @@ th{background:#0ea5e9;color:white;}
 
 <div class="main">
 
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="section active fade">
+  <div id="dashboard" class="section active">
     <h2>Dashboard</h2>
     <div class="dashboard">
       <div class="card">
@@ -208,26 +167,24 @@ th{background:#0ea5e9;color:white;}
     </div>
   </div>
 
-  <!-- ALUNOS -->
   <div id="alunos" class="section">
     <div class="box">
       <h3>Cadastrar Aluno</h3>
       <form id="formAluno">
         <input id="nomeAluno" placeholder="Nome" required>
-        <input id="cpfAluno" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
+        <input id="cpfAluno" placeholder="CPF" required>
         <input id="senhaAluno" placeholder="Senha" required>
         <button class="action">Cadastrar</button>
       </form>
     </div>
   </div>
 
-  <!-- PROFESSORES -->
   <div id="professores" class="section">
     <div class="box">
       <h3>Cadastrar Professor</h3>
       <form id="formProfessor">
         <input id="nomeProfessor" placeholder="Nome" required>
-        <input id="cpfProfessor" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
+        <input id="cpfProfessor" placeholder="CPF" required>
         <input id="senhaProfessor" placeholder="Senha" required>
         <input id="disciplinaProfessor" placeholder="Disciplina" required>
         <button class="action">Cadastrar</button>
@@ -235,58 +192,10 @@ th{background:#0ea5e9;color:white;}
     </div>
   </div>
 
-  <!-- AVISOS -->
-  <div id="avisos" class="section">
-    <div class="box">
-      <h3>Publicar Aviso</h3>
-      <form id="formAviso">
-        <input id="tituloAviso" placeholder="Título" required>
-        <textarea id="textoAviso" placeholder="Mensagem" required></textarea>
-        <button class="action">Publicar</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- NOTÍCIAS -->
-  <div id="noticias" class="section">
-    <div class="box">
-      <h3>Publicar Notícia</h3>
-      <form id="formNoticia">
-        <input id="tituloNoticia" placeholder="Título" required>
-        <input id="subtituloNoticia" placeholder="Subtítulo">
-        <label>📷 Imagem</label>
-        <input type="file" id="imagemUpload" accept="image/*">
-        <label>Conteúdo</label>
-        <div id="editor"></div>
-        <button class="action">Publicar</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- PUBLICAÇÕES -->
-  <div id="publicacoes" class="section">
-    <div class="box">
-      <h3>Publicações</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Tipo</th>
-            <th>Data</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody id="listaPublicacoes"></tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
 
 <script src="script.js"></script>
 <script>
-// INICIAR EDITOR
 var quill = new Quill('#editor', { theme: 'snow' })
 </script>
 
