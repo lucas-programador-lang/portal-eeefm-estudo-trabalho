@@ -22,6 +22,28 @@ border-bottom:1px solid #1e293b;
 z-index:999;
 }
 
+/* CENTRALIZAR HEADER */
+.header-comum .container{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:10px;
+}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.logo img{
+width:50px;
+}
+
+.logo strong{
+color:#38bdf8;
+}
+
 /* CONTAINER */
 .main-container{
 max-width:900px;
@@ -91,19 +113,12 @@ display:none;
 
 <body>
 
-<!-- HEADER PADRÃO (ÚNICO) -->
+<!-- HEADER LIMPO -->
 <header class="header-comum">
 <div class="container">
 <div class="logo">
 <img src="logo.png">
 <strong>EEEFM Estudo e Trabalho</strong>
-</div>
-
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="noticias.html">Notícias</a>
-<button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
-<button onclick="logout()">🚪 Sair</button>
 </div>
 </div>
 </header>
@@ -124,6 +139,12 @@ display:none;
 <input type="number" step="0.1" id="notaAluno" placeholder="Nota" required>
 <button type="submit">Salvar Nota</button>
 </form>
+
+<!-- BOTÕES ÚTEIS -->
+<div style="margin-top:20px;">
+<button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
+<button onclick="logout()">🚪 Sair</button>
+</div>
 
 </div>
 
