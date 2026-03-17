@@ -10,8 +10,7 @@ const API = "https://portal-escola-backend.onrender.com"
 function mostrar(sec){
 
 document.querySelectorAll(".section").forEach(s=>{
-s.classList.remove("active")
-s.classList.remove("fade")
+s.classList.remove("active","fade")
 })
 
 const el = document.getElementById(sec)
@@ -36,7 +35,7 @@ return localStorage.getItem("token")
 
 
 // ==========================
-// LOGOUT AUTOMÁTICO
+// VERIFICAR LOGIN
 // ==========================
 function verificarLogin(){
 
@@ -52,7 +51,7 @@ return true
 
 
 // ==========================
-// FETCH PADRÃO
+// FETCH PADRÃO (ROBUSTO)
 // ==========================
 async function apiFetch(url, options={}){
 
@@ -70,6 +69,10 @@ Authorization:"Bearer "+getToken(),
 if(res.status === 401){
 logout()
 return null
+}
+
+if(!res.ok){
+throw new Error("Erro servidor")
 }
 
 return await res.json()
@@ -110,13 +113,8 @@ let dados = await apiFetch("/dashboard")
 
 if(!dados) return
 
-if(document.getElementById("totalAlunos"))
 document.getElementById("totalAlunos").innerText = dados.alunos || 0
-
-if(document.getElementById("totalProfessores"))
 document.getElementById("totalProfessores").innerText = dados.professores || 0
-
-if(document.getElementById("totalPublicacoes"))
 document.getElementById("totalPublicacoes").innerText = dados.publicacoes || 0
 
 }
@@ -142,14 +140,14 @@ if(!data) return
 
 if(data.success){
 
-alert("✅ Aluno cadastrado")
+alert("✅ Aluno cadastrado com sucesso")
 
 e.target.reset()
 carregarDashboard()
 
 }else{
 
-alert(data.erro || "Erro ao cadastrar")
+alert(data.erro || "Erro ao cadastrar aluno")
 
 }
 
@@ -177,14 +175,14 @@ if(!data) return
 
 if(data.success){
 
-alert("✅ Professor cadastrado")
+alert("✅ Professor cadastrado com sucesso")
 
 e.target.reset()
 carregarDashboard()
 
 }else{
 
-alert(data.erro || "Erro ao cadastrar")
+alert(data.erro || "Erro ao cadastrar professor")
 
 }
 
@@ -217,13 +215,12 @@ if(data.success){
 alert("✅ Aviso publicado")
 
 e.target.reset()
-
 carregarPublicacoes()
 carregarDashboard()
 
 }else{
 
-alert("Erro ao publicar")
+alert(data.erro || "Erro ao publicar aviso")
 
 }
 
@@ -271,7 +268,7 @@ carregarDashboard()
 
 }else{
 
-alert("Erro ao publicar")
+alert(data.erro || "Erro ao publicar notícia")
 
 }
 
@@ -286,10 +283,9 @@ async function carregarPublicacoes(){
 let tabela = document.getElementById("listaPublicacoes")
 if(!tabela) return
 
-try{
+let dados = await apiFetch("/publicacoes")
 
-let res = await fetch(API+"/publicacoes")
-let dados = await res.json()
+if(!dados) return
 
 tabela.innerHTML=""
 
@@ -302,16 +298,14 @@ tabela.innerHTML+=`
 <td>${p.tipo}</td>
 <td>${new Date(p.data_publicacao).toLocaleDateString()}</td>
 <td>
-<button onclick="excluirPublicacao(${p.id})">Excluir</button>
+<button class="small-btn" onclick="excluirPublicacao(${p.id})">
+Excluir
+</button>
 </td>
 </tr>
 `
 
 })
-
-}catch{
-console.log("Erro publicações")
-}
 
 }
 
