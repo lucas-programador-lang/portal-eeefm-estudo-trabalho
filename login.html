@@ -6,20 +6,11 @@
 <title>Portal do Aluno</title>
 
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI',sans-serif;
-}
-
-body{
-  background:linear-gradient(135deg,#0f172a,#020617);
-  min-height:100vh;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:linear-gradient(135deg,#0f172a,#020617);min-height:100vh;}
 
 /* =========================
-NAVBAR
+HEADER FIXO COM MENU MOBILE
 ========================= */
 header{
   background:#020617;
@@ -48,41 +39,32 @@ header .logo{
   font-weight:bold;
   font-size:18px;
 }
+header .logo img{width:45px;}
 
-header .logo img{
-  width:45px;
+.menu{
+  display:flex;
+  gap:15px;
 }
 
-header .menu a{
+.menu a{
   color:#cbd5f5;
-  margin-left:20px;
   text-decoration:none;
   font-weight:500;
   transition:0.3s;
-  position:relative;
 }
 
-header .menu a::after{
-  content:"";
-  position:absolute;
-  bottom:-5px;
-  left:0;
-  width:0%;
-  height:2px;
-  background:#38bdf8;
-  transition:0.3s;
-}
+.menu a:hover{color:#38bdf8;}
 
-header .menu a:hover::after{
-  width:100%;
-}
-
-header .menu a:hover{
+/* BOTÃO MOBILE */
+.menu-toggle{
+  display:none;
+  font-size:24px;
   color:#38bdf8;
+  cursor:pointer;
 }
 
 /* =========================
-CONTAINER LOGIN
+LOGIN CONTAINER
 ========================= */
 .login-container{
   width:100%;
@@ -93,13 +75,10 @@ CONTAINER LOGIN
   border:1px solid #1e293b;
   box-shadow:0 0 30px rgba(0,0,0,0.5);
   text-align:center;
-  margin:150px auto 0 auto; /* adiciona espaço abaixo da navbar */
+  margin:150px auto 0 auto;
 }
 
-.login-container h2{
-  margin-bottom:20px;
-  color:#38bdf8;
-}
+.login-container h2{margin-bottom:20px;color:#38bdf8;}
 
 input{
   width:100%;
@@ -111,10 +90,7 @@ input{
   color:white;
 }
 
-input:focus{
-  outline:none;
-  border-color:#38bdf8;
-}
+input:focus{outline:none;border-color:#38bdf8;}
 
 button{
   width:100%;
@@ -129,9 +105,7 @@ button{
   transition:0.2s;
 }
 
-button:hover{
-  background:#0284c7;
-}
+button:hover{background:#0284c7;}
 
 .loading{
   opacity:0.6;
@@ -144,43 +118,52 @@ button:hover{
   font-size:14px;
 }
 
+/* =========================
+RESPONSIVO
+========================= */
+@media(max-width:768px){
+  .menu{display:none;flex-direction:column;background:#020617;position:absolute;top:60px;right:20px;padding:10px;border-radius:8px;}
+  .menu.show{display:flex;}
+  .menu-toggle{display:block;}
+}
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR FIXA -->
 <header>
-  <div class="container">
-    <div class="logo">
-      <img src="logo.png" alt="Logo Escola">
-      EEEFM Estudo e Trabalho
-    </div>
-    <div class="menu">
-      <a href="index.html">Início</a>
-      <a href="noticias.html">Notícias</a>
-      <a href="login-professor.html">Portal do Professor</a>
-      <a href="admin.html">Admin</a>
-    </div>
+<div class="container">
+  <div class="logo">
+    <img src="logo.png" alt="Logo Escola">
+    EEEFM Estudo e Trabalho
   </div>
+  <div class="menu-toggle" id="menuToggle">&#9776;</div>
+  <nav class="menu" id="menuNav">
+    <a href="index.html">Início</a>
+    <a href="noticias.html">Notícias</a>
+    <a href="login-professor.html">Portal do Professor</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+</div>
 </header>
 
-<!-- LOGIN -->
 <div class="login-container">
   <h2>🎓 Portal do Aluno</h2>
-
   <input id="cpf" placeholder="CPF" maxlength="14">
   <input type="password" id="senha" placeholder="Senha">
-
   <button id="btnLogin">Entrar</button>
   <div id="erro" class="erro"></div>
 </div>
 
 <script>
 const API="https://portal-escola-backend.onrender.com"
+const btn=document.getElementById("btnLogin")
+const erro=document.getElementById("erro")
 
-const btn = document.getElementById("btnLogin")
-const erro = document.getElementById("erro")
+// MENU MOBILE
+const menuToggle=document.getElementById("menuToggle")
+const menuNav=document.getElementById("menuNav")
+menuToggle.addEventListener("click",()=>menuNav.classList.toggle("show"))
 
 // FORMATAR CPF
 document.getElementById("cpf").addEventListener("input",(e)=>{
@@ -188,20 +171,14 @@ document.getElementById("cpf").addEventListener("input",(e)=>{
   cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
   cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
   cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-  e.target.value = cpf
+  e.target.value=cpf
 })
 
-btn.onclick = loginAluno
-
-async function loginAluno(){
+btn.onclick = async function loginAluno(){
   erro.innerText=""
   let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
   let senha=document.getElementById("senha").value
-
-  if(!cpf || !senha){
-    erro.innerText="Preencha todos os campos"
-    return
-  }
+  if(!cpf || !senha){erro.innerText="Preencha todos os campos";return}
 
   btn.classList.add("loading")
   btn.innerText="Entrando..."
@@ -212,9 +189,7 @@ async function loginAluno(){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({cpf,senha})
     })
-
     let data=await res.json()
-
     if(data.success){
       localStorage.setItem("token",data.token)
       localStorage.setItem("usuario",JSON.stringify(data.aluno))
@@ -222,7 +197,6 @@ async function loginAluno(){
     }else{
       erro.innerText="CPF ou senha inválidos"
     }
-
   }catch{
     erro.innerText="Erro de conexão com servidor"
   }
