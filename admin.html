@@ -10,95 +10,106 @@
 
 <style>
 
-body{
+/* RESET */
+*{
 margin:0;
-font-family:Arial, Helvetica, sans-serif;
-background:#f1f4fb;
-display:flex;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
 }
 
+body{
+background:#0f172a;
+display:flex;
+color:#fff;
+}
+
+/* SIDEBAR */
 .sidebar{
-width:220px;
-background:#0a2a66;
+width:230px;
+background:#020617;
 min-height:100vh;
-color:white;
 padding-top:20px;
 position:fixed;
+border-right:1px solid #1e293b;
 }
 
 .sidebar h2{
 text-align:center;
 margin-bottom:30px;
+color:#38bdf8;
 }
 
 .sidebar button{
 display:block;
 width:100%;
-padding:12px 20px;
+padding:14px 20px;
 background:none;
 border:none;
-color:white;
+color:#cbd5f5;
 text-align:left;
 cursor:pointer;
 font-size:15px;
+transition:0.2s;
 }
 
 .sidebar button:hover{
-background:#123c8a;
+background:#0ea5e9;
+color:white;
 }
 
+/* MAIN */
 .main{
-margin-left:220px;
+margin-left:230px;
 padding:30px;
 width:100%;
-box-sizing:border-box;
 }
 
+/* BOX */
 .box{
-background:white;
+background:#020617;
 padding:25px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+border-radius:12px;
+box-shadow:0 0 20px rgba(0,0,0,0.4);
 margin-top:20px;
+border:1px solid #1e293b;
 }
 
+/* INPUTS */
 input, textarea{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
-border:1px solid #ccc;
-border-radius:6px;
-box-sizing:border-box;
-font-size:15px;
+border:1px solid #1e293b;
+border-radius:8px;
+background:#0f172a;
+color:white;
+font-size:14px;
 }
 
-label{
-display:block;
-margin-top:12px;
-font-weight:bold;
+input:focus, textarea:focus{
+outline:none;
+border-color:#38bdf8;
 }
 
+/* BOTÃO */
 button.action{
 margin-top:15px;
-padding:10px 15px;
-background:#0a2a66;
+padding:12px;
+background:#0ea5e9;
 color:white;
 border:none;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
-font-size:15px;
+font-weight:bold;
+transition:0.2s;
 }
 
 button.action:hover{
-background:#123c8a;
+background:#0284c7;
 }
 
-#editor{
-height:200px;
-margin-top:10px;
-background:white;
-}
-
+/* DASHBOARD */
 .dashboard{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
@@ -106,48 +117,55 @@ gap:20px;
 }
 
 .card{
-background:white;
+background:#020617;
 padding:25px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
+border-radius:12px;
+border:1px solid #1e293b;
 text-align:center;
 }
 
 .card p{
-font-size:32px;
-color:#0a2a66;
+font-size:30px;
+color:#38bdf8;
 font-weight:bold;
-margin:10px 0 0;
 }
 
+/* SEÇÕES */
 .section{
 display:none;
+opacity:0;
+transform:translateY(10px);
+transition:0.3s;
 }
 
 .section.active{
 display:block;
 }
 
+.section.fade{
+opacity:1;
+transform:translateY(0);
+}
+
+/* TABELA */
 table{
 width:100%;
 border-collapse:collapse;
 margin-top:15px;
-background:white;
 }
 
 th, td{
-border:1px solid #ddd;
+border:1px solid #1e293b;
 padding:10px;
-text-align:left;
 }
 
 th{
-background:#0a2a66;
+background:#0ea5e9;
 color:white;
 }
 
 .small-btn{
-background:#dc2626;
+background:#ef4444;
 color:white;
 border:none;
 padding:6px 10px;
@@ -156,7 +174,16 @@ cursor:pointer;
 }
 
 .small-btn:hover{
-background:#b91c1c;
+background:#dc2626;
+}
+
+/* EDITOR */
+#editor{
+height:200px;
+margin-top:10px;
+background:white;
+color:black;
+border-radius:8px;
 }
 
 </style>
@@ -165,23 +192,21 @@ background:#b91c1c;
 <body>
 
 <div class="sidebar">
+<h2>⚙️ Admin</h2>
 
-<h2>Admin</h2>
-
-<button onclick="mostrar('dashboard')">Dashboard</button>
-<button onclick="mostrar('alunos')">Alunos</button>
-<button onclick="mostrar('professores')">Professores</button>
-<button onclick="mostrar('avisos')">Avisos</button>
-<button onclick="mostrar('noticias')">Notícias</button>
-<button onclick="mostrar('publicacoes')">Publicações</button>
-<button onclick="logout()">Sair</button>
-
+<button onclick="mostrar('dashboard')">📊 Dashboard</button>
+<button onclick="mostrar('alunos')">👨‍🎓 Alunos</button>
+<button onclick="mostrar('professores')">👨‍🏫 Professores</button>
+<button onclick="mostrar('avisos')">📢 Avisos</button>
+<button onclick="mostrar('noticias')">📰 Notícias</button>
+<button onclick="mostrar('publicacoes')">📋 Publicações</button>
+<button onclick="logout()">🚪 Sair</button>
 </div>
-
 
 <div class="main">
 
-<div id="dashboard" class="section active">
+<!-- DASHBOARD -->
+<div id="dashboard" class="section active fade">
 
 <h2>Dashboard</h2>
 
@@ -206,8 +231,7 @@ background:#b91c1c;
 
 </div>
 
-
-
+<!-- ALUNOS -->
 <div id="alunos" class="section">
 
 <div class="box">
@@ -215,23 +239,17 @@ background:#b91c1c;
 <h3>Cadastrar Aluno</h3>
 
 <form id="formAluno">
-
 <input id="nomeAluno" placeholder="Nome" required>
-<input id="cpfAluno" placeholder="CPF" required maxlength="14">
+<input id="cpfAluno" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
 <input id="senhaAluno" placeholder="Senha" required>
-
-<button class="action" type="submit">
-Cadastrar
-</button>
-
+<button class="action">Cadastrar</button>
 </form>
 
 </div>
 
 </div>
 
-
-
+<!-- PROFESSORES -->
 <div id="professores" class="section">
 
 <div class="box">
@@ -239,24 +257,18 @@ Cadastrar
 <h3>Cadastrar Professor</h3>
 
 <form id="formProfessor">
-
 <input id="nomeProfessor" placeholder="Nome" required>
-<input id="cpfProfessor" placeholder="CPF" required maxlength="14">
+<input id="cpfProfessor" placeholder="CPF" required maxlength="14" oninput="formatarCPF(this)">
 <input id="senhaProfessor" placeholder="Senha" required>
 <input id="disciplinaProfessor" placeholder="Disciplina" required>
-
-<button class="action" type="submit">
-Cadastrar
-</button>
-
+<button class="action">Cadastrar</button>
 </form>
 
 </div>
 
 </div>
 
-
-
+<!-- AVISOS -->
 <div id="avisos" class="section">
 
 <div class="box">
@@ -264,23 +276,16 @@ Cadastrar
 <h3>Publicar Aviso</h3>
 
 <form id="formAviso">
-
 <input id="tituloAviso" placeholder="Título" required>
-
 <textarea id="textoAviso" placeholder="Mensagem" required></textarea>
-
-<button class="action" type="submit">
-Publicar
-</button>
-
+<button class="action">Publicar</button>
 </form>
 
 </div>
 
 </div>
 
-
-
+<!-- NOTÍCIAS -->
 <div id="noticias" class="section">
 
 <div class="box">
@@ -298,9 +303,7 @@ Publicar
 <label>Conteúdo</label>
 <div id="editor"></div>
 
-<button class="action" type="submit">
-Publicar
-</button>
+<button class="action">Publicar</button>
 
 </form>
 
@@ -308,8 +311,7 @@ Publicar
 
 </div>
 
-
-
+<!-- PUBLICAÇÕES -->
 <div id="publicacoes" class="section">
 
 <div class="box">
@@ -317,9 +319,7 @@ Publicar
 <h3>Publicações</h3>
 
 <table>
-
 <thead>
-
 <tr>
 <th>ID</th>
 <th>Título</th>
@@ -327,7 +327,6 @@ Publicar
 <th>Data</th>
 <th>Ação</th>
 </tr>
-
 </thead>
 
 <tbody id="listaPublicacoes"></tbody>
@@ -340,8 +339,14 @@ Publicar
 
 </div>
 
-
 <script src="script.js"></script>
+
+<script>
+// INICIAR EDITOR
+var quill = new Quill('#editor', {
+theme: 'snow'
+})
+</script>
 
 </body>
 </html>
