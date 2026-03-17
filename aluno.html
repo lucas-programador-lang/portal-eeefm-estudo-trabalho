@@ -1,70 +1,73 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Boletim Escolar</title>
+<title>Portal do Aluno</title>
 
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* RESET */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#0f172a;color:white;transition:0.3s;}
 
-body{
-background:#0f172a;
-color:white;
+/* HEADER COMUM */
+.header-comum{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  background:#020617;
+  border-bottom:1px solid #1e293b;
+  z-index:999;
+  animation:slideDown 0.5s ease;
 }
+.header-comum .container{
+  max-width:1200px;
+  margin:auto;
+  padding:0 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.header-comum .logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.header-comum .logo img{width:50px;}
+.header-comum .logo strong{color:#38bdf8;font-size:18px;}
+.header-comum .menu a, .header-comum .menu button{
+  color:#cbd5f5;
+  margin-left:15px;
+  text-decoration:none;
+  font-weight:500;
+  background:none;
+  border:none;
+  cursor:pointer;
+  transition:0.2s;
+}
+.header-comum .menu a:hover, .header-comum .menu button:hover{color:#38bdf8;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
 
 /* BOLETIM */
-.boletim-container{
-max-width:800px;
-margin:40px auto;
-background:#020617;
-padding:30px;
-border-radius:12px;
-border:1px solid #1e293b;
-box-shadow:0 0 25px rgba(0,0,0,0.5);
+.main-container{
+  max-width:800px;
+  margin:120px auto 40px auto;
+  padding:20px;
+  background:#020617;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  box-shadow:0 0 25px rgba(0,0,0,0.5);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-margin-top:20px;
-}
-
-th{
-background:#0ea5e9;
-color:white;
-padding:10px;
-}
-
-td{
-padding:10px;
-border:1px solid #1e293b;
-}
-
-/* STATUS */
-.aprovado{
-color:#22c55e;
-font-weight:bold;
-}
-
-.reprovado{
-color:#ef4444;
-font-weight:bold;
-}
-
-/* BOTÃO */
-.btn{
-margin-top:20px;
-padding:12px;
-background:#0ea5e9;
-border:none;
-border-radius:8px;
-cursor:pointer;
-color:white;
-}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th{background:#0ea5e9;color:white;padding:10px;}
+td{padding:10px;border:1px solid #1e293b;}
+.aprovado{color:#22c55e;font-weight:bold;}
+.reprovado{color:#ef4444;font-weight:bold;}
+.btn{margin-top:20px;padding:12px;background:#0ea5e9;border:none;border-radius:8px;cursor:pointer;color:white;}
 
 /* TROCAR SENHA */
 .trocar-senha-box{
@@ -76,7 +79,6 @@ border-radius:10px;
 border:1px solid #1e293b;
 display:none;
 }
-
 input{
 width:100%;
 padding:10px;
@@ -86,173 +88,110 @@ border:1px solid #1e293b;
 background:#0f172a;
 color:white;
 }
-
 </style>
-
 </head>
 
 <body>
 
-<div class="boletim-container">
+<!-- HEADER COMUM -->
+<header class="header-comum">
+<div class="container">
+  <div class="logo">
+    <img src="logo.png" alt="Logo Escola">
+    <strong>EEEFM Estudo e Trabalho</strong>
+  </div>
+  <div class="menu">
+    <a href="index.html">Início</a>
+    <a href="noticias.html">Notícias</a>
+    <button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
+    <button onclick="logout()">🚪 Sair</button>
+  </div>
+</div>
+</header>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div class="main-container">
 
 <h2>📘 Boletim Escolar</h2>
 
 <table id="tabela"></table>
 
 <button class="btn" onclick="exportarPDF()">📄 Baixar PDF</button>
-<button class="btn" onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
-<button class="btn" onclick="logout()">🚪 Sair</button>
 
 </div>
 
+<!-- TROCAR SENHA -->
 <div class="trocar-senha-box" id="trocarSenhaBox">
-
 <h3>Alterar Senha</h3>
-
 <input type="password" id="senhaAtual" placeholder="Senha atual">
 <input type="password" id="novaSenha" placeholder="Nova senha">
-
 <button class="btn" onclick="trocarSenha()">Salvar</button>
-
 </div>
 
 <script>
+const API="https://portal-escola-backend.onrender.com"
 
-const API = "https://portal-escola-backend.onrender.com"
+function getToken(){return localStorage.getItem("token")}
+function logout(){localStorage.clear(); window.location="login.html"}
+if(!getToken()){logout()}
 
-function getToken(){
-return localStorage.getItem("token")
-}
-
-function logout(){
-localStorage.clear()
-window.location="login.html"
-}
-
-if(!getToken()){
-logout()
-}
-
-/* =========================
-CARREGAR BOLETIM
-========================= */
-
+/* CARREGAR BOLETIM */
 async function carregarBoletim(){
-
-let tabela = document.getElementById("tabela")
-let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
+let tabela=document.getElementById("tabela")
+let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
 
 try{
+let res=await fetch(API+"/boletim/"+usuario.id,{headers:{Authorization:"Bearer "+getToken()}})
+if(res.status===401){logout();return}
+let notas=await res.json()
+let soma=0
 
-let res = await fetch(API+"/notas/"+usuario.id,{
-headers:{
-Authorization:"Bearer "+getToken()
-}
-})
-
-if(res.status === 401){
-logout()
-return
-}
-
-let notas = await res.json()
-
-let soma = 0
-
-tabela.innerHTML = `
-<tr>
-<th>Disciplina</th>
-<th>Nota</th>
-</tr>
-`
+tabela.innerHTML=`<tr><th>Disciplina</th><th>Nota</th></tr>`
 
 notas.forEach(n=>{
-
-tabela.innerHTML += `
-<tr>
-<td>${n.disciplina}</td>
-<td>${n.nota}</td>
-</tr>
-`
-
-soma += Number(n.nota)
-
+  tabela.innerHTML+=`<tr><td>${n.disciplina}</td><td>${n.nota}</td></tr>`
+  soma+=Number(n.nota)
 })
 
-let media = notas.length ? (soma/notas.length).toFixed(1) : 0
+let media=notas.length?(soma/notas.length).toFixed(1):0
+let aprovado=media>=6
 
-let aprovado = media >= 6
-
-tabela.innerHTML += `
-<tr>
-<td><strong>Média</strong></td>
-<td>${media}</td>
-</tr>
-
-<tr>
-<td><strong>Situação</strong></td>
-<td class="${aprovado ? "aprovado":"reprovado"}">
-${aprovado ? "Aprovado":"Reprovado"}
-</td>
-</tr>
+tabela.innerHTML+=`
+<tr><td><strong>Média</strong></td><td>${media}</td></tr>
+<tr><td><strong>Situação</strong></td><td class="${aprovado?"aprovado":"reprovado"}">${aprovado?"Aprovado":"Reprovado"}</td></tr>
 `
-
 }catch{
 alert("Erro ao carregar boletim")
 }
-
 }
 
-/* =========================
-TROCAR SENHA
-========================= */
-
+/* TROCAR SENHA */
 function abrirTrocarSenha(){
-let box = document.getElementById("trocarSenhaBox")
-box.style.display = box.style.display === "block" ? "none":"block"
+let box=document.getElementById("trocarSenhaBox")
+box.style.display = box.style.display==="block"?"none":"block"
 }
-
 async function trocarSenha(){
+let senhaAtual=document.getElementById("senhaAtual").value
+let novaSenha=document.getElementById("novaSenha").value
+let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
 
-let senhaAtual = document.getElementById("senhaAtual").value
-let novaSenha = document.getElementById("novaSenha").value
-
-let usuario = JSON.parse(localStorage.getItem("usuario") || "{}")
-
-let res = await fetch(API+"/trocar-senha",{
+let res=await fetch(API+"/trocar-senha",{
 method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-cpf:usuario.cpf,
-senhaAtual,
-novaSenha,
-tipo:"aluno"
-})
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({cpf:usuario.cpf,senhaAtual,novaSenha,tipo:"aluno"})
 })
 
-let data = await res.json()
-
+let data=await res.json()
 if(data.success){
 alert("Senha alterada")
 document.getElementById("trocarSenhaBox").style.display="none"
-}else{
-alert("Senha incorreta")
+}else{alert("Senha incorreta")}
 }
 
-}
+/* EXPORTAR PDF */
+function exportarPDF(){window.print()}
 
-/* =========================
-PDF
-========================= */
-
-function exportarPDF(){
-window.print()
-}
-
-window.onload = carregarBoletim
-
+window.onload=carregarBoletim
 </script>
 
 </body>
