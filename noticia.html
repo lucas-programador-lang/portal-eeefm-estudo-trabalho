@@ -12,49 +12,76 @@
 
 <style>
 
+body{
+background:#0f172a;
+color:white;
+}
+
 .noticia-container{
 max-width:900px;
 margin:auto;
 padding:40px 20px;
 }
 
+/* CARD */
+.card{
+background:#020617;
+padding:25px;
+border-radius:12px;
+border:1px solid #1e293b;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+/* TITULO */
 .titulo{
-font-size:32px;
-color:#0a2a66;
+font-size:30px;
+color:#38bdf8;
 margin-bottom:10px;
 }
 
+/* DATA */
 .data{
-color:#777;
+color:#94a3b8;
 font-size:14px;
 margin-bottom:20px;
 }
 
+/* IMAGEM */
 .imagem{
 width:100%;
 max-height:450px;
 object-fit:cover;
-border-radius:8px;
+border-radius:10px;
 margin-bottom:20px;
 }
 
+/* CONTEUDO */
 .conteudo{
 line-height:1.7;
-font-size:18px;
+font-size:17px;
 }
 
+/* BOTÃO */
 .voltar{
-margin-top:30px;
+margin-top:25px;
 display:inline-block;
 padding:10px 20px;
-background:#0a2a66;
+background:#0ea5e9;
 color:white;
-border-radius:6px;
+border-radius:8px;
 text-decoration:none;
+transition:0.2s;
 }
 
 .voltar:hover{
-background:#1c4cb3;
+background:#0284c7;
+}
+
+/* LOADING */
+.loading{
+text-align:center;
+margin-top:50px;
+color:#94a3b8;
 }
 
 </style>
@@ -62,7 +89,6 @@ background:#1c4cb3;
 </head>
 
 <body>
-
 
 <header>
 
@@ -86,10 +112,13 @@ background:#1c4cb3;
 
 </header>
 
-
 <div class="noticia-container">
 
-<h1 class="titulo" id="titulo">Carregando...</h1>
+<div class="card">
+
+<div id="loading" class="loading">Carregando notícia...</div>
+
+<h1 class="titulo" id="titulo" style="display:none;"></h1>
 
 <div class="data" id="data"></div>
 
@@ -97,10 +126,11 @@ background:#1c4cb3;
 
 <div id="conteudo" class="conteudo"></div>
 
-<a href="noticias.html" class="voltar">⬅ Voltar para notícias</a>
+<a href="noticias.html" class="voltar">⬅ Voltar</a>
 
 </div>
 
+</div>
 
 <script>
 
@@ -113,12 +143,14 @@ return params.get("id")
 
 async function carregarNoticia(){
 
+let loading = document.getElementById("loading")
+
 try{
 
 let id = pegarId()
 
 if(!id){
-document.getElementById("titulo").innerText="Notícia não encontrada"
+loading.innerText = "Notícia não encontrada"
 return
 }
 
@@ -133,10 +165,13 @@ let dados = await res.json()
 let noticia = dados.find(p => p.id == id)
 
 if(!noticia){
-document.getElementById("titulo").innerText="Notícia não encontrada"
+loading.innerText = "Notícia não encontrada"
 return
 }
 
+loading.style.display = "none"
+
+document.getElementById("titulo").style.display = "block"
 document.getElementById("titulo").innerText = noticia.titulo || ""
 
 document.getElementById("data").innerText =
@@ -149,24 +184,21 @@ document.getElementById("conteudo").innerHTML = noticia.conteudo || ""
 if(noticia.imagem){
 
 let img = document.getElementById("imagem")
-
 img.src = noticia.imagem
-
-img.style.display="block"
+img.style.display = "block"
 
 }
 
 }catch(err){
 
 console.error(err)
-
-document.getElementById("titulo").innerText="Erro ao carregar notícia"
-
-}
+loading.innerText = "Erro ao carregar notícia"
 
 }
 
-document.addEventListener("DOMContentLoaded",carregarNoticia)
+}
+
+document.addEventListener("DOMContentLoaded", carregarNoticia)
 
 </script>
 
