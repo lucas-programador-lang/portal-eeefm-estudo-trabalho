@@ -2,59 +2,121 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Pré-Matrícula - EEEFM Estudo e Trabalho</title>
 
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* FORMULÁRIO */
+.form-box{
+  max-width:500px;
+  margin:120px auto 40px;
+  background:#020617;
+  padding:30px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+.form-box h2{
+  color:#38bdf8;
+  margin-bottom:20px;
+  text-align:center;
+}
+
+.form-box label{
+  display:block;
+  margin-top:12px;
+  font-size:14px;
+}
+
+.form-box input,
+.form-box select{
+  width:100%;
+  padding:12px;
+  margin-top:5px;
+  border-radius:8px;
+  border:1px solid #1e293b;
+  background:#0f172a;
+  color:white;
+}
+
+.form-box button{
+  width:100%;
+  margin-top:15px;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#0ea5e9;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.form-box button:hover{
+  background:#0284c7;
+}
+
+.sucesso{
+  color:#22c55e;
+  text-align:center;
+  margin-top:10px;
+}
+
+/* MENU MOBILE */
+.menu-toggle{
+  display:none;
+  font-size:24px;
+  color:#38bdf8;
+  cursor:pointer;
+}
+
+@media(max-width:768px){
+  .menu{display:none;flex-direction:column;position:absolute;top:60px;right:20px;background:#020617;padding:10px;border-radius:8px;}
+  .menu.show{display:flex;}
+  .menu-toggle{display:block;}
+}
+</style>
 
 </head>
 
 <body>
 
 <header>
+  <div class="container">
+    <div class="logo">
+      <img src="logo.png" alt="Logo Escola">
+      <strong>EEEFM Estudo e Trabalho</strong>
+    </div>
 
-<div class="container">
+    <div class="menu-toggle" id="menuToggle">&#9776;</div>
 
-<nav>
-
-<div class="logo">
-<img src="logo.png">
-<strong>EEEFM Estudo e Trabalho</strong>
-</div>
-
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="login.html">Portal do Aluno</a>
-<a href="professores.html">Área de Professores</a>
-<a href="matricula.html">Matrícula</a>
-</div>
-
-</nav>
-
-</div>
-
+    <nav class="menu" id="menuNav">
+      <a href="index.html">Início</a>
+      <a href="login.html">Portal do Aluno</a>
+      <a href="login-professor.html">Área de Professores</a>
+      <a href="matricula.html">Matrícula</a>
+    </nav>
+  </div>
 </header>
 
+<div class="form-box">
+<h2>📚 Pré-Matrícula</h2>
 
-<div class="container">
-
-<h2 style="margin-top:40px;">Pré-Matrícula</h2>
-
-<form>
+<form id="formMatricula">
 
 <label>Nome do aluno</label>
-<input type="text" placeholder="Digite o nome do aluno">
+<input type="text" id="nome" placeholder="Digite o nome do aluno" required>
 
 <label>Data de nascimento</label>
-<input type="date">
+<input type="date" id="data" required>
 
 <label>Série</label>
-
-<select>
-
+<select id="serie" required>
+<option value="">Selecione</option>
 <option>6º Ano</option>
 <option>7º Ano</option>
 <option>8º Ano</option>
@@ -62,14 +124,48 @@
 <option>1º Médio</option>
 <option>2º Médio</option>
 <option>3º Médio</option>
-
 </select>
 
-<button type="submit">Enviar matrícula</button>
+<button type="submit" id="btnEnviar">Enviar matrícula</button>
+<div id="msg" class="sucesso"></div>
 
 </form>
-
 </div>
+
+<script>
+// MENU MOBILE
+const menuToggle = document.getElementById("menuToggle");
+const menuNav = document.getElementById("menuNav");
+menuToggle.onclick = () => menuNav.classList.toggle("show");
+
+// FORMULARIO
+const form = document.getElementById("formMatricula");
+const btn = document.getElementById("btnEnviar");
+const msg = document.getElementById("msg");
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  let nome = document.getElementById("nome").value;
+  let data = document.getElementById("data").value;
+  let serie = document.getElementById("serie").value;
+
+  if(!nome || !data || !serie){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  btn.innerText = "Enviando...";
+  btn.disabled = true;
+
+  setTimeout(()=>{
+    msg.innerText = "✅ Matrícula enviada com sucesso!";
+    form.reset();
+    btn.innerText = "Enviar matrícula";
+    btn.disabled = false;
+  },1200);
+});
+</script>
 
 </body>
 </html>
