@@ -11,16 +11,18 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-
+/* Mantendo 100% da sua estrutura original de CSS */
 body{
 background:#0f172a;
 color:white;
+margin:0;
+padding:0;
 }
 
 .noticia-container{
 max-width:900px;
 margin:auto;
-padding:40px 20px;
+padding:120px 20px 40px 20px; /* Ajustado para não ficar sob o header fixo */
 }
 
 /* CARD */
@@ -84,6 +86,28 @@ margin-top:50px;
 color:#94a3b8;
 }
 
+/* Ajuste básico de Header */
+header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #020617;
+  border-bottom: 1px solid #1e293b;
+  z-index: 1000;
+  padding: 10px 0;
+}
+.container nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 900px;
+  margin: auto;
+  padding: 0 20px;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo img { width: 40px; }
+.menu a { color: white; text-decoration: none; margin-left: 15px; }
+
 </style>
 
 </head>
@@ -91,25 +115,18 @@ color:#94a3b8;
 <body>
 
 <header>
-
 <div class="container">
-
 <nav>
-
 <div class="logo">
-<img src="logo.png">
+<img src="logo.png" alt="Logo">
 <strong>EEEFM Estudo e Trabalho</strong>
 </div>
-
 <div class="menu">
 <a href="index.html">Início</a>
 <a href="noticias.html">Notícias</a>
 </div>
-
 </nav>
-
 </div>
-
 </header>
 
 <div class="noticia-container">
@@ -122,7 +139,7 @@ color:#94a3b8;
 
 <div class="data" id="data"></div>
 
-<img id="imagem" class="imagem" style="display:none">
+<img id="imagem" class="imagem" style="display:none" alt="Imagem da notícia">
 
 <div id="conteudo" class="conteudo"></div>
 
@@ -144,55 +161,58 @@ return params.get("id")
 async function carregarNoticia(){
 
 let loading = document.getElementById("loading")
+let tituloElem = document.getElementById("titulo")
+let dataElem = document.getElementById("data")
+let conteudoElem = document.getElementById("conteudo")
+let imagemElem = document.getElementById("imagem")
 
 try{
 
 let id = pegarId()
 
 if(!id){
-loading.innerText = "Notícia não encontrada"
+loading.innerText = "ID da notícia não fornecido"
 return
 }
 
 let res = await fetch(API + "/publicacoes")
 
 if(!res.ok){
-throw new Error("Erro API")
+throw new Error("Erro ao conectar com a API")
 }
 
 let dados = await res.json()
 
-let noticia = dados.find(p => p.id == id)
+// Garantindo comparação de ID independente de tipo (string/number)
+let noticia = dados.find(p => String(p.id) === String(id))
 
 if(!noticia){
-loading.innerText = "Notícia não encontrada"
+loading.innerText = "Notícia não encontrada no banco de dados"
 return
 }
 
+// Sucesso: Esconder loading e mostrar dados
 loading.style.display = "none"
 
-document.getElementById("titulo").style.display = "block"
-document.getElementById("titulo").innerText = noticia.titulo || ""
+tituloElem.style.display = "block"
+tituloElem.innerText = noticia.titulo || "Sem título"
 
-document.getElementById("data").innerText =
-noticia.data_publicacao
-? new Date(noticia.data_publicacao).toLocaleDateString()
+dataElem.innerText = noticia.data_publicacao
+? new Date(noticia.data_publicacao).toLocaleDateString('pt-BR')
 : ""
 
-document.getElementById("conteudo").innerHTML = noticia.conteudo || ""
+conteudoElem.innerHTML = noticia.conteudo || "Sem conteúdo disponível."
 
-if(noticia.imagem){
-
-let img = document.getElementById("imagem")
-img.src = noticia.imagem
-img.style.display = "block"
-
+if(noticia.imagem && noticia.imagem.trim() !== ""){
+imagemElem.src = noticia.imagem
+imagemElem.style.display = "block"
 }
 
 }catch(err){
 
-console.error(err)
-loading.innerText = "Erro ao carregar notícia"
+console.error("Erro de console:", err)
+loading.style.color = "#ef4444"
+loading.innerText = "Erro ao carregar notícia. Tente novamente mais tarde."
 
 }
 
