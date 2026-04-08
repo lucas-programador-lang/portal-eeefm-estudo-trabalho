@@ -42,7 +42,7 @@ function verificarLogin(){
 const token = getToken()
 
 if(!token){
-window.location="login-admin.html"
+window.location.href="login-admin.html"
 return false
 }
 
@@ -58,14 +58,18 @@ async function apiFetch(url, options={}){
 try{
 
 const isFormData = options.body instanceof FormData
+const token = getToken()
+
+// Montagem dinâmica de headers
+const headers = {
+...(isFormData ? {} : {"Content-Type":"application/json"}),
+...(token ? {Authorization:"Bearer "+token} : {}),
+...(options.headers || {})
+}
 
 const res = await fetch(API+url,{
 ...options,
-headers:{
-...(isFormData ? {} : {"Content-Type":"application/json"}),
-Authorization:"Bearer "+getToken(),
-...(options.headers || {})
-}
+headers: headers
 })
 
 if(res.status === 401){
@@ -75,16 +79,21 @@ return null
 
 if(!res.ok){
 const text = await res.text()
-console.log("Erro servidor:", text)
-throw new Error("Erro servidor")
+console.error("Erro servidor:", text)
+// Tenta extrair mensagem de erro amigável se for JSON
+try { 
+    const errData = JSON.parse(text);
+    if(errData.erro) alert(errData.erro);
+} catch(e) {}
+return null
 }
 
 return await res.json()
 
 }catch(err){
 
-console.log("Erro API:",err)
-alert("Erro de conexão com servidor")
+console.error("Erro API:",err)
+alert("Erro de conexão com servidor. Verifique sua internet.")
 return null
 
 }
@@ -93,11 +102,13 @@ return null
 
 
 // ==========================
-// FORMATAR CPF
+// FORMATAR CPF (MELHORADO)
 // ==========================
 function formatarCPF(campo){
-
+if(!campo) return
 let cpf = campo.value.replace(/\D/g,'')
+
+if(cpf.length > 11) cpf = cpf.slice(0, 11)
 
 cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
 cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
@@ -117,9 +128,9 @@ let dados = await apiFetch("/dashboard")
 
 if(!dados) return
 
-document.getElementById("totalAlunos").innerText = dados.alunos || 0
-document.getElementById("totalProfessores").innerText = dados.professores || 0
-document.getElementById("totalPublicacoes").innerText = dados.publicacoes || 0
+if(document.getElementById("totalAlunos")) document.getElementById("totalAlunos").innerText = dados.alunos || 0
+if(document.getElementById("totalProfessores")) document.getElementById("totalProfessores").innerText = dados.professores || 0
+if(document.getElementById("totalPublicacoes")) document.getElementById("totalPublicacoes").innerText = dados.publicacoes || 0
 
 }
 
@@ -143,16 +154,11 @@ body:JSON.stringify({nome,cpf,senha})
 if(!data) return
 
 if(data.success){
-
 alert("✅ Aluno cadastrado com sucesso")
-
 e.target.reset()
 carregarDashboard()
-
 }else{
-
 alert(data.erro || "Erro ao cadastrar aluno")
-
 }
 
 }
@@ -178,23 +184,18 @@ body:JSON.stringify({nome,cpf,senha,disciplina})
 if(!data) return
 
 if(data.success){
-
 alert("✅ Professor cadastrado com sucesso")
-
 e.target.reset()
 carregarDashboard()
-
 }else{
-
 alert(data.erro || "Erro ao cadastrar professor")
-
 }
 
 }
 
 
 // ==========================
-// PUBLICAR AVISO (CORRIGIDO)
+// PUBLICAR AVISO
 // ==========================
 async function publicarAviso(e){
 
@@ -215,24 +216,19 @@ tipo:"aviso"
 if(!data) return
 
 if(data.success){
-
 alert("✅ Aviso publicado")
-
 e.target.reset()
 carregarPublicacoes()
 carregarDashboard()
-
 }else{
-
 alert(data.erro || "Erro ao publicar aviso")
-
 }
 
 }
 
 
 // ==========================
-// PUBLICAR NOTÍCIA (CORRIGIDO)
+// PUBLICAR NOTÍCIA
 // ==========================
 async function publicarNoticia(e){
 
@@ -241,8 +237,13 @@ e.preventDefault()
 let titulo = document.getElementById("tituloNoticia").value
 let subtitulo = document.getElementById("subtituloNoticia").value
 
-// 🔥 CORREÇÃO AQUI
-let conteudo = (window.quill && quill.root) ? quill.root.innerHTML : ""
+// Verificação de segurança para o Quill
+let conteudo = (window.quill && window.quill.root) ? window.quill.root.innerHTML : ""
+
+if(!conteudo || conteudo === "<p><br></p>") {
+    alert("Por favor, preencha o conteúdo da notícia.");
+    return;
+}
 
 let tituloFinal = subtitulo ? titulo+" - "+subtitulo : titulo
 
@@ -258,23 +259,18 @@ tipo:"noticia"
 if(!data) return
 
 if(data.success){
-
 alert("✅ Notícia publicada")
-
 document.getElementById("tituloNoticia").value=""
-document.getElementById("subtituloNoticia").value=""
+if(document.getElementById("subtituloNoticia")) document.getElementById("subtituloNoticia").value=""
 
 if(window.quill){
-quill.root.innerHTML=""
+window.quill.root.innerHTML=""
 }
 
 carregarPublicacoes()
 carregarDashboard()
-
 }else{
-
 alert(data.erro || "Erro ao publicar notícia")
-
 }
 
 }
@@ -290,7 +286,7 @@ if(!tabela) return
 
 let dados = await apiFetch("/publicacoes")
 
-if(!dados) return
+if(!dados || !Array.isArray(dados)) return
 
 tabela.innerHTML=""
 
@@ -301,7 +297,7 @@ tabela.innerHTML+=`
 <td>${p.id}</td>
 <td>${p.titulo}</td>
 <td>${p.tipo}</td>
-<td>${p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : "-"}</td>
+<td>${p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString('pt-BR') : "-"}</td>
 <td>
 <button class="small-btn" onclick="excluirPublicacao(${p.id})">
 Excluir
@@ -320,14 +316,16 @@ Excluir
 // ==========================
 async function excluirPublicacao(id){
 
-if(!confirm("Excluir publicação?")) return
+if(!confirm("Tem certeza que deseja excluir esta publicação?")) return
 
-await apiFetch("/publicacao/"+id,{
+let res = await apiFetch("/publicacao/"+id,{
 method:"DELETE"
 })
 
-carregarPublicacoes()
-carregarDashboard()
+if(res) {
+    carregarPublicacoes()
+    carregarDashboard()
+}
 
 }
 
@@ -336,10 +334,8 @@ carregarDashboard()
 // LOGOUT
 // ==========================
 function logout(){
-
 localStorage.clear()
-window.location="login-admin.html"
-
+window.location.href="login-admin.html"
 }
 
 
@@ -351,18 +347,4 @@ window.onload=function(){
 if(!verificarLogin()) return
 
 carregarDashboard()
-carregarPublicacoes()
-
-const fAluno = document.getElementById("formAluno")
-if(fAluno) fAluno.addEventListener("submit", cadastrarAluno)
-
-const fProfessor = document.getElementById("formProfessor")
-if(fProfessor) fProfessor.addEventListener("submit", cadastrarProfessor)
-
-const fAviso = document.getElementById("formAviso")
-if(fAviso) fAviso.addEventListener("submit", publicarAviso)
-
-const fNoticia = document.getElementById("formNoticia")
-if(fNoticia) fNoticia.addEventListener("submit", publicarNoticia)
-
-}
+carregarPublicacoes
