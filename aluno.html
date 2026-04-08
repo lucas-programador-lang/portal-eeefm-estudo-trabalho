@@ -101,7 +101,6 @@ input{
 
 <body>
 
-<!-- HEADER LIMPO -->
 <header class="header-comum">
   <div class="container">
     <div class="logo">
@@ -111,7 +110,6 @@ input{
   </div>
 </header>
 
-<!-- CONTEÚDO -->
 <div class="main-container">
 
 <h2>📘 Boletim Escolar</h2>
@@ -126,7 +124,6 @@ input{
 
 </div>
 
-<!-- TROCAR SENHA -->
 <div class="trocar-senha-box" id="trocarSenhaBox">
 <h3>Alterar Senha</h3>
 <input type="password" id="senhaAtual" placeholder="Senha atual">
@@ -138,14 +135,16 @@ input{
 const API="https://portal-escola-backend.onrender.com"
 
 function getToken(){return localStorage.getItem("token")}
-function logout(){localStorage.clear(); window.location="login.html"}
+function logout(){localStorage.clear(); window.location.href="login.html"}
 
 if(!getToken()){logout()}
 
 /* CARREGAR BOLETIM */
 async function carregarBoletim(){
 let tabela=document.getElementById("tabela")
-let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
+let usuarioStr = localStorage.getItem("usuario")
+if(!usuarioStr) { logout(); return; }
+let usuario=JSON.parse(usuarioStr)
 
 try{
 let res=await fetch(API+"/boletim/"+usuario.id,{headers:{Authorization:"Bearer "+getToken()}})
@@ -168,7 +167,8 @@ tabela.innerHTML+=`
 <tr><td><strong>Situação</strong></td><td class="${aprovado?"aprovado":"reprovado"}">${aprovado?"Aprovado":"Reprovado"}</td></tr>
 `
 
-}catch{
+}catch(err){
+console.error(err)
 alert("Erro ao carregar boletim")
 }
 }
@@ -176,27 +176,36 @@ alert("Erro ao carregar boletim")
 /* TROCAR SENHA */
 function abrirTrocarSenha(){
 let box=document.getElementById("trocarSenhaBox")
-box.style.display = box.style.display==="block"?"none":"block"
+box.style.display = (box.style.display==="block") ? "none" : "block"
 }
 
 async function trocarSenha(){
-let senhaAtual=document.getElementById("senhaAtual").value
-let novaSenha=document.getElementById("novaSenha").value
+let senhaAtualInput=document.getElementById("senhaAtual")
+let novaSenhaInput=document.getElementById("novaSenha")
 let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
 
+try {
 let res=await fetch(API+"/trocar-senha",{
 method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({cpf:usuario.cpf,senhaAtual,novaSenha,tipo:"aluno"})
+headers:{
+    "Content-Type":"application/json",
+    "Authorization":"Bearer "+getToken()
+},
+body:JSON.stringify({cpf:usuario.cpf,senhaAtual:senhaAtualInput.value,novaSenha:novaSenhaInput.value,tipo:"aluno"})
 })
 
-let data=await res.json()
+let data=await res.json() // Adicionado await aqui
 
 if(data.success){
 alert("Senha alterada")
+senhaAtualInput.value=""
+novaSenhaInput.value=""
 document.getElementById("trocarSenhaBox").style.display="none"
 }else{
-alert("Senha incorreta")
+alert(data.message || "Senha incorreta")
+}
+} catch(err) {
+alert("Erro ao conectar com o servidor")
 }
 }
 
