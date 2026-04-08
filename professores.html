@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* Mantendo 100% da sua estrutura original de CSS */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#0f172a;color:white;}
 
@@ -22,7 +23,6 @@ border-bottom:1px solid #1e293b;
 z-index:999;
 }
 
-/* CENTRALIZAR HEADER */
 .header-comum .container{
 display:flex;
 justify-content:center;
@@ -113,17 +113,15 @@ display:none;
 
 <body>
 
-<!-- HEADER LIMPO -->
 <header class="header-comum">
 <div class="container">
 <div class="logo">
-<img src="logo.png">
+<img src="logo.png" alt="Logo Escola">
 <strong>EEEFM Estudo e Trabalho</strong>
 </div>
 </div>
 </header>
 
-<!-- CONTEÚDO -->
 <div class="main-container">
 
 <h2>👨‍🏫 Painel do Professor</h2>
@@ -133,14 +131,13 @@ display:none;
 
 <h3 style="margin-top:30px;">Registrar Nota</h3>
 
-<form onsubmit="registrarNota(event)">
+<form id="formNota" onsubmit="registrarNota(event)">
 <input type="number" id="idAluno" placeholder="ID do aluno" required>
 <input type="text" id="disciplinaNota" placeholder="Disciplina" required>
 <input type="number" step="0.1" id="notaAluno" placeholder="Nota" required>
 <button type="submit">Salvar Nota</button>
 </form>
 
-<!-- BOTÕES ÚTEIS -->
 <div style="margin-top:20px;">
 <button onclick="abrirTrocarSenha()">🔒 Trocar senha</button>
 <button onclick="logout()">🚪 Sair</button>
@@ -148,7 +145,6 @@ display:none;
 
 </div>
 
-<!-- TROCAR SENHA -->
 <div class="trocar-senha-box" id="trocarSenhaBox">
 <h3>Alterar Senha</h3>
 <input type="password" id="senhaAtual" placeholder="Senha atual">
@@ -165,23 +161,25 @@ return localStorage.getItem("token")
 
 function logout(){
 localStorage.clear()
-window.location="login-professor.html"
+window.location.href="login-professor.html"
 }
 
+// Verificação imediata de acesso
 if(!getToken()){
 logout()
 }
 
 /* CARREGAR ALUNOS */
 async function carregarAlunos(){
-
 let tabela=document.getElementById("tabelaAlunos")
+if(!tabela) return;
 
 try{
-
 let res=await fetch(API+"/alunos",{
 headers:{Authorization:"Bearer "+getToken()}
 })
+
+if(res.status === 401) { logout(); return; }
 
 let alunos=await res.json()
 
@@ -193,88 +191,51 @@ tabela.innerHTML=`
 </tr>
 `
 
-alunos.forEach(a=>{
-tabela.innerHTML+=`
-<tr>
-<td>${a.id}</td>
-<td>${a.nome}</td>
-<td>${a.cpf}</td>
-</tr>
-`
-})
-
-}catch{
-alert("Erro ao carregar alunos")
+if(Array.isArray(alunos)){
+    alunos.forEach(a=>{
+    tabela.innerHTML+=`
+    <tr>
+    <td>${a.id}</td>
+    <td>${a.nome}</td>
+    <td>${a.cpf}</td>
+    </tr>
+    `
+    })
+} else {
+    tabela.innerHTML += `<tr><td colspan="3">Nenhum aluno encontrado.</td></tr>`;
 }
 
+}catch(err){
+console.error(err)
+alert("Erro ao carregar lista de alunos")
+}
 }
 
 /* REGISTRAR NOTA */
 async function registrarNota(e){
-
 e.preventDefault()
 
 let aluno_id=document.getElementById("idAluno").value
 let disciplina=document.getElementById("disciplinaNota").value
 let nota=document.getElementById("notaAluno").value
 
-let res=await fetch(API+"/nota",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-Authorization:"Bearer "+getToken()
-},
-body:JSON.stringify({aluno_id,disciplina,nota})
-})
+try {
+    let res=await fetch(API+"/nota",{
+    method:"POST",
+    headers:{
+    "Content-Type":"application/json",
+    Authorization:"Bearer "+getToken()
+    },
+    body:JSON.stringify({aluno_id,disciplina,nota})
+    })
 
-let data=await res.json()
+    let data=await res.json()
 
-if(data.success){
-alert("Nota salva")
-e.target.reset()
-}else{
-alert("Erro ao salvar")
-}
-
-}
-
-/* TROCAR SENHA */
-function abrirTrocarSenha(){
-let box=document.getElementById("trocarSenhaBox")
-box.style.display = box.style.display==="block" ? "none":"block"
-}
-
-async function trocarSenha(){
-
-let senhaAtual=document.getElementById("senhaAtual").value
-let novaSenha=document.getElementById("novaSenha").value
-
-let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
-
-let res=await fetch(API+"/trocar-senha",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-cpf:usuario.cpf,
-senhaAtual,
-novaSenha,
-tipo:"professor"
-})
-})
-
-let data=await res.json()
-
-if(data.success){
-alert("Senha alterada")
-document.getElementById("trocarSenhaBox").style.display="none"
-}else{
-alert("Erro na senha")
-}
-
-}
-
-window.onload=carregarAlunos
-</script>
-
-</body>
-</html>
+    if(data.success){
+    alert("✅ Nota salva com sucesso!")
+    e.target.reset()
+    }else{
+    alert(data.erro || "Erro ao salvar nota")
+    }
+} catch (err) {
+    alert("Erro de conexão com o servidor ao salvar nota")
