@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -52,7 +51,7 @@ margin-top:0;
 <h2>Avisos da Escola</h2>
 </header>
 
-<div class="container" id="listaAvisos"></div>
+<div class="container" id="listaAvisos">Carregando avisos...</div>
 
 <script>
 
@@ -60,32 +59,51 @@ const API="https://portal-escola-backend.onrender.com"
 
 async function carregarAvisos(){
 
-let res=await fetch(API+"/publicacoes")
-let dados=await res.json()
-
 let lista=document.getElementById("listaAvisos")
 
-lista.innerHTML=""
+try {
+    let res=await fetch(API+"/publicacoes")
+    
+    // Verificação de erro na resposta da rede
+    if(!res.ok) throw new Error("Erro ao buscar dados");
 
-dados
-.filter(p=>p.tipo==="aviso")
-.forEach(p=>{
+    let dados=await res.json()
 
-lista.innerHTML+=`
+    // Garante que 'dados' seja um array antes de filtrar
+    if(!Array.isArray(dados)) {
+        lista.innerHTML = "<p>Nenhum aviso encontrado no momento.</p>";
+        return;
+    }
 
-<div class="aviso">
+    lista.innerHTML=""
 
-<h3>${p.titulo}</h3>
+    dados
+    .filter(p=>p.tipo==="aviso")
+    .forEach(p=>{
 
-<p>${p.conteudo}</p>
+    // Fallback para data inválida
+    const dataFormatada = p.data_publicacao 
+        ? new Date(p.data_publicacao).toLocaleDateString() 
+        : "Data não disponível";
 
-<small>${new Date(p.data_publicacao).toLocaleDateString()}</small>
+    lista.innerHTML+=`
+    <div class="aviso">
+    <h3>${p.titulo}</h3>
+    <div>${p.conteudo}</div>
+    <br>
+    <small>${dataFormatada}</small>
+    </div>
+    `
+    })
 
-</div>
+    if(lista.innerHTML === "") {
+        lista.innerHTML = "<p>Não há avisos recentes.</p>";
+    }
 
-`
-
-})
+} catch(err) {
+    console.error("Erro de conexão:", err);
+    lista.innerHTML = "<p style='color:red;'>Erro ao carregar avisos. Verifique sua conexão.</p>";
+}
 
 }
 
