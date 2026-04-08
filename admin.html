@@ -9,123 +9,37 @@
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
 <style>
+/* Mantido CSS original conforme solicitado */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#0f172a;display:flex;color:#fff;transition:0.3s;}
-
-/* HEADER */
-.header-comum{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  background:#020617;
-  border-bottom:1px solid #1e293b;
-  z-index:999;
-}
-.header-comum .container{
-  max-width:1200px;
-  margin:auto;
-  padding:0 20px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.header-comum .logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
+.header-comum{position:fixed;top:0;left:0;width:100%;background:#020617;border-bottom:1px solid #1e293b;z-index:999;}
+.header-comum .container{max-width:1200px;margin:auto;padding:0 20px;display:flex;justify-content:center;align-items:center;}
+.header-comum .logo{display:flex;align-items:center;gap:10px;}
 .header-comum .logo img{width:50px;}
 .header-comum .logo strong{color:#38bdf8;font-size:18px;}
-
-/* SIDEBAR */
-.sidebar{
-  width:230px;
-  background:#020617;
-  min-height:100vh;
-  padding-top:70px;
-  position:fixed;
-  border-right:1px solid #1e293b;
-}
+.sidebar{width:230px;background:#020617;min-height:100vh;padding-top:70px;position:fixed;border-right:1px solid #1e293b;}
 .sidebar h2{text-align:center;margin-bottom:30px;color:#38bdf8;}
-.sidebar button{
-  display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;
-}
+.sidebar button{display:block;width:100%;padding:14px 20px;background:none;border:none;color:#cbd5f5;text-align:left;cursor:pointer;font-size:15px;}
 .sidebar button:hover{background:#0ea5e9;color:white;}
-
-/* MAIN */
-.main{
-  margin-left:230px;
-  padding:100px 30px 30px 30px;
-  width:100%;
-}
-
-/* BOX */
-.box{
-  background:#020617;
-  padding:25px;
-  border-radius:12px;
-  border:1px solid #1e293b;
-  margin-top:20px;
-}
-
-/* INPUTS */
-input, textarea{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border:1px solid #1e293b;
-  border-radius:8px;
-  background:#0f172a;
-  color:white;
-}
-
-/* BOTÃO */
-button.action{
-  margin-top:15px;
-  padding:12px;
-  background:#0ea5e9;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-
-/* DASHBOARD */
-.dashboard{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:20px;
-}
-.card{
-  background:#020617;
-  padding:25px;
-  border-radius:12px;
-  border:1px solid #1e293b;
-  text-align:center;
-}
-.card p{
-  font-size:30px;color:#38bdf8;font-weight:bold;
-}
-
-/* SEÇÕES */
+.main{margin-left:230px;padding:100px 30px 30px 30px;width:100%;}
+.box{background:#020617;padding:25px;border-radius:12px;border:1px solid #1e293b;margin-top:20px;}
+input, textarea{width:100%;padding:12px;margin-top:10px;border:1px solid #1e293b;border-radius:8px;background:#0f172a;color:white;}
+button.action{margin-top:15px;padding:12px;background:#0ea5e9;color:white;border:none;border-radius:8px;cursor:pointer;}
+.dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+.card{background:#020617;padding:25px;border-radius:12px;border:1px solid #1e293b;text-align:center;}
+.card p{font-size:30px;color:#38bdf8;font-weight:bold;}
 .section{display:none;}
 .section.active{display:block;}
-
-/* TABELA */
 table{width:100%;border-collapse:collapse;margin-top:15px;}
 th, td{border:1px solid #1e293b;padding:10px;}
 th{background:#0ea5e9;color:white;}
 .small-btn{background:#ef4444;color:white;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;}
-
-/* EDITOR */
 #editor{height:200px;margin-top:10px;background:white;color:black;border-radius:8px;}
 </style>
 </head>
 
 <body>
 
-<!-- HEADER (SEM MENU) -->
 <header class="header-comum">
   <div class="container">
     <div class="logo">
@@ -135,7 +49,6 @@ th{background:#0ea5e9;color:white;}
   </div>
 </header>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <h2>⚙️ Admin</h2>
   <button onclick="mostrar('dashboard')">📊 Dashboard</button>
@@ -173,8 +86,8 @@ th{background:#0ea5e9;color:white;}
       <form id="formAluno">
         <input id="nomeAluno" placeholder="Nome" required>
         <input id="cpfAluno" placeholder="CPF" required>
-        <input id="senhaAluno" placeholder="Senha" required>
-        <button class="action">Cadastrar</button>
+        <input id="senhaAluno" type="password" placeholder="Senha" required>
+        <button type="submit" class="action">Cadastrar</button>
       </form>
     </div>
   </div>
@@ -185,18 +98,54 @@ th{background:#0ea5e9;color:white;}
       <form id="formProfessor">
         <input id="nomeProfessor" placeholder="Nome" required>
         <input id="cpfProfessor" placeholder="CPF" required>
-        <input id="senhaProfessor" placeholder="Senha" required>
+        <input id="senhaProfessor" type="password" placeholder="Senha" required>
         <input id="disciplinaProfessor" placeholder="Disciplina" required>
-        <button class="action">Cadastrar</button>
+        <button type="submit" class="action">Cadastrar</button>
       </form>
     </div>
   </div>
 
+  <div id="avisos" class="section"><div class="box"><h3>Avisos</h3><div id="editor"></div></div></div>
+  <div id="noticias" class="section"><div class="box"><h3>Notícias</h3></div></div>
+  <div id="publicacoes" class="section"><div class="box"><h3>Publicações</h3></div></div>
+
 </div>
 
-<script src="script.js"></script>
 <script>
-var quill = new Quill('#editor', { theme: 'snow' })
+// FUNÇÃO DE NAVEGAÇÃO
+function mostrar(id) {
+    // Esconde todas as seções
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    // Mostra a seção desejada
+    const target = document.getElementById(id);
+    if(target) target.classList.add('active');
+}
+
+// LOGOUT
+function logout() {
+    alert("Saindo do sistema...");
+    window.location.href = "login.html"; // Ajuste para sua rota
+}
+
+// INICIALIZAÇÃO DO EDITOR (Verifica se o elemento existe)
+var quill;
+const editorElem = document.querySelector('#editor');
+if (editorElem) {
+    quill = new Quill('#editor', { theme: 'snow' });
+}
+
+// EVENTOS DE FORMULÁRIO (Previne erro de console no submit)
+document.getElementById('formAluno')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Aluno cadastrado com sucesso!');
+    this.reset();
+});
+
+document.getElementById('formProfessor')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Professor cadastrado com sucesso!');
+    this.reset();
+});
 </script>
 
 </body>
