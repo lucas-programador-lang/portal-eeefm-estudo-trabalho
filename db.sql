@@ -9,7 +9,7 @@ USE escola;
    TURMAS
 ========================= */
 
-CREATE TABLE turmas (
+CREATE TABLE IF NOT EXISTS turmas (
 id INT AUTO_INCREMENT PRIMARY KEY,
 nome VARCHAR(50) NOT NULL
 );
@@ -18,46 +18,46 @@ nome VARCHAR(50) NOT NULL
    ALUNOS
 ========================= */
 
-CREATE TABLE alunos (
+CREATE TABLE IF NOT EXISTS alunos (
 id INT AUTO_INCREMENT PRIMARY KEY,
 nome VARCHAR(100) NOT NULL,
-cpf VARCHAR(11) UNIQUE NOT NULL,
+cpf VARCHAR(14) UNIQUE NOT NULL, -- Ajustado para suportar formatação caso necessário
 senha VARCHAR(255) NOT NULL,
 turma_id INT,
-FOREIGN KEY (turma_id) REFERENCES turmas(id)
+FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE SET NULL
 );
 
 /* =========================
    PROFESSORES
 ========================= */
 
-CREATE TABLE professores (
+CREATE TABLE IF NOT EXISTS professores (
 id INT AUTO_INCREMENT PRIMARY KEY,
 nome VARCHAR(100) NOT NULL,
-cpf VARCHAR(11) UNIQUE NOT NULL,
+cpf VARCHAR(14) UNIQUE NOT NULL, -- Ajustado para suportar formatação
 senha VARCHAR(255) NOT NULL,
 disciplina VARCHAR(100),
 turma_id INT,
-FOREIGN KEY (turma_id) REFERENCES turmas(id)
+FOREIGN KEY (turma_id) REFERENCES turmas(id) ON DELETE SET NULL
 );
 
 /* =========================
    NOTAS
 ========================= */
 
-CREATE TABLE notas (
+CREATE TABLE IF NOT EXISTS notas (
 id INT AUTO_INCREMENT PRIMARY KEY,
 aluno_id INT NOT NULL,
 disciplina VARCHAR(100) NOT NULL,
 nota DECIMAL(4,2),
-FOREIGN KEY (aluno_id) REFERENCES alunos(id)
+FOREIGN KEY (aluno_id) REFERENCES alunos(id) ON DELETE CASCADE
 );
 
 /* =========================
    PUBLICAÇÕES (ESSENCIAL)
 ========================= */
 
-CREATE TABLE publicacoes (
+CREATE TABLE IF NOT EXISTS publicacoes (
 id INT AUTO_INCREMENT PRIMARY KEY,
 titulo VARCHAR(255) NOT NULL,
 conteudo TEXT,
@@ -69,6 +69,14 @@ data_publicacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 /* =========================
    DADOS INICIAIS
 ========================= */
+
+-- Limpeza preventiva para evitar erros de duplicidade em re-execução
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE notas;
+TRUNCATE TABLE alunos;
+TRUNCATE TABLE professores;
+TRUNCATE TABLE turmas;
+SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO turmas (nome) VALUES
 ("1º Ano A"),
