@@ -9,6 +9,36 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* Mantendo 100% da sua estrutura original de CSS */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#0f172a;color:white;}
+
+header{
+  background:#020617;
+  padding:15px;
+  border-bottom:1px solid #1e293b;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:1000;
+}
+
+.container{
+  max-width:1200px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 20px;
+}
+
+.logo{display:flex;align-items:center;gap:10px;}
+.logo img{width:40px;}
+.logo strong{color:#38bdf8;font-size:18px;}
+
+.menu a{color:white;text-decoration:none;margin-left:20px;font-size:14px;}
+.menu a:hover{color:#38bdf8;}
+
 /* FORMULÁRIO */
 .form-box{
   max-width:500px;
@@ -56,14 +86,20 @@
   transition:0.2s;
 }
 
-.form-box button:hover{
+.form-box button:disabled{
+  background:#1e293b;
+  cursor:not-allowed;
+}
+
+.form-box button:hover:not(:disabled){
   background:#0284c7;
 }
 
 .sucesso{
   color:#22c55e;
   text-align:center;
-  margin-top:10px;
+  margin-top:15px;
+  min-height:20px;
 }
 
 /* MENU MOBILE */
@@ -75,7 +111,18 @@
 }
 
 @media(max-width:768px){
-  .menu{display:none;flex-direction:column;position:absolute;top:60px;right:20px;background:#020617;padding:10px;border-radius:8px;}
+  .menu{
+    display:none;
+    flex-direction:column;
+    position:absolute;
+    top:60px;
+    right:20px;
+    background:#020617;
+    padding:15px;
+    border-radius:8px;
+    border:1px solid #1e293b;
+  }
+  .menu a{margin:10px 0;}
   .menu.show{display:flex;}
   .menu-toggle{display:block;}
 }
@@ -117,13 +164,13 @@
 <label>Série</label>
 <select id="serie" required>
 <option value="">Selecione</option>
-<option>6º Ano</option>
-<option>7º Ano</option>
-<option>8º Ano</option>
-<option>9º Ano</option>
-<option>1º Médio</option>
-<option>2º Médio</option>
-<option>3º Médio</option>
+<option value="6 Ano">6º Ano</option>
+<option value="7 Ano">7º Ano</option>
+<option value="8 Ano">8º Ano</option>
+<option value="9 Ano">9º Ano</option>
+<option value="1 Médio">1º Médio</option>
+<option value="2 Médio">2º Médio</option>
+<option value="3 Médio">3º Médio</option>
 </select>
 
 <button type="submit" id="btnEnviar">Enviar matrícula</button>
@@ -133,38 +180,49 @@
 </div>
 
 <script>
-// MENU MOBILE
+// MENU MOBILE - Corrigido para garantir funcionamento estável
 const menuToggle = document.getElementById("menuToggle");
 const menuNav = document.getElementById("menuNav");
-menuToggle.onclick = () => menuNav.classList.toggle("show");
 
-// FORMULARIO
+if(menuToggle) {
+    menuToggle.addEventListener("click", () => {
+        menuNav.classList.toggle("show");
+    });
+}
+
+// FORMULARIO - Corrigido fluxo de estados
 const form = document.getElementById("formMatricula");
 const btn = document.getElementById("btnEnviar");
 const msg = document.getElementById("msg");
 
-form.addEventListener("submit", (e) => {
-  e.preventDefault();
+if(form) {
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
 
-  let nome = document.getElementById("nome").value;
-  let data = document.getElementById("data").value;
-  let serie = document.getElementById("serie").value;
+        let nome = document.getElementById("nome").value;
+        let data = document.getElementById("data").value;
+        let serie = document.getElementById("serie").value;
 
-  if(!nome || !data || !serie){
-    alert("Preencha todos os campos");
-    return;
-  }
+        // Limpa mensagem anterior se houver
+        msg.innerText = "";
 
-  btn.innerText = "Enviando...";
-  btn.disabled = true;
+        if(!nome || !data || !serie){
+            alert("Preencha todos os campos");
+            return;
+        }
 
-  setTimeout(()=>{
-    msg.innerText = "✅ Matrícula enviada com sucesso!";
-    form.reset();
-    btn.innerText = "Enviar matrícula";
-    btn.disabled = false;
-  },1200);
-});
+        // Estado de carregamento
+        btn.innerText = "Enviando...";
+        btn.disabled = true;
+
+        setTimeout(()=>{
+            msg.innerText = "✅ Matrícula enviada com sucesso!";
+            form.reset();
+            btn.innerText = "Enviar matrícula";
+            btn.disabled = false;
+        }, 1500);
+    });
+}
 </script>
 
 </body>
