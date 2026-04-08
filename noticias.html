@@ -11,19 +11,44 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
+/* Mantendo 100% da sua estrutura original de CSS */
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#0f172a;color:white;}
 
-body{
-background:#0f172a;
-color:white;
+header{
+  background:#020617;
+  padding:15px;
+  border-bottom:1px solid #1e293b;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:1000;
 }
+
+.container nav{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 20px;
+}
+
+.logo{display:flex;align-items:center;gap:10px;}
+.logo img{width:40px;}
+.logo strong{color:#38bdf8;font-size:18px;}
+
+.menu a{color:white;text-decoration:none;margin-left:15px;font-size:14px;}
+.menu a:hover{color:#38bdf8;}
 
 .noticias-container{
 max-width:1100px;
 margin:auto;
-padding:40px 20px;
+padding:100px 20px 40px 20px; /* Ajuste para o header fixo */
 }
 
 /* BUSCA */
+.busca{margin-bottom: 25px;}
 .busca input{
 width:100%;
 padding:12px;
@@ -44,19 +69,9 @@ border:1px solid #1e293b;
 transition:0.3s;
 }
 
-.destaque:hover{
-transform:scale(1.01);
-}
-
-.destaque img{
-width:100%;
-max-height:350px;
-object-fit:cover;
-}
-
-.destaque-conteudo{
-padding:20px;
-}
+.destaque:hover{transform:scale(1.01);}
+.destaque img{width:100%;max-height:350px;object-fit:cover;}
+.destaque-conteudo{padding:20px;}
 
 /* SLIDER */
 .slider{
@@ -64,6 +79,7 @@ display:flex;
 overflow-x:auto;
 gap:15px;
 margin-bottom:30px;
+padding-bottom:10px;
 }
 
 .slider-card{
@@ -75,20 +91,9 @@ cursor:pointer;
 transition:0.3s;
 }
 
-.slider-card:hover{
-transform:scale(1.05);
-}
-
-.slider-card img{
-width:100%;
-height:140px;
-object-fit:cover;
-}
-
-.slider-card h4{
-padding:10px;
-font-size:14px;
-}
+.slider-card:hover{transform:scale(1.05);}
+.slider-card img{width:100%;height:140px;object-fit:cover;border-radius:10px 10px 0 0;}
+.slider-card h4{padding:10px;font-size:14px;}
 
 /* AVISO */
 .aviso-diretor{
@@ -109,33 +114,12 @@ cursor:pointer;
 transition:0.3s;
 }
 
-.noticia-card:hover{
-transform:translateY(-4px);
-}
-
-.noticia-card img{
-width:100%;
-max-height:300px;
-object-fit:cover;
-}
-
-.noticia-conteudo{
-padding:20px;
-}
-
-.data{
-font-size:12px;
-color:#94a3b8;
-margin-top:10px;
-}
+.noticia-card:hover{transform:translateY(-4px);}
+.noticia-card img{width:100%;max-height:300px;object-fit:cover;border-radius:12px 12px 0 0;}
+.noticia-conteudo{padding:20px;}
 
 /* LOADING */
-.loading{
-text-align:center;
-margin-top:30px;
-color:#94a3b8;
-}
-
+.loading{text-align:center;margin-top:30px;color:#94a3b8;}
 </style>
 
 </head>
@@ -143,27 +127,20 @@ color:#94a3b8;
 <body>
 
 <header>
-
-<div class="container">
-
-<nav>
-
-<div class="logo">
-<img src="logo.png">
-<strong>EEEFM Estudo e Trabalho</strong>
-</div>
-
-<div class="menu">
-<a href="index.html">Início</a>
-<a href="noticias.html">Notícias</a>
-<a href="login.html">Portal do Aluno</a>
-<a href="login-professor.html">Portal do Professor</a>
-</div>
-
-</nav>
-
-</div>
-
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <img src="logo.png" alt="Logo">
+        <strong>EEEFM Estudo e Trabalho</strong>
+      </div>
+      <div class="menu">
+        <a href="index.html">Início</a>
+        <a href="noticias.html">Notícias</a>
+        <a href="login.html">Portal do Aluno</a>
+        <a href="login-professor.html">Portal do Professor</a>
+      </div>
+    </nav>
+  </div>
 </header>
 
 <div class="noticias-container">
@@ -171,7 +148,7 @@ color:#94a3b8;
 <h2>📰 Notícias e Avisos</h2>
 
 <div class="busca">
-<input id="busca" placeholder="Buscar..." oninput="filtrarNoticias()">
+<input id="busca" placeholder="Buscar por título ou conteúdo..." oninput="filtrarNoticias()">
 </div>
 
 <div id="avisos"></div>
@@ -179,28 +156,31 @@ color:#94a3b8;
 <div class="slider" id="sliderNoticias"></div>
 <div id="noticias"></div>
 
-<div id="loading" class="loading">Carregando...</div>
+<div id="loading" class="loading">Carregando notícias...</div>
 
 </div>
 
 <script>
 
 const API = "https://portal-escola-backend.onrender.com"
-
 let todasNoticias = []
 
 async function carregarNoticias(){
-
 let loading = document.getElementById("loading")
 
 try{
-
 let res = await fetch(API + "/publicacoes")
-let dados = await res.json()
+if(!res.ok) throw new Error("Erro na API");
 
+let dados = await res.json()
 loading.style.display = "none"
 
-dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
+// Ordenação segura por data
+dados.sort((a,b)=> {
+    const dataA = a.data_publicacao ? new Date(a.data_publicacao) : 0;
+    const dataB = b.data_publicacao ? new Date(b.data_publicacao) : 0;
+    return dataB - dataA;
+});
 
 let avisosDiv = document.getElementById("avisos")
 let destaqueDiv = document.getElementById("destaque")
@@ -210,6 +190,7 @@ avisosDiv.innerHTML=""
 destaqueDiv.innerHTML=""
 sliderDiv.innerHTML=""
 
+// Filtragem para garantir que apenas notícias entrem na lista principal
 todasNoticias = dados.filter(p=>p.tipo==="noticia")
 
 /* AVISOS */
@@ -217,73 +198,74 @@ dados.forEach(p=>{
 if(p.tipo==="aviso"){
 avisosDiv.innerHTML += `
 <div class="aviso-diretor">
-📢 <strong>${p.titulo}</strong><br>
+📢 <strong>${p.titulo || "Aviso"}</strong><br>
 ${p.conteudo || ""}
 </div>
 `
 }
 })
 
-/* DESTAQUE */
+/* DESTAQUE - Primeira notícia da lista */
 if(todasNoticias.length){
-
 let d = todasNoticias[0]
+let resumoDestaque = (d.conteudo || "").replace(/<[^>]*>?/gm, ''); // Remove HTML para o resumo
 
 destaqueDiv.innerHTML = `
-<div class="destaque" onclick="abrirNoticia(${d.id})">
+<div class="destaque" onclick="abrirNoticia('${d.id}')">
 ${d.imagem ? `<img src="${d.imagem}">` : ""}
 <div class="destaque-conteudo">
-<h2>${d.titulo}</h2>
-<p>${(d.conteudo || "").substring(0,150)}...</p>
+<h2>${d.titulo || "Sem título"}</h2>
+<p>${resumoDestaque.substring(0,150)}...</p>
 </div>
 </div>
 `
-
 }
 
 /* SLIDER */
 todasNoticias.forEach(p=>{
 sliderDiv.innerHTML += `
-<div class="slider-card" onclick="abrirNoticia(${p.id})">
+<div class="slider-card" onclick="abrirNoticia('${p.id}')">
 ${p.imagem ? `<img src="${p.imagem}">` : ""}
-<h4>${p.titulo}</h4>
+<h4>${p.titulo || "Sem título"}</h4>
 </div>
 `
 })
 
 renderNoticias(todasNoticias)
 
-}catch{
-document.getElementById("loading").innerText="Erro ao carregar"
+}catch(err){
+console.error(err);
+document.getElementById("loading").innerText="Erro ao carregar notícias. Verifique sua conexão."
 }
-
 }
 
 /* LISTA */
 function renderNoticias(lista){
-
 let noticiasDiv = document.getElementById("noticias")
 noticiasDiv.innerHTML=""
 
+if(lista.length === 0) {
+    noticiasDiv.innerHTML = "<p class='loading'>Nenhuma notícia encontrada.</p>";
+    return;
+}
+
 lista.forEach(p=>{
+let resumo = (p.conteudo || "").replace(/<[^>]*>?/gm, ''); // Remove tags HTML
 
 noticiasDiv.innerHTML += `
-<div class="noticia-card" onclick="abrirNoticia(${p.id})">
+<div class="noticia-card" onclick="abrirNoticia('${p.id}')">
 ${p.imagem ? `<img src="${p.imagem}">` : ""}
 <div class="noticia-conteudo">
-<h3>${p.titulo}</h3>
-<p>${(p.conteudo || "").substring(0,200)}...</p>
+<h3>${p.titulo || "Sem título"}</h3>
+<p>${resumo.substring(0,200)}...</p>
 </div>
 </div>
 `
-
 })
-
 }
 
 /* BUSCA */
 function filtrarNoticias(){
-
 let busca = document.getElementById("busca").value.toLowerCase()
 
 let filtradas = todasNoticias.filter(n =>
@@ -292,16 +274,14 @@ let filtradas = todasNoticias.filter(n =>
 )
 
 renderNoticias(filtradas)
-
 }
 
-/* ABRIR */
+/* ABRIR - Corrigido para passar o ID como string */
 function abrirNoticia(id){
-window.location = "noticia.html?id=" + id
+if(id) window.location.href = "noticia.html?id=" + id
 }
 
 carregarNoticias()
-
 </script>
 
 </body>
