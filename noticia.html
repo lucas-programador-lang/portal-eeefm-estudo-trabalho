@@ -8,7 +8,7 @@
 
 <title>Notícia</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 /* Mantendo 100% da sua estrutura original de CSS */
@@ -118,7 +118,7 @@ header {
 <div class="container">
 <nav>
 <div class="logo">
-<img src="logo.png" alt="Logo">
+<img src="logo.png" alt="Logo Escola">
 <strong>EEEFM Estudo e Trabalho</strong>
 </div>
 <div class="menu">
@@ -148,6 +148,8 @@ header {
 </div>
 
 </div>
+
+<script src="js/script.js"></script>
 
 <script>
 
@@ -183,7 +185,11 @@ throw new Error("Erro ao conectar com a API")
 
 let dados = await res.json()
 
-// Garantindo comparação de ID independente de tipo (string/number)
+// BUG FIX: Verificação se 'dados' é um array para evitar erro de console
+if(!Array.isArray(dados)) {
+    throw new Error("Dados inválidos recebidos do servidor");
+}
+
 let noticia = dados.find(p => String(p.id) === String(id))
 
 if(!noticia){
@@ -197,27 +203,36 @@ loading.style.display = "none"
 tituloElem.style.display = "block"
 tituloElem.innerText = noticia.titulo || "Sem título"
 
-dataElem.innerText = noticia.data_publicacao
-? new Date(noticia.data_publicacao).toLocaleDateString('pt-BR')
-: ""
+// BUG FIX: Tratamento de data para evitar 'Invalid Date'
+if(noticia.data_publicacao) {
+    const d = new Date(noticia.data_publicacao);
+    if(!isNaN(d.getTime())) {
+        dataElem.innerText = d.toLocaleDateString('pt-BR');
+    }
+}
 
+// BUG FIX: Garantindo que o conteúdo HTML seja renderizado (caso venha do Quill/Editor)
 conteudoElem.innerHTML = noticia.conteudo || "Sem conteúdo disponível."
 
-if(noticia.imagem && noticia.imagem.trim() !== ""){
-imagemElem.src = noticia.imagem
-imagemElem.style.display = "block"
+// BUG FIX: Verificação robusta de imagem
+if(noticia.imagem && noticia.imagem.trim() !== "" && noticia.imagem !== "null"){
+    imagemElem.src = noticia.imagem
+    imagemElem.style.display = "block"
 }
 
 }catch(err){
 
 console.error("Erro de console:", err)
-loading.style.color = "#ef4444"
-loading.innerText = "Erro ao carregar notícia. Tente novamente mais tarde."
-
+if(loading) {
+    loading.style.color = "#ef4444"
+    loading.innerText = "Erro ao carregar notícia. Tente novamente mais tarde."
 }
 
 }
 
+}
+
+// GARANTIA DE PRODUÇÃO: Chamada via listener
 document.addEventListener("DOMContentLoaded", carregarNoticia)
 
 </script>
