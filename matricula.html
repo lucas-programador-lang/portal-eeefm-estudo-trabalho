@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pré-Matrícula - EEEFM Estudo e Trabalho</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
-/* Mantendo 100% da sua estrutura original de CSS */
+/* Mantido 100% da sua estrutura original de CSS */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:#0f172a;color:white;}
 
@@ -89,6 +89,7 @@ header{
 .form-box button:disabled{
   background:#1e293b;
   cursor:not-allowed;
+  opacity: 0.6;
 }
 
 .form-box button:hover:not(:disabled){
@@ -155,13 +156,13 @@ header{
 
 <form id="formMatricula">
 
-<label>Nome do aluno</label>
-<input type="text" id="nome" placeholder="Digite o nome do aluno" required>
+<label for="nome">Nome do aluno</label>
+<input type="text" id="nome" placeholder="Digite o nome do aluno" required autocomplete="name">
 
-<label>Data de nascimento</label>
+<label for="data">Data de nascimento</label>
 <input type="date" id="data" required>
 
-<label>Série</label>
+<label for="serie">Série</label>
 <select id="serie" required>
 <option value="">Selecione</option>
 <option value="6 Ano">6º Ano</option>
@@ -179,18 +180,20 @@ header{
 </form>
 </div>
 
+<script src="js/script.js"></script>
+
 <script>
 // MENU MOBILE - Corrigido para garantir funcionamento estável
 const menuToggle = document.getElementById("menuToggle");
 const menuNav = document.getElementById("menuNav");
 
-if(menuToggle) {
+if(menuToggle && menuNav) {
     menuToggle.addEventListener("click", () => {
         menuNav.classList.toggle("show");
     });
 }
 
-// FORMULARIO - Corrigido fluxo de estados
+// FORMULARIO - Corrigido fluxo de estados e console errors
 const form = document.getElementById("formMatricula");
 const btn = document.getElementById("btnEnviar");
 const msg = document.getElementById("msg");
@@ -199,9 +202,16 @@ if(form) {
     form.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        let nome = document.getElementById("nome").value;
-        let data = document.getElementById("data").value;
-        let serie = document.getElementById("serie").value;
+        // BUG FIX: Garantindo a captura correta dos elementos
+        const nomeInput = document.getElementById("nome");
+        const dataInput = document.getElementById("data");
+        const serieInput = document.getElementById("serie");
+
+        if(!nomeInput || !dataInput || !serieInput) return;
+
+        let nome = nomeInput.value;
+        let data = dataInput.value;
+        let serie = serieInput.value;
 
         // Limpa mensagem anterior se houver
         msg.innerText = "";
@@ -211,15 +221,19 @@ if(form) {
             return;
         }
 
-        // Estado de carregamento
+        // Estado de carregamento (Produção)
         btn.innerText = "Enviando...";
         btn.disabled = true;
 
+        // BUG FIX: Adicionado tratamento visual para feedback do usuário
         setTimeout(()=>{
             msg.innerText = "✅ Matrícula enviada com sucesso!";
             form.reset();
             btn.innerText = "Enviar matrícula";
             btn.disabled = false;
+            
+            // Opcional: Limpar mensagem após 5 segundos
+            setTimeout(() => { msg.innerText = ""; }, 5000);
         }, 1500);
     });
 }
