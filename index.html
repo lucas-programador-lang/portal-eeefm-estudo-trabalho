@@ -5,7 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EEEFM Estudo e Trabalho</title>
-<link rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="css/style.css">
+
 <style>
 /* HEADER */
 header{
@@ -89,7 +91,7 @@ h2{color:#38bdf8;margin-bottom:15px;}
   margin-bottom:20px;
 }
 .news h3{color:#38bdf8;margin-bottom:10px;}
-.news img{max-width:100%;border-radius:8px;margin-bottom:10px;}
+.news img{max-width:100%;border-radius:8px;margin-bottom:10px; display: block;}
 
 /* AVISO */
 .aviso-diretor{
@@ -115,7 +117,7 @@ h2{color:#38bdf8;margin-bottom:15px;}
 .calendario th{background:#0ea5e9;color:white;}
 
 /* MAPA */
-.mapa iframe{width:100%;border-radius:12px;border:0;}
+.mapa iframe{width:100%;border-radius:12px;border:0; background: #1e293b;}
 
 /* RODAPÉ */
 footer{
@@ -143,17 +145,17 @@ footer{
 <header>
 <div class="container">
   <div class="logo">
-    <img src="logo.png">
+    <img src="logo.png" alt="Logo Escola">
     <strong>EEEFM Estudo e Trabalho</strong>
   </div>
-  <div class="menu">
+  <nav class="menu">
     <a href="index.html">Início</a>
     <a href="login.html">Portal do Aluno</a>
     <a href="login-professor.html">Portal do Professor</a>
     <a href="matricula.html">Matrícula</a>
     <a href="login-admin.html">Admin</a>
     <a href="noticias.html">Notícias</a>
-  </div>
+  </nav>
 </div>
 </header>
 
@@ -204,17 +206,21 @@ promovendo o desenvolvimento acadêmico, social e cultural dos estudantes.
 
 <section class="container">
 <h2>Notícias da Escola</h2>
-<div id="listaNoticias" class="noticias"></div>
+<div id="listaNoticias">Carregando notícias...</div>
 </section>
 
 <section class="container">
 <h2>Calendário Escolar</h2>
 <div class="calendario">
 <table>
-<tr><th>Evento</th><th>Data</th></tr>
-<tr><td>Início das aulas</td><td>05/02</td></tr>
-<tr><td>Feira de Ciências</td><td>20/04</td></tr>
-<tr><td>Recesso Escolar</td><td>15/07</td></tr>
+<thead>
+  <tr><th>Evento</th><th>Data</th></tr>
+</thead>
+<tbody>
+  <tr><td>Início das aulas</td><td>05/02</td></tr>
+  <tr><td>Feira de Ciências</td><td>20/04</td></tr>
+  <tr><td>Recesso Escolar</td><td>15/07</td></tr>
+</tbody>
 </table>
 </div>
 </section>
@@ -222,7 +228,7 @@ promovendo o desenvolvimento acadêmico, social e cultural dos estudantes.
 <section class="container">
 <h2>Localização da Escola</h2>
 <div class="mapa">
-<iframe src="https://www.google.com/maps?q=EEEFM%20Estudo%20e%20Trabalho%20Porto%20Velho&output=embed" height="350" loading="lazy"></iframe>
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15764.571407283627!2d-63.89!3d-8.76!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x92325cb1017d75b3%3A0x6b16e458e0a2948b!2sPorto%20Velho%20-%20RO!5e0!3m2!1spt-BR!2sbr!4v1712770000000!5m2!1spt-BR!2sbr" height="350" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
 </div>
 </section>
 
@@ -234,33 +240,70 @@ promovendo o desenvolvimento acadêmico, social e cultural dos estudantes.
 </div>
 </footer>
 
+<script src="js/script.js"></script>
+
 <script>
 const API = "https://portal-escola-backend.onrender.com"
+
 async function carregarConteudo(){
-try{
-let res = await fetch(API + "/publicacoes")
-let dados = await res.json()
-let avisoDiv = document.getElementById("aviso-diretor")
-let noticiasDiv = document.getElementById("listaNoticias")
-avisoDiv.innerHTML=""
-noticiasDiv.innerHTML=""
-dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
-let avisoMostrado = false
-dados.forEach(p=>{
-let data = p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString() : ""
-if(p.tipo==="aviso" && !avisoMostrado){
-avisoDiv.innerHTML = `<div class="aviso-diretor"><div class="container">📢 <strong>${p.titulo || "Aviso da Direção"}:</strong> ${p.conteudo || ""}</div></div>`
-avisoMostrado = true
+    const avisoDiv = document.getElementById("aviso-diretor")
+    const noticiasDiv = document.getElementById("listaNoticias")
+
+    try{
+        let res = await fetch(API + "/publicacoes")
+        if(!res.ok) throw new Error("Erro na rede");
+        
+        let dados = await res.json()
+        
+        avisoDiv.innerHTML=""
+        noticiasDiv.innerHTML=""
+
+        if(!Array.isArray(dados) || dados.length === 0) {
+            noticiasDiv.innerHTML = "<p>Nenhuma notícia disponível no momento.</p>"
+            return;
+        }
+
+        // Ordenação
+        dados.sort((a,b)=> new Date(b.data_publicacao) - new Date(a.data_publicacao))
+        
+        let avisoMostrado = false
+
+        dados.forEach(p=>{
+            let data = p.data_publicacao ? new Date(p.data_publicacao).toLocaleDateString('pt-BR') : ""
+            
+            // Lógica de Aviso
+            if(p.tipo === "aviso" && !avisoMostrado){
+                avisoDiv.innerHTML = `
+                    <div class="aviso-diretor">
+                        <div class="container">📢 <strong>${p.titulo || "Aviso"}:</strong> ${p.conteudo || ""}</div>
+                    </div>`
+                avisoMostrado = true
+            }
+            
+            // Lógica de Notícia
+            if(p.tipo === "noticia"){
+                noticiasDiv.innerHTML += `
+                    <div class="news">
+                        <h3>${p.titulo}</h3>
+                        ${p.imagem ? `<img src="${p.imagem}" class="img-noticia" onerror="this.style.display='none'">` : ""}
+                        <div class="conteudo-noticia">${p.conteudo}</div>
+                        <br>
+                        <small class="data-noticia">Postado em: ${data}</small>
+                    </div>`
+            }
+        })
+
+        if(noticiasDiv.innerHTML === "") {
+             noticiasDiv.innerHTML = "<p>Não há notícias recentes.</p>"
+        }
+
+    }catch(err){
+        console.error("Erro de Console:", err)
+        noticiasDiv.innerHTML = "<p>Erro ao carregar notícias. Verifique o servidor.</p>"
+    }
 }
-if(p.tipo==="noticia"){
-noticiasDiv.innerHTML += `<div class="news"><h3>${p.titulo}</h3>${p.imagem ? `<img src="${p.imagem}" class="img-noticia">` : ""}<div class="conteudo-noticia">${p.conteudo}</div><small class="data-noticia">${data}</small></div>`
-}
-})
-}catch(err){
-console.error(err)
-document.getElementById("listaNoticias").innerHTML = "<p>Erro ao carregar notícias.</p>"
-}}
-document.addEventListener("DOMContentLoaded",carregarConteudo)
+
+document.addEventListener("DOMContentLoaded", carregarConteudo)
 </script>
 
 </body>
