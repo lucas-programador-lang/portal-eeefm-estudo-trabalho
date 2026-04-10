@@ -8,6 +8,8 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
+<link rel="stylesheet" href="css/style.css">
+
 <style>
 /* Mantido CSS original conforme solicitado */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
@@ -84,8 +86,8 @@ th{background:#0ea5e9;color:white;}
     <div class="box">
       <h3>Cadastrar Aluno</h3>
       <form id="formAluno">
-        <input id="nomeAluno" placeholder="Nome" required>
-        <input id="cpfAluno" placeholder="CPF" required>
+        <input id="nomeAluno" type="text" placeholder="Nome" required>
+        <input id="cpfAluno" type="text" placeholder="CPF" required>
         <input id="senhaAluno" type="password" placeholder="Senha" required>
         <button type="submit" class="action">Cadastrar</button>
       </form>
@@ -96,57 +98,89 @@ th{background:#0ea5e9;color:white;}
     <div class="box">
       <h3>Cadastrar Professor</h3>
       <form id="formProfessor">
-        <input id="nomeProfessor" placeholder="Nome" required>
-        <input id="cpfProfessor" placeholder="CPF" required>
+        <input id="nomeProfessor" type="text" placeholder="Nome" required>
+        <input id="cpfProfessor" type="text" placeholder="CPF" required>
         <input id="senhaProfessor" type="password" placeholder="Senha" required>
-        <input id="disciplinaProfessor" placeholder="Disciplina" required>
+        <input id="disciplinaProfessor" type="text" placeholder="Disciplina" required>
         <button type="submit" class="action">Cadastrar</button>
       </form>
     </div>
   </div>
 
-  <div id="avisos" class="section"><div class="box"><h3>Avisos</h3><div id="editor"></div></div></div>
+  <div id="avisos" class="section">
+    <div class="box">
+        <h3>Avisos</h3>
+        <div id="editor"></div>
+        <button class="action" onclick="salvarAviso()">Publicar Aviso</button>
+    </div>
+  </div>
+  
   <div id="noticias" class="section"><div class="box"><h3>Notícias</h3></div></div>
   <div id="publicacoes" class="section"><div class="box"><h3>Publicações</h3></div></div>
 
 </div>
 
+<script src="js/logout.js"></script>
+<script src="js/script.js"></script>
+
 <script>
-// FUNÇÃO DE NAVEGAÇÃO
+// FUNÇÃO DE NAVEGAÇÃO (Corrigida para evitar erro de null)
 function mostrar(id) {
-    // Esconde todas as seções
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    // Mostra a seção desejada
+    const sections = document.querySelectorAll('.section');
+    sections.forEach(s => s.classList.remove('active'));
+    
     const target = document.getElementById(id);
-    if(target) target.classList.add('active');
+    if(target) {
+        target.classList.add('active');
+    }
 }
 
-// LOGOUT
-function logout() {
-    alert("Saindo do sistema...");
-    window.location.href = "login.html"; // Ajuste para sua rota
+// LOGOUT (Verifica se já existe no logout.js para não duplicar)
+if (typeof logout !== 'function') {
+    function logout() {
+        alert("Saindo do sistema...");
+        window.location.href = "login.html";
+    }
 }
 
-// INICIALIZAÇÃO DO EDITOR (Verifica se o elemento existe)
+// INICIALIZAÇÃO DO EDITOR
 var quill;
-const editorElem = document.querySelector('#editor');
-if (editorElem) {
-    quill = new Quill('#editor', { theme: 'snow' });
+window.onload = function() {
+    const editorElem = document.querySelector('#editor');
+    if (editorElem && typeof Quill !== 'undefined') {
+        quill = new Quill('#editor', { theme: 'snow' });
+    }
+};
+
+// EVENTOS DE FORMULÁRIO
+document.addEventListener('DOMContentLoaded', function() {
+    const fAluno = document.getElementById('formAluno');
+    if(fAluno) {
+        fAluno.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Aluno cadastrado com sucesso!');
+            this.reset();
+        });
+    }
+
+    const fProf = document.getElementById('formProfessor');
+    if(fProf) {
+        fProf.addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Professor cadastrado com sucesso!');
+            this.reset();
+        });
+    }
+});
+
+function salvarAviso() {
+    if(quill) {
+        const conteudo = quill.root.innerHTML;
+        alert('Aviso pronto para envio ao banco de dados!');
+        console.log(conteudo);
+    }
 }
-
-// EVENTOS DE FORMULÁRIO (Previne erro de console no submit)
-document.getElementById('formAluno')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Aluno cadastrado com sucesso!');
-    this.reset();
-});
-
-document.getElementById('formProfessor')?.addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Professor cadastrado com sucesso!');
-    this.reset();
-});
 </script>
 
-</body>
+</body> 
 </html>
