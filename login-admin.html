@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login Administrativo</title>
 
+<link rel="stylesheet" href="css/style.css">
+
 <style>
+/* Mantido CSS original conforme solicitado */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:linear-gradient(135deg,#0f172a,#020617);min-height:100vh;display:flex;flex-direction:column;align-items:center;color:white;}
 
-/* =========================
-HEADER + MENU MOBILE
-========================= */
 header{
   background:#020617;
   padding:15px 0;
@@ -42,9 +42,6 @@ header .container{
 .menu a:hover{color:#38bdf8;}
 .menu-toggle{display:none;font-size:24px;color:#38bdf8;cursor:pointer;}
 
-/* =========================
-LOGIN BOX
-========================= */
 .login-box{
   width:100%;
   max-width:400px;
@@ -64,9 +61,6 @@ button:hover{background:#0284c7;}
 .loading{opacity:0.6;pointer-events:none;}
 .erro{color:#ef4444;margin-top:10px;font-size:14px;}
 
-/* =========================
-RESPONSIVO
-========================= */
 @media(max-width:768px){
   .menu{display:none;flex-direction:column;position:absolute;top:60px;right:20px;background:#020617;padding:10px;border-radius:8px;}
   .menu.show{display:flex;}
@@ -96,64 +90,102 @@ RESPONSIVO
 
 <div class="login-box" id="loginBox">
   <h2>Login Administrativo</h2>
-  <input id="usuario" placeholder="Usuário">
-  <input type="password" id="senha" placeholder="Senha">
+  <input id="usuario" placeholder="Usuário" autocomplete="username">
+  <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
   <button id="btnLogin">Entrar</button>
   <div id="erro" class="erro"></div>
 </div>
 
 <script>
+// BUG FIX: API original mantida, mas preparada para falhas de rede
 const API="https://portal-escola-backend.onrender.com"
 
 // MENU MOBILE
 const menuToggle=document.getElementById("menuToggle")
 const menuNav=document.getElementById("menuNav")
-menuToggle.onclick=()=>menuNav.classList.toggle("show")
+if(menuToggle) {
+    menuToggle.onclick=()=>menuNav.classList.toggle("show")
+}
 
 // LOGIN
 const btnLogin=document.getElementById("btnLogin")
 const erro=document.getElementById("erro")
 
-btnLogin.onclick=async function loginAdmin(){
+// BUG FIX: Declarada como função nomeada para ser chamada pelo evento de tecla
+async function loginAdmin(){
+  if(!erro) return;
   erro.innerText=""
-  let usuario=document.getElementById("usuario").value
-  let senha=document.getElementById("senha").value
+  
+  const usuarioInput = document.getElementById("usuario")
+  const senhaInput = document.getElementById("senha")
+  
+  if(!usuarioInput || !senhaInput) return;
 
-  if(!usuario||!senha){erro.innerText="Preencha usuário e senha";return}
+  let usuario = usuarioInput.value
+  let senha = senhaInput.value
+
+  if(!usuario || !senha){
+      erro.innerText="Preencha usuário e senha";
+      return;
+  }
 
   btnLogin.classList.add("loading")
   btnLogin.innerText="Entrando..."
 
   try{
     localStorage.clear()
-    let res=await fetch(API+"/login-admin",{
+    // BUG FIX: Adicionado timeout manual para evitar que o botão fique travado em "Entrando..." para sempre
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    let res = await fetch(API+"/login-admin",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({usuario,senha})
+      body:JSON.stringify({usuario,senha}),
+      signal: controller.signal
     })
 
-    if(!res.ok){erro.innerText="Servidor indisponível";btnLogin.classList.remove("loading");btnLogin.innerText="Entrar";return}
+    clearTimeout(timeoutId);
+
+    if(!res.ok){
+        erro.innerText="Usuário ou senha inválidos"; // Ajustado para ser mais genérico por segurança
+        resetBotao();
+        return;
+    }
 
     let data=await res.json()
     if(data.success){
       localStorage.setItem("token",data.token)
       localStorage.setItem("usuario",JSON.stringify({usuario,tipo:"admin"}))
-      window.location="admin.html"
+      window.location.href="admin.html" // Adicionado .href por padrão de produção
     }else{
       erro.innerText="Usuário ou senha inválidos"
     }
 
   }catch(err){
-    console.error(err)
-    erro.innerText="Erro de conexão"
+    console.error("Erro de Console:", err)
+    erro.innerText="Erro ao conectar com o servidor"
   }
 
-  btnLogin.classList.remove("loading")
-  btnLogin.innerText="Entrar"
+  resetBotao();
 }
 
-// ENTER para login
-document.addEventListener("keypress",(e)=>{if(e.key==="Enter") loginAdmin()})
+function resetBotao() {
+    btnLogin.classList.remove("loading")
+    btnLogin.innerText="Entrar"
+}
+
+// EVENTOS
+if(btnLogin) {
+    btnLogin.onclick = loginAdmin;
+}
+
+// BUG FIX: Corrigido o erro de referência. O "Enter" agora chama a função corretamente.
+document.addEventListener("keypress",(e)=>{
+    if(e.key==="Enter") {
+        loginAdmin();
+    }
+})
 </script>
 
 </body>
