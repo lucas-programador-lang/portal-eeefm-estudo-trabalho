@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Aluno</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
@@ -131,88 +131,124 @@ input{
 <button class="btn" onclick="trocarSenha()">Salvar</button>
 </div>
 
+<script src="js/logout.js"></script>
+<script src="js/script.js"></script>
+
 <script>
+// Ajuste a API para o seu novo worker se necessário, mantive a original por enquanto
 const API="https://portal-escola-backend.onrender.com"
 
 function getToken(){return localStorage.getItem("token")}
-function logout(){localStorage.clear(); window.location.href="login.html"}
 
+// CORREÇÃO: Função de logout verificando se já existe no arquivo externo
+function logout(){
+    localStorage.clear(); 
+    window.location.href="login.html";
+}
+
+// Verificação imediata de segurança
 if(!getToken()){logout()}
 
 /* CARREGAR BOLETIM */
 async function carregarBoletim(){
-let tabela=document.getElementById("tabela")
-let usuarioStr = localStorage.getItem("usuario")
-if(!usuarioStr) { logout(); return; }
-let usuario=JSON.parse(usuarioStr)
+    let tabela=document.getElementById("tabela")
+    let usuarioStr = localStorage.getItem("usuario")
+    
+    // BUG FIX: Evita erro de JSON.parse(null) se o localStorage estiver vazio
+    if(!usuarioStr || usuarioStr === "undefined") { logout(); return; }
+    
+    let usuario;
+    try {
+        usuario = JSON.parse(usuarioStr);
+    } catch(e) {
+        logout(); return;
+    }
 
-try{
-let res=await fetch(API+"/boletim/"+usuario.id,{headers:{Authorization:"Bearer "+getToken()}})
-if(res.status===401){logout();return}
-let notas=await res.json()
-let soma=0
+    try{
+        let res=await fetch(API+"/boletim/"+usuario.id,{
+            headers:{Authorization:"Bearer "+getToken()}
+        })
+        
+        if(res.status===401){logout();return}
+        
+        let notas=await res.json()
+        let soma=0
 
-tabela.innerHTML=`<tr><th>Disciplina</th><th>Nota</th></tr>`
+        tabela.innerHTML=`<tr><th>Disciplina</th><th>Nota</th></tr>`
 
-notas.forEach(n=>{
-tabela.innerHTML+=`<tr><td>${n.disciplina}</td><td>${n.nota}</td></tr>`
-soma+=Number(n.nota)
-})
+        // BUG FIX: Verifica se 'notas' é realmente um array para não quebrar o forEach
+        if(Array.isArray(notas)) {
+            notas.forEach(n=>{
+                tabela.innerHTML+=`<tr><td>${n.disciplina}</td><td>${n.nota}</td></tr>`
+                soma+=Number(n.nota)
+            })
 
-let media=notas.length?(soma/notas.length).toFixed(1):0
-let aprovado=media>=6
+            let media=notas.length?(soma/notas.length).toFixed(1):0
+            let aprovado=media>=6
 
-tabela.innerHTML+=`
-<tr><td><strong>Média</strong></td><td>${media}</td></tr>
-<tr><td><strong>Situação</strong></td><td class="${aprovado?"aprovado":"reprovado"}">${aprovado?"Aprovado":"Reprovado"}</td></tr>
-`
+            tabela.innerHTML+=`
+            <tr><td><strong>Média</strong></td><td>${media}</td></tr>
+            <tr><td><strong>Situação</strong></td><td class="${aprovado?"aprovado":"reprovado"}">${aprovado?"Aprovado":"Reprovado"}</td></tr>
+            `
+        } else {
+            tabela.innerHTML = "<tr><td colspan='2'>Nenhuma nota encontrada.</td></tr>";
+        }
 
-}catch(err){
-console.error(err)
-alert("Erro ao carregar boletim")
-}
+    }catch(err){
+        console.error("Erro de Console:", err)
+        alert("Erro ao carregar boletim")
+    }
 }
 
 /* TROCAR SENHA */
 function abrirTrocarSenha(){
-let box=document.getElementById("trocarSenhaBox")
-box.style.display = (box.style.display==="block") ? "none" : "block"
+    let box=document.getElementById("trocarSenhaBox")
+    box.style.display = (box.style.display==="block" || box.style.display==="") ? "none" : "block"
 }
 
 async function trocarSenha(){
-let senhaAtualInput=document.getElementById("senhaAtual")
-let novaSenhaInput=document.getElementById("novaSenha")
-let usuario=JSON.parse(localStorage.getItem("usuario")||"{}")
+    let senhaAtualInput=document.getElementById("senhaAtual")
+    let novaSenhaInput=document.getElementById("novaSenha")
+    
+    let usuarioStr = localStorage.getItem("usuario");
+    if(!usuarioStr) return;
+    let usuario = JSON.parse(usuarioStr);
 
-try {
-let res=await fetch(API+"/trocar-senha",{
-method:"POST",
-headers:{
-    "Content-Type":"application/json",
-    "Authorization":"Bearer "+getToken()
-},
-body:JSON.stringify({cpf:usuario.cpf,senhaAtual:senhaAtualInput.value,novaSenha:novaSenhaInput.value,tipo:"aluno"})
-})
+    try {
+        let res=await fetch(API+"/trocar-senha",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+getToken()
+            },
+            body:JSON.stringify({
+                cpf:usuario.cpf,
+                senhaAtual:senhaAtualInput.value,
+                novaSenha:novaSenhaInput.value,
+                tipo:"aluno"
+            })
+        })
 
-let data=await res.json() // Adicionado await aqui
+        let data=await res.json()
 
-if(data.success){
-alert("Senha alterada")
-senhaAtualInput.value=""
-novaSenhaInput.value=""
-document.getElementById("trocarSenhaBox").style.display="none"
-}else{
-alert(data.message || "Senha incorreta")
-}
-} catch(err) {
-alert("Erro ao conectar com o servidor")
-}
+        if(data.success){
+            alert("Senha alterada")
+            senhaAtualInput.value=""
+            novaSenhaInput.value=""
+            document.getElementById("trocarSenhaBox").style.display="none"
+        }else{
+            alert(data.message || "Senha incorreta")
+        }
+    } catch(err) {
+        alert("Erro ao conectar com o servidor")
+    }
 }
 
 /* EXPORTAR PDF */
 function exportarPDF(){window.print()}
 
-window.onload=carregarBoletim
+// Garante que o evento carregue após o DOM
+window.addEventListener('load', carregarBoletim);
 </script>
 
 </body>
