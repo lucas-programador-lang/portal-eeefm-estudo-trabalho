@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Aluno</title>
 
+<link rel="stylesheet" href="css/style.css">
+
 <style>
+/* Mantido CSS original conforme solicitado */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
 body{background:linear-gradient(135deg,#0f172a,#020617);min-height:100vh;}
 
-/* =========================
-HEADER FIXO COM MENU MOBILE
-========================= */
 header{
   background:#020617;
   padding:15px 0;
@@ -55,7 +55,6 @@ header .logo img{width:45px;}
 
 .menu a:hover{color:#38bdf8;}
 
-/* BOTÃO MOBILE */
 .menu-toggle{
   display:none;
   font-size:24px;
@@ -63,9 +62,6 @@ header .logo img{width:45px;}
   cursor:pointer;
 }
 
-/* =========================
-LOGIN CONTAINER
-========================= */
 .login-container{
   width:100%;
   max-width:380px;
@@ -118,9 +114,6 @@ button:hover{background:#0284c7;}
   font-size:14px;
 }
 
-/* =========================
-RESPONSIVO
-========================= */
 @media(max-width:768px){
   .menu{display:none;flex-direction:column;background:#020617;position:absolute;top:60px;right:20px;padding:10px;border-radius:8px;}
   .menu.show{display:flex;}
@@ -142,43 +135,63 @@ RESPONSIVO
     <a href="index.html">Início</a>
     <a href="noticias.html">Notícias</a>
     <a href="login-professor.html">Portal do Professor</a>
-    <a href="admin.html">Admin</a>
+    <a href="login-admin.html">Admin</a>
   </nav>
 </div>
 </header>
 
 <div class="login-container">
   <h2>🎓 Portal do Aluno</h2>
-  <input id="cpf" placeholder="CPF" maxlength="14">
-  <input type="password" id="senha" placeholder="Senha">
+  <input id="cpf" placeholder="CPF" maxlength="14" autocomplete="username">
+  <input type="password" id="senha" placeholder="Senha" autocomplete="current-password">
   <button id="btnLogin">Entrar</button>
   <div id="erro" class="erro"></div>
 </div>
 
+<script src="js/script.js"></script>
+
 <script>
+// BUG FIX: API original mantida
 const API="https://portal-escola-backend.onrender.com"
-const btn=document.getElementById("btnLogin")
-const erro=document.getElementById("erro")
 
 // MENU MOBILE
 const menuToggle=document.getElementById("menuToggle")
 const menuNav=document.getElementById("menuNav")
-menuToggle.addEventListener("click",()=>menuNav.classList.toggle("show"))
+if(menuToggle) {
+    menuToggle.addEventListener("click",()=>menuNav.classList.toggle("show"))
+}
 
 // FORMATAR CPF
-document.getElementById("cpf").addEventListener("input",(e)=>{
-  let cpf = e.target.value.replace(/\D/g,'')
-  cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-  cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
-  cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
-  e.target.value=cpf
-})
+const cpfInput = document.getElementById("cpf")
+if(cpfInput) {
+    cpfInput.addEventListener("input",(e)=>{
+      let cpf = e.target.value.replace(/\D/g,'')
+      cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+      cpf = cpf.replace(/(\d{3})(\d)/,"$1.$2")
+      cpf = cpf.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
+      e.target.value=cpf
+    })
+}
 
-btn.onclick = async function loginAluno(){
+// LOGIN
+const btn=document.getElementById("btnLogin")
+const erro=document.getElementById("erro")
+
+// BUG FIX: Função nomeada para evitar erros de referência no console
+async function loginAluno(){
+  if(!erro) return;
   erro.innerText=""
-  let cpf=document.getElementById("cpf").value.replace(/\D/g,'')
-  let senha=document.getElementById("senha").value
-  if(!cpf || !senha){erro.innerText="Preencha todos os campos";return}
+  
+  const inputCpf = document.getElementById("cpf")
+  const inputSenha = document.getElementById("senha")
+  
+  let cpf=inputCpf.value.replace(/\D/g,'')
+  let senha=inputSenha.value
+  
+  if(!cpf || !senha){
+    erro.innerText="Preencha todos os campos";
+    return;
+  }
 
   btn.classList.add("loading")
   btn.innerText="Entrando..."
@@ -189,21 +202,46 @@ btn.onclick = async function loginAluno(){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({cpf,senha})
     })
+
+    // BUG FIX: Verificação de erro de resposta antes do JSON
+    if(!res.ok) {
+        erro.innerText = "CPF ou senha inválidos";
+        finalizarBotao();
+        return;
+    }
+
     let data=await res.json()
     if(data.success){
       localStorage.setItem("token",data.token)
       localStorage.setItem("usuario",JSON.stringify(data.aluno))
-      window.location="aluno.html"
+      window.location.href="aluno.html"
     }else{
       erro.innerText="CPF ou senha inválidos"
     }
-  }catch{
+  }catch(err){
+    console.error("Erro de Rede:", err)
     erro.innerText="Erro de conexão com servidor"
   }
 
-  btn.classList.remove("loading")
-  btn.innerText="Entrar"
+  finalizarBotao()
 }
+
+function finalizarBotao() {
+    btn.classList.remove("loading")
+    btn.innerText="Entrar"
+}
+
+// EVENTOS
+if(btn) {
+    btn.onclick = loginAluno;
+}
+
+// BUG FIX: Evento Enter corrigido para chamar a função correta
+document.addEventListener("keypress",(e)=>{
+    if(e.key==="Enter") {
+        loginAluno();
+    }
+})
 </script>
 
 </body>
