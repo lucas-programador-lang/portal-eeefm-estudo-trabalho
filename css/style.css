@@ -1,288 +1,307 @@
 /* =========================
-RESET
-========================= */
+   RESET E BASE
+   ========================= */
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* BUG FIX: Evita scroll horizontal indesejado em dispositivos móveis */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
 }
 
 body{
-background:#0f172a;
-color:#e2e8f0;
-line-height: 1.6; /* Melhora a legibilidade em produção */
+    background:#0f172a;
+    color:#e2e8f0;
+    line-height: 1.6;
 }
 
 /* =========================
-HEADER (FUNCIONA PRA TODOS)
-========================= */
+   HEADER (FIXO E ADAPTÁVEL)
+   ========================= */
 header, .header-comum{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-background:#020617;
-border-bottom:1px solid #1e293b;
-z-index:999;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:#020617;
+    border-bottom:1px solid #1e293b;
+    z-index:999;
 }
 
 header .container,
 .header-comum .container{
-max-width:1200px;
-margin:auto;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:12px 20px;
-flex-wrap:wrap;
-min-height: 70px; /* Garante altura mínima consistente */
+    max-width:1200px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 20px;
+    flex-wrap:wrap;
+    min-height: 70px;
 }
 
 /* LOGO */
 .logo{
-display:flex;
-align-items:center;
-gap:10px;
-text-decoration: none; /* Previne sublinhado se for link */
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration: none;
 }
 
 .logo img{
-width:50px;
-height: auto;
+    width:50px;
+    height: auto;
+    /* BUG FIX: Garante que a logo não distorça */
+    display: block;
 }
 
 .logo strong{
-color:#38bdf8;
-font-size:18px;
-white-space: nowrap;
+    color:#38bdf8;
+    font-size:18px;
+    white-space: nowrap;
 }
 
 /* MENU */
 .menu{
-display:flex;
-flex-wrap:wrap;
-align-items:center;
-list-style: none;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    list-style: none;
 }
 
 .menu a{
-color:#cbd5f5;
-margin-left:18px;
-text-decoration:none;
-font-weight:500;
-transition:0.3s;
-cursor: pointer;
+    color:#cbd5f5;
+    margin-left:18px;
+    text-decoration:none;
+    font-weight:500;
+    transition:0.3s;
+    cursor: pointer;
 }
 
 .menu a:hover{
-color:#38bdf8;
+    color:#38bdf8;
 }
 
 /* =========================
-CONTAINER
-========================= */
+   CONTAINER GLOBAL
+   ========================= */
 .container{
-max-width:1200px;
-margin:40px auto;
-padding:0 20px;
+    max-width:1200px;
+    margin:40px auto;
+    padding:0 20px;
 }
 
 /* =========================
-BANNER
-========================= */
+   BANNER (COM AJUSTE DE MARGEM)
+   ========================= */
 .banner{
-background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
-color:white;
-text-align:center;
-padding:100px 20px 80px;
-margin-top:70px; /* Ajustado para não sumir sob o header fixo */
+    background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
+    color:white;
+    text-align:center;
+    padding:100px 20px 80px;
+    /* BUG FIX: Aumentado para garantir que não fique sob o header em nenhuma tela */
+    margin-top: 70px; 
 }
 
 .banner h1{
-font-size:38px;
-margin-bottom:10px;
+    font-size:38px;
+    margin-bottom:10px;
 }
 
 .banner p{
-font-size:18px;
-opacity:0.9;
+    font-size:18px;
+    opacity:0.9;
 }
 
 /* =========================
-CARDS
-========================= */
+   SISTEMA DE CARDS
+   ========================= */
 .cards{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:25px;
-margin-top:30px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:25px;
+    margin-top:30px;
 }
 
 .card{
-background:#020617;
-padding:25px;
-border-radius:12px;
-border:1px solid #1e293b;
-text-align:center;
-transition:0.3s;
-color: #e2e8f0;
+    background:#020617;
+    padding:25px;
+    border-radius:12px;
+    border:1px solid #1e293b;
+    text-align:center;
+    transition:0.3s;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .card:hover{
-transform:translateY(-6px);
-box-shadow:0 10px 25px rgba(0,0,0,0.5);
+    transform:translateY(-6px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.5);
 }
 
 .card h3{
-color:#38bdf8;
-margin-bottom:10px;
+    color:#38bdf8;
+    margin-bottom:10px;
 }
 
 .card p{
-opacity:0.8;
-margin-bottom:15px;
+    opacity:0.8;
+    margin-bottom:15px;
 }
 
 /* =========================
-BOTÃO
-========================= */
+   BOTÕES (ESTILO PREMIUM)
+   ========================= */
 .btn{
-display:inline-block;
-padding:10px 18px;
-background:#0ea5e9;
-color:white !important; /* Garante cor branca mesmo em links */
-border-radius:8px;
-text-decoration:none;
-transition:0.3s;
-border: none;
-cursor: pointer;
-font-weight: 600;
-text-align: center;
+    display:inline-block;
+    padding:10px 18px;
+    background:#0ea5e9;
+    color:white !important;
+    border-radius:8px;
+    text-decoration:none;
+    transition:0.3s;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    text-align: center;
 }
 
 .btn:hover{
-background:#0284c7;
-transform: translateY(-2px);
+    background:#0284c7;
+    transform: translateY(-2px);
 }
 
 /* =========================
-AVISO
-========================= */
+   AVISO DA DIREÇÃO
+   ========================= */
 .aviso-diretor{
-background:#facc15;
-color:#111;
-padding:12px;
-font-weight:bold;
-text-align:center;
-margin-top:90px; /* Ajustado para o header fixo */
-border-radius: 4px;
+    background:#facc15;
+    color:#111;
+    padding:15px;
+    font-weight:bold;
+    text-align:center;
+    /* BUG FIX: Ajustado para o header fixo não cobrir o aviso em páginas internas */
+    margin-top:80px; 
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.1);
 }
 
 /* =========================
-NOTÍCIAS
-========================= */
+   FEED DE NOTÍCIAS
+   ========================= */
 .news{
-background:#020617;
-padding:20px;
-border-radius:12px;
-border:1px solid #1e293b;
-margin-bottom:20px;
+    background:#020617;
+    padding:20px;
+    border-radius:12px;
+    border:1px solid #1e293b;
+    margin-bottom:20px;
 }
 
 .news h3{
-color:#38bdf8;
-margin-bottom:10px;
+    color:#38bdf8;
+    margin-bottom:10px;
 }
 
 .news img{
-width:100%;
-max-height: 400px; /* Evita que imagens verticais quebrem o layout */
-object-fit: cover;
-border-radius:8px;
-margin-bottom:10px;
+    width:100%;
+    max-height: 450px;
+    object-fit: cover;
+    border-radius:8px;
+    margin-bottom:15px;
+    /* BUG FIX: Garante que a imagem carregue corretamente sem distorção */
+    display: block;
 }
 
 /* =========================
-TABELAS
-========================= */
+   TABELAS RESPONSIVAS
+   ========================= */
 table{
-width:100%;
-border-collapse:collapse;
-margin-top:15px;
-background: #020617;
-color: #e2e8f0;
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    background: #020617;
+    color: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden; /* Mantém as bordas arredondadas */
 }
 
 th,td{
-border:1px solid #1e293b;
-padding:12px;
-text-align: left;
+    border:1px solid #1e293b;
+    padding:14px;
+    text-align: left;
 }
 
 th{
-background:#0ea5e9;
-color:white;
-font-weight: 600;
+    background:#0ea5e9;
+    color:white;
+    font-weight: 600;
 }
 
 tr:hover td{
-background: rgba(56, 189, 248, 0.05); /* Feedback visual simples */
+    background: rgba(56, 189, 248, 0.08);
 }
 
 /* =========================
-FOOTER
-========================= */
+   RODAPÉ (FOOTER)
+   ========================= */
 footer{
-background:#020617;
-color:#94a3b8;
-text-align:center;
-padding:30px;
-margin-top:50px;
-border-top:1px solid #1e293b;
+    background:#020617;
+    color:#94a3b8;
+    text-align:center;
+    padding:40px 20px;
+    margin-top:60px;
+    border-top:1px solid #1e293b;
 }
 
 /* =========================
-RESPONSIVO
-========================= */
+   QUERY RESPONSIVA (MOBILE)
+   ========================= */
 @media(max-width:768px){
 
-header .container{
-flex-direction:column;
-gap:15px;
-padding: 15px;
-}
+    header .container{
+        flex-direction:column;
+        gap:15px;
+        padding: 15px;
+    }
 
-.menu{
-justify-content:center;
-width: 100%;
-}
+    .menu{
+        justify-content:center;
+        width: 100%;
+    }
 
-.menu a{
-margin:5px 10px;
-font-size: 14px;
-}
+    .menu a{
+        margin:5px 10px;
+        font-size: 14px;
+    }
 
-.banner{
-padding:60px 20px;
-margin-top: 120px; /* Espaço maior para o header que cresceu no mobile */
-}
+    .banner{
+        padding:70px 20px;
+        /* BUG FIX: Compensação para o header que fica maior no mobile */
+        margin-top: 130px; 
+    }
 
-.banner h1{
-font-size:26px;
-}
+    .banner h1{
+        font-size:28px;
+    }
 
-.banner p{
-font-size:15px;
-}
+    .card{
+        margin-bottom: 10px;
+    }
 
-.cards{
-grid-template-columns: 1fr; /* Força uma coluna em telas muito pequenas */
-}
-
-table{
-display: block;
-overflow-x: auto; /* Permite scroll horizontal em tabelas no mobile */
-}
-
+    /* BUG FIX: Permite que tabelas grandes não "quebrem" o layout mobile */
+    .container-tabela {
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    table {
+        min-width: 500px;
+    }
 }
