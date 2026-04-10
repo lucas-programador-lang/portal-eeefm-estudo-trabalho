@@ -8,7 +8,7 @@
 
 <title>Notícias da Escola</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 /* Mantendo 100% da sua estrutura original de CSS */
@@ -70,7 +70,7 @@ transition:0.3s;
 }
 
 .destaque:hover{transform:scale(1.01);}
-.destaque img{width:100%;max-height:350px;object-fit:cover;}
+.destaque img{width:100%;max-height:350px;object-fit:cover; display: block;}
 .destaque-conteudo{padding:20px;}
 
 /* SLIDER */
@@ -80,6 +80,8 @@ overflow-x:auto;
 gap:15px;
 margin-bottom:30px;
 padding-bottom:10px;
+/* BUG FIX: Melhoria na rolagem para dispositivos móveis */
+-webkit-overflow-scrolling: touch;
 }
 
 .slider-card{
@@ -92,7 +94,7 @@ transition:0.3s;
 }
 
 .slider-card:hover{transform:scale(1.05);}
-.slider-card img{width:100%;height:140px;object-fit:cover;border-radius:10px 10px 0 0;}
+.slider-card img{width:100%;height:140px;object-fit:cover;border-radius:10px 10px 0 0; display: block;}
 .slider-card h4{padding:10px;font-size:14px;}
 
 /* AVISO */
@@ -115,7 +117,7 @@ transition:0.3s;
 }
 
 .noticia-card:hover{transform:translateY(-4px);}
-.noticia-card img{width:100%;max-height:300px;object-fit:cover;border-radius:12px 12px 0 0;}
+.noticia-card img{width:100%;max-height:300px;object-fit:cover;border-radius:12px 12px 0 0; display: block;}
 .noticia-conteudo{padding:20px;}
 
 /* LOADING */
@@ -130,7 +132,7 @@ transition:0.3s;
   <div class="container">
     <nav>
       <div class="logo">
-        <img src="logo.png" alt="Logo">
+        <img src="logo.png" alt="Logo Escola">
         <strong>EEEFM Estudo e Trabalho</strong>
       </div>
       <div class="menu">
@@ -160,128 +162,139 @@ transition:0.3s;
 
 </div>
 
-<script>
+<script src="js/script.js"></script>
 
+<script>
 const API = "https://portal-escola-backend.onrender.com"
 let todasNoticias = []
 
 async function carregarNoticias(){
-let loading = document.getElementById("loading")
+    const loading = document.getElementById("loading")
 
-try{
-let res = await fetch(API + "/publicacoes")
-if(!res.ok) throw new Error("Erro na API");
+    try{
+        let res = await fetch(API + "/publicacoes")
+        if(!res.ok) throw new Error("Erro na API");
 
-let dados = await res.json()
-loading.style.display = "none"
+        let dados = await res.json()
+        
+        if(!Array.isArray(dados)) {
+            throw new Error("Dados inválidos recebidos");
+        }
 
-// Ordenação segura por data
-dados.sort((a,b)=> {
-    const dataA = a.data_publicacao ? new Date(a.data_publicacao) : 0;
-    const dataB = b.data_publicacao ? new Date(b.data_publicacao) : 0;
-    return dataB - dataA;
-});
+        loading.style.display = "none"
 
-let avisosDiv = document.getElementById("avisos")
-let destaqueDiv = document.getElementById("destaque")
-let sliderDiv = document.getElementById("sliderNoticias")
+        // Ordenação segura por data
+        dados.sort((a,b)=> {
+            const dataA = a.data_publicacao ? new Date(a.data_publicacao) : 0;
+            const dataB = b.data_publicacao ? new Date(b.data_publicacao) : 0;
+            return dataB - dataA;
+        });
 
-avisosDiv.innerHTML=""
-destaqueDiv.innerHTML=""
-sliderDiv.innerHTML=""
+        const avisosDiv = document.getElementById("avisos")
+        const destaqueDiv = document.getElementById("destaque")
+        const sliderDiv = document.getElementById("sliderNoticias")
 
-// Filtragem para garantir que apenas notícias entrem na lista principal
-todasNoticias = dados.filter(p=>p.tipo==="noticia")
+        avisosDiv.innerHTML=""
+        destaqueDiv.innerHTML=""
+        sliderDiv.innerHTML=""
 
-/* AVISOS */
-dados.forEach(p=>{
-if(p.tipo==="aviso"){
-avisosDiv.innerHTML += `
-<div class="aviso-diretor">
-📢 <strong>${p.titulo || "Aviso"}</strong><br>
-${p.conteudo || ""}
-</div>
-`
-}
-})
+        // Filtragem para garantir que apenas notícias entrem na lista principal
+        todasNoticias = dados.filter(p => p && p.tipo === "noticia")
 
-/* DESTAQUE - Primeira notícia da lista */
-if(todasNoticias.length){
-let d = todasNoticias[0]
-let resumoDestaque = (d.conteudo || "").replace(/<[^>]*>?/gm, ''); // Remove HTML para o resumo
+        /* AVISOS */
+        dados.forEach(p=>{
+            if(p && p.tipo === "aviso"){
+                avisosDiv.innerHTML += `
+                    <div class="aviso-diretor">
+                    📢 <strong>${p.titulo || "Aviso"}</strong><br>
+                    ${p.conteudo || ""}
+                    </div>`
+            }
+        })
 
-destaqueDiv.innerHTML = `
-<div class="destaque" onclick="abrirNoticia('${d.id}')">
-${d.imagem ? `<img src="${d.imagem}">` : ""}
-<div class="destaque-conteudo">
-<h2>${d.titulo || "Sem título"}</h2>
-<p>${resumoDestaque.substring(0,150)}...</p>
-</div>
-</div>
-`
-}
+        /* DESTAQUE - Primeira notícia da lista */
+        if(todasNoticias.length > 0){
+            let d = todasNoticias[0]
+            let resumoDestaque = (d.conteudo || "").replace(/<[^>]*>?/gm, ''); 
 
-/* SLIDER */
-todasNoticias.forEach(p=>{
-sliderDiv.innerHTML += `
-<div class="slider-card" onclick="abrirNoticia('${p.id}')">
-${p.imagem ? `<img src="${p.imagem}">` : ""}
-<h4>${p.titulo || "Sem título"}</h4>
-</div>
-`
-})
+            destaqueDiv.innerHTML = `
+                <div class="destaque" onclick="abrirNoticia('${d.id}')">
+                ${(d.imagem && d.imagem !== "null") ? `<img src="${d.imagem}" onerror="this.style.display='none'">` : ""}
+                <div class="destaque-conteudo">
+                <h2>${d.titulo || "Sem título"}</h2>
+                <p>${resumoDestaque.substring(0,150)}...</p>
+                </div>
+                </div>`
+        }
 
-renderNoticias(todasNoticias)
+        /* SLIDER */
+        todasNoticias.forEach(p=>{
+            sliderDiv.innerHTML += `
+                <div class="slider-card" onclick="abrirNoticia('${p.id}')">
+                ${(p.imagem && p.imagem !== "null") ? `<img src="${p.imagem}" onerror="this.style.display='none'">` : ""}
+                <h4>${p.titulo || "Sem título"}</h4>
+                </div>`
+        })
 
-}catch(err){
-console.error(err);
-document.getElementById("loading").innerText="Erro ao carregar notícias. Verifique sua conexão."
-}
+        renderNoticias(todasNoticias)
+
+    }catch(err){
+        console.error("Erro de Console:", err);
+        const loadingElem = document.getElementById("loading");
+        if(loadingElem) {
+            loadingElem.innerText="Erro ao carregar notícias. Verifique sua conexão.";
+            loadingElem.style.color = "#ef4444";
+        }
+    }
 }
 
 /* LISTA */
 function renderNoticias(lista){
-let noticiasDiv = document.getElementById("noticias")
-noticiasDiv.innerHTML=""
+    const noticiasDiv = document.getElementById("noticias")
+    if(!noticiasDiv) return;
+    
+    noticiasDiv.innerHTML=""
 
-if(lista.length === 0) {
-    noticiasDiv.innerHTML = "<p class='loading'>Nenhuma notícia encontrada.</p>";
-    return;
-}
+    if(lista.length === 0) {
+        noticiasDiv.innerHTML = "<p class='loading'>Nenhuma notícia encontrada.</p>";
+        return;
+    }
 
-lista.forEach(p=>{
-let resumo = (p.conteudo || "").replace(/<[^>]*>?/gm, ''); // Remove tags HTML
+    lista.forEach(p=>{
+        let resumo = (p.conteudo || "").replace(/<[^>]*>?/gm, ''); 
 
-noticiasDiv.innerHTML += `
-<div class="noticia-card" onclick="abrirNoticia('${p.id}')">
-${p.imagem ? `<img src="${p.imagem}">` : ""}
-<div class="noticia-conteudo">
-<h3>${p.titulo || "Sem título"}</h3>
-<p>${resumo.substring(0,200)}...</p>
-</div>
-</div>
-`
-})
+        noticiasDiv.innerHTML += `
+            <div class="noticia-card" onclick="abrirNoticia('${p.id}')">
+            ${(p.imagem && p.imagem !== "null") ? `<img src="${p.imagem}" onerror="this.style.display='none'">` : ""}
+            <div class="noticia-conteudo">
+            <h3>${p.titulo || "Sem título"}</h3>
+            <p>${resumo.substring(0,200)}...</p>
+            </div>
+            </div>`
+    })
 }
 
 /* BUSCA */
 function filtrarNoticias(){
-let busca = document.getElementById("busca").value.toLowerCase()
+    const buscaInput = document.getElementById("busca")
+    if(!buscaInput) return;
+    
+    let busca = buscaInput.value.toLowerCase()
 
-let filtradas = todasNoticias.filter(n =>
-(n.titulo || "").toLowerCase().includes(busca) ||
-(n.conteudo || "").toLowerCase().includes(busca)
-)
+    let filtradas = todasNoticias.filter(n =>
+        (n.titulo || "").toLowerCase().includes(busca) ||
+        (n.conteudo || "").toLowerCase().includes(busca)
+    )
 
-renderNoticias(filtradas)
+    renderNoticias(filtradas)
 }
 
-/* ABRIR - Corrigido para passar o ID como string */
+/* ABRIR */
 function abrirNoticia(id){
-if(id) window.location.href = "noticia.html?id=" + id
+    if(id) window.location.href = "noticia.html?id=" + id
 }
 
-carregarNoticias()
+document.addEventListener("DOMContentLoaded", carregarNoticias);
 </script>
 
 </body>
