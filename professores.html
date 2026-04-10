@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Painel do Professor</title>
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
 
 <style>
 /* Mantendo 100% da sua estrutura original de CSS */
@@ -76,7 +76,7 @@ border:1px solid #1e293b;
 /* FORM */
 input{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
 border-radius:8px;
 border:1px solid #1e293b;
@@ -152,6 +152,9 @@ display:none;
 <button onclick="trocarSenha()">Salvar</button>
 </div>
 
+<script src="js/logout.js"></script>
+<script src="js/script.js"></script>
+
 <script>
 const API="https://portal-escola-backend.onrender.com"
 
@@ -159,83 +162,143 @@ function getToken(){
 return localStorage.getItem("token")
 }
 
-function logout(){
-localStorage.clear()
-window.location.href="login-professor.html"
+// BUG FIX: Verificando se logout já não está definido globalmente no logout.js
+if (typeof logout !== 'function') {
+    function logout(){
+        localStorage.clear()
+        window.location.href="login-professor.html"
+    }
 }
 
 // Verificação imediata de acesso
 if(!getToken()){
-logout()
+    logout()
 }
 
 /* CARREGAR ALUNOS */
 async function carregarAlunos(){
-let tabela=document.getElementById("tabelaAlunos")
-if(!tabela) return;
+    let tabela=document.getElementById("tabelaAlunos")
+    if(!tabela) return;
 
-try{
-let res=await fetch(API+"/alunos",{
-headers:{Authorization:"Bearer "+getToken()}
-})
+    try{
+        let res=await fetch(API+"/alunos",{
+            headers:{Authorization:"Bearer "+getToken()}
+        })
 
-if(res.status === 401) { logout(); return; }
+        if(res.status === 401) { logout(); return; }
 
-let alunos=await res.json()
+        let alunos=await res.json()
 
-tabela.innerHTML=`
-<tr>
-<th>ID</th>
-<th>Nome</th>
-<th>CPF</th>
-</tr>
-`
+        tabela.innerHTML=`
+        <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>CPF</th>
+        </tr>
+        `
 
-if(Array.isArray(alunos)){
-    alunos.forEach(a=>{
-    tabela.innerHTML+=`
-    <tr>
-    <td>${a.id}</td>
-    <td>${a.nome}</td>
-    <td>${a.cpf}</td>
-    </tr>
-    `
-    })
-} else {
-    tabela.innerHTML += `<tr><td colspan="3">Nenhum aluno encontrado.</td></tr>`;
-}
+        if(Array.isArray(alunos)){
+            alunos.forEach(a=>{
+                tabela.innerHTML+=`
+                <tr>
+                <td>${a.id}</td>
+                <td>${a.nome}</td>
+                <td>${a.cpf}</td>
+                </tr>
+                `
+            })
+        } else {
+            tabela.innerHTML += `<tr><td colspan="3">Nenhum aluno encontrado.</td></tr>`;
+        }
 
-}catch(err){
-console.error(err)
-alert("Erro ao carregar lista de alunos")
-}
+    }catch(err){
+        console.error("Erro de Console:", err)
+        alert("Erro ao carregar lista de alunos")
+    }
 }
 
 /* REGISTRAR NOTA */
 async function registrarNota(e){
-e.preventDefault()
+    e.preventDefault()
 
-let aluno_id=document.getElementById("idAluno").value
-let disciplina=document.getElementById("disciplinaNota").value
-let nota=document.getElementById("notaAluno").value
+    let aluno_id=document.getElementById("idAluno").value
+    let disciplina=document.getElementById("disciplinaNota").value
+    let nota=document.getElementById("notaAluno").value
 
-try {
-    let res=await fetch(API+"/nota",{
-    method:"POST",
-    headers:{
-    "Content-Type":"application/json",
-    Authorization:"Bearer "+getToken()
-    },
-    body:JSON.stringify({aluno_id,disciplina,nota})
-    })
+    try {
+        let res=await fetch(API+"/nota",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                Authorization:"Bearer "+getToken()
+            },
+            body:JSON.stringify({aluno_id,disciplina,nota})
+        })
 
-    let data=await res.json()
+        let data=await res.json()
 
-    if(data.success){
-    alert("✅ Nota salva com sucesso!")
-    e.target.reset()
-    }else{
-    alert(data.erro || "Erro ao salvar nota")
+        if(data.success){
+            alert("✅ Nota salva com sucesso!")
+            e.target.reset()
+        }else{
+            alert(data.erro || "Erro ao salvar nota")
+        }
+    } catch (err) {
+        console.error(err)
+        alert("Erro de conexão com o servidor ao salvar nota")
     }
-} catch (err) {
-    alert("Erro de conexão com o servidor ao salvar nota")
+}
+
+/* TROCAR SENHA */
+function abrirTrocarSenha(){
+    let box=document.getElementById("trocarSenhaBox")
+    if(box) {
+        box.style.display = (box.style.display==="block") ? "none" : "block"
+    }
+}
+
+async function trocarSenha(){
+    let senhaAtualInput=document.getElementById("senhaAtual")
+    let novaSenhaInput=document.getElementById("novaSenha")
+    
+    // BUG FIX: Recuperando dados do professor logado para o CPF
+    let usuarioStr = localStorage.getItem("usuario")
+    if(!usuarioStr) return;
+    let usuario = JSON.parse(usuarioStr)
+
+    try {
+        let res=await fetch(API+"/trocar-senha",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer "+getToken()
+            },
+            body:JSON.stringify({
+                cpf:usuario.cpf,
+                senhaAtual:senhaAtualInput.value,
+                novaSenha:novaSenhaInput.value,
+                tipo:"professor"
+            })
+        })
+
+        let data=await res.json()
+
+        if(data.success){
+            alert("Senha alterada com sucesso!")
+            senhaAtualInput.value=""
+            novaSenhaInput.value=""
+            document.getElementById("trocarSenhaBox").style.display="none"
+        }else{
+            alert(data.message || "Erro ao alterar senha")
+        }
+    } catch(err) {
+        alert("Erro de conexão")
+    }
+}
+
+// Inicialização em produção
+document.addEventListener('DOMContentLoaded', carregarAlunos);
+</script>
+
+</body>
+</html>
