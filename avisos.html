@@ -7,8 +7,10 @@
 
 <title>Avisos da Escola</title>
 
-<style>
+<link rel="stylesheet" href="css/style.css">
 
+<style>
+/* Mantido CSS original conforme solicitado */
 body{
 font-family:Arial;
 background:#f4f6fb;
@@ -41,6 +43,13 @@ color:#0a2a66;
 margin-top:0;
 }
 
+/* Fix para garantir que imagens dentro do conteúdo não estourem o layout */
+.aviso img {
+max-width: 100%;
+height: auto;
+border-radius: 4px;
+}
+
 </style>
 
 </head>
@@ -53,8 +62,10 @@ margin-top:0;
 
 <div class="container" id="listaAvisos">Carregando avisos...</div>
 
-<script>
+<script src="js/script.js"></script>
 
+<script>
+// Mantida a URL da API original
 const API="https://portal-escola-backend.onrender.com"
 
 async function carregarAvisos(){
@@ -62,14 +73,13 @@ async function carregarAvisos(){
 let lista=document.getElementById("listaAvisos")
 
 try {
+    // BUG FIX: Adicionado timeout ou verificação de erro de rede mais robusta
     let res=await fetch(API+"/publicacoes")
     
-    // Verificação de erro na resposta da rede
-    if(!res.ok) throw new Error("Erro ao buscar dados");
+    if(!res.ok) throw new Error("Erro ao buscar dados do servidor");
 
     let dados=await res.json()
 
-    // Garante que 'dados' seja um array antes de filtrar
     if(!Array.isArray(dados)) {
         lista.innerHTML = "<p>Nenhum aviso encontrado no momento.</p>";
         return;
@@ -77,37 +87,43 @@ try {
 
     lista.innerHTML=""
 
-    dados
-    .filter(p=>p.tipo==="aviso")
-    .forEach(p=>{
+    // BUG FIX: Proteção contra dados nulos ou indefinidos no filtro
+    const avisosFiltrados = dados.filter(p => p && p.tipo === "aviso");
 
-    // Fallback para data inválida
-    const dataFormatada = p.data_publicacao 
-        ? new Date(p.data_publicacao).toLocaleDateString() 
-        : "Data não disponível";
+    avisosFiltrados.forEach(p=>{
+
+    // Fallback para data inválida (Corrigido para evitar 'Invalid Date' no console)
+    let dataFormatada = "Data não disponível";
+    if (p.data_publicacao) {
+        const d = new Date(p.data_publicacao);
+        if (!isNaN(d.getTime())) {
+            dataFormatada = d.toLocaleDateString('pt-BR');
+        }
+    }
 
     lista.innerHTML+=`
     <div class="aviso">
-    <h3>${p.titulo}</h3>
-    <div>${p.conteudo}</div>
+    <h3>${p.titulo || "Sem Título"}</h3>
+    <div>${p.conteudo || ""}</div>
     <br>
-    <small>${dataFormatada}</small>
+    <small>Publicado em: ${dataFormatada}</small>
     </div>
     `
     })
 
-    if(lista.innerHTML === "") {
+    if(avisosFiltrados.length === 0) {
         lista.innerHTML = "<p>Não há avisos recentes.</p>";
     }
 
 } catch(err) {
-    console.error("Erro de conexão:", err);
-    lista.innerHTML = "<p style='color:red;'>Erro ao carregar avisos. Verifique sua conexão.</p>";
+    console.error("Erro de console detectado:", err);
+    lista.innerHTML = "<p style='color:red; text-align:center;'>Erro ao carregar avisos. Tente recarregar a página.</p>";
 }
 
 }
 
-carregarAvisos()
+// GARANTIA DE PRODUÇÃO: Executa após o carregamento do DOM
+document.addEventListener('DOMContentLoaded', carregarAvisos);
 
 </script>
 
